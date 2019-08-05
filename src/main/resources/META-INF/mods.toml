@@ -1,0 +1,11 @@
+modLoader="javafml" 
+loaderVersion="[27,)"
+
+[[mods]]
+modId="lollipop"
+version="${file.jarVersion}"
+displayName="Lollipop"
+authors="xieao"
+description='''
+A Library mod.
+'''
