@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 public abstract class TileBase extends TileEntity {
-    public NonNullList<ItemStack> stacks = NonNullList.withSize(0, ItemStack.EMPTY);
+    public NonNullList<ItemStack> stacks = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
     @Nullable
     public ITextComponent customName;
 
@@ -59,7 +59,7 @@ public abstract class TileBase extends TileEntity {
             this.customName = ITextComponent.Serializer.fromJson(compound.getString("CustomName"));
         }
         if (this instanceof IInvBase) {
-            this.stacks = NonNullList.withSize(this.stacks.size(), ItemStack.EMPTY);
+            this.stacks = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
             InventoryUtil.readAllItems(compound, (IInvBase) this);
         }
         readStorable(compound);
@@ -74,6 +74,10 @@ public abstract class TileBase extends TileEntity {
         }
         writeStorable(compound);
         return compound;
+    }
+
+    public int getSizeInventory() {
+        return 0;
     }
 
     public void readStorable(CompoundNBT compound) {

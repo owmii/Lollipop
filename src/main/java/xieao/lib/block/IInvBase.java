@@ -32,9 +32,7 @@ public interface IInvBase extends ISidedInventory, IForgeTileEntity {
     }
 
     @Override
-    default int getSizeInventory() {
-        return getTile().stacks.size();
-    }
+    int getSizeInventory();
 
     default void setInvSize(int size) {
         getTile().stacks = NonNullList.withSize(size, ItemStack.EMPTY);

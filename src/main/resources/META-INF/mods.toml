@@ -9,3 +9,10 @@ authors="xieao"
 description='''
 A Library mod.
 '''
+
+[[dependencies.lollipop]]
+    modId="forge"
+    mandatory=true
+    versionRange="[28.1.39,)"
+    ordering="NONE"
+    side="BOTH"
