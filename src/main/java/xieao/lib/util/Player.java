@@ -6,22 +6,20 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.FakePlayer;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.UUID;
 
-public class PlayerUtil {
+public class Player {
     public static boolean isFake(PlayerEntity player) {
         return player instanceof FakePlayer;
     }
 
-    @Nullable
-    public static ServerPlayerEntity get(UUID uuid) {
-        return ServerUtil.getServer().getPlayerList().getPlayerByUUID(uuid);
+    public static Optional<ServerPlayerEntity> get(UUID uuid) {
+        return Optional.ofNullable(Server.get().getPlayerList().getPlayerByUUID(uuid));
     }
 
-    @Nullable
-    public static ServerPlayerEntity get(String name) {
-        return ServerUtil.getServer().getPlayerList().getPlayerByUsername(name);
+    public static Optional<ServerPlayerEntity> get(String name) {
+        return Optional.ofNullable(Server.get().getPlayerList().getPlayerByUsername(name));
     }
 
     public static boolean hasItem(PlayerEntity player, Item item) {

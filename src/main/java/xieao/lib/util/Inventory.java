@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 
-public class InventoryUtil {
+public class Inventory {
     public static CompoundNBT writeItems(CompoundNBT tag, IInventory inv) {
         return writeItems(tag, inv, true);
     }

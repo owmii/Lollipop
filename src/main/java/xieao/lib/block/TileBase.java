@@ -12,7 +12,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import xieao.lib.util.InventoryUtil;
+import xieao.lib.util.Inventory;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -60,7 +60,7 @@ public abstract class TileBase extends TileEntity {
         }
         if (this instanceof IInvBase) {
             this.stacks = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
-            InventoryUtil.readAllItems(compound, (IInvBase) this);
+            Inventory.readAllItems(compound, (IInvBase) this);
         }
         readStorable(compound);
     }
@@ -70,7 +70,7 @@ public abstract class TileBase extends TileEntity {
             compound.putString("CustomName", ITextComponent.Serializer.toJson(this.customName));
         }
         if (this instanceof IInvBase) {
-            InventoryUtil.writeItems(compound, (IInventory) this);
+            Inventory.writeItems(compound, (IInventory) this);
         }
         writeStorable(compound);
         return compound;

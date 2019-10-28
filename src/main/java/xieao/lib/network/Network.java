@@ -10,6 +10,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import xieao.lib.Lollipop;
+import xieao.lib.util.Server;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -29,6 +30,12 @@ public class Network {
     @OnlyIn(Dist.CLIENT)
     public <T> void toServer(T msg) {
         CHANNEL.sendToServer(msg);
+    }
+
+    public <T> void toAll(T msg) {
+        Server.get().getPlayerList().getPlayers().forEach(serverPlayerEntity -> {
+            toClient(msg, serverPlayerEntity);
+        });
     }
 
     public <T> void toClient(T msg, PlayerEntity player) {
