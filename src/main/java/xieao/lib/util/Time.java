@@ -8,6 +8,6 @@ public class Time {
         long hours = TimeUnit.SECONDS.toHours(time) - (days * 24);
         long minutes = TimeUnit.SECONDS.toMinutes(time) - (TimeUnit.SECONDS.toHours(time) * 60);
         long seconds = TimeUnit.SECONDS.toSeconds(time) - (TimeUnit.SECONDS.toMinutes(time) * 60);
-        return String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds);
+        return String.format("%03d:%02d:%02d:%02d", days, hours, minutes, seconds);
     }
 }
