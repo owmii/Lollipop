@@ -59,8 +59,8 @@ public abstract class TileBase extends TileEntity {
             this.customName = ITextComponent.Serializer.fromJson(compound.getString("CustomName"));
         }
         if (this instanceof IInvBase) {
-            this.stacks = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
-            Inventory.readAllItems(compound, (IInvBase) this);
+            this.stacks = Inventory.readItems(compound, (IInvBase) this);
+            ((IInvBase) this).onInventoryChanged(0);
         }
         readStorable(compound);
     }
