@@ -2,6 +2,7 @@ package xieao.lib.util;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DimensionSavedDataManager;
@@ -15,6 +16,14 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class Server {
+    public static void chatToAll(ITextComponent... textComponents) {
+        get().getPlayerList().getPlayers().forEach(player -> {
+            for (ITextComponent textComponent : textComponents) {
+                player.sendMessage(textComponent);
+            }
+        });
+    }
+
     public static <T extends WorldSavedData> T getData(Supplier<T> supplier) {
         return getData(supplier, 0);
     }
