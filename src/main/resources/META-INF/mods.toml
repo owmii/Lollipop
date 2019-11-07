@@ -1,10 +1,12 @@
 modLoader="javafml" 
 loaderVersion="[28,)"
+issueTrackerURL="https://github.com/xieaoDev/Lollipop/issues"
 
 [[mods]]
 modId="lollipop"
 version="${file.jarVersion}"
 displayName="Lollipop"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/lollipop"
 authors="xieao"
 description='''
 A Library mod.
@@ -13,6 +15,6 @@ A Library mod.
 [[dependencies.lollipop]]
     modId="forge"
     mandatory=true
-    versionRange="[28.1.56,)"
+    versionRange="[28.1.80,)"
     ordering="NONE"
     side="BOTH"
