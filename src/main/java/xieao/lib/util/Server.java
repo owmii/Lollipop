@@ -1,5 +1,6 @@
 package xieao.lib.util;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -12,12 +13,17 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.LogicalSidedProvider;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class Server {
-    public static void chatToAll(ITextComponent... textComponents) {
+    public static void chatToAll(BiConsumer<PlayerEntity, List<ITextComponent>> biConsumer) {
+        List<ITextComponent> textComponents = new ArrayList<>();
         get().getPlayerList().getPlayers().forEach(player -> {
+            biConsumer.accept(player, textComponents);
             for (ITextComponent textComponent : textComponents) {
                 player.sendMessage(textComponent);
             }
