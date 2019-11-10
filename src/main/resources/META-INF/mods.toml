@@ -7,7 +7,7 @@ modId="lollipop"
 version="${file.jarVersion}"
 displayName="Lollipop"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/lollipop"
-authors="xieao"
+authors="zeroneye"
 description='''
 A Library mod.
 '''
