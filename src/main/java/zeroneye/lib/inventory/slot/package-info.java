@@ -1,4 +1,4 @@
 @NonnullDefault
-package zeroneye.lib.energy;
+package zeroneye.lib.inventory.slot;
 
 import org.lwjgl.system.NonnullDefault;

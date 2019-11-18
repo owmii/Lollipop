@@ -1,5 +1,6 @@
 package zeroneye.lib.block;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -9,18 +10,21 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.INameable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import zeroneye.lib.util.Inventory;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 
-public abstract class TileBase extends TileEntity {
+public abstract class TileBase extends TileEntity implements INameable {
     public NonNullList<ItemStack> stacks = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
     @Nullable
     public ITextComponent customName;
+    public String defaultName = "";
+    protected boolean isContainerOpen;
+    protected boolean sync;
 
     public TileBase(TileEntityType<?> tileEntityType) {
         super(tileEntityType);
@@ -55,6 +59,9 @@ public abstract class TileBase extends TileEntity {
     }
 
     public void readSync(CompoundNBT compound) {
+        if (compound.contains("DefaultName", 8)) {
+            this.defaultName = compound.getString("DefaultName");
+        }
         if (compound.contains("CustomName", 8)) {
             this.customName = ITextComponent.Serializer.fromJson(compound.getString("CustomName"));
         }
@@ -66,6 +73,9 @@ public abstract class TileBase extends TileEntity {
     }
 
     public CompoundNBT writeSync(CompoundNBT compound) {
+        if (!this.defaultName.isEmpty()) {
+            compound.putString("DefaultName", this.defaultName);
+        }
         if (this.customName != null) {
             compound.putString("CustomName", ITextComponent.Serializer.toJson(this.customName));
         }
@@ -87,6 +97,18 @@ public abstract class TileBase extends TileEntity {
         return compound;
     }
 
+    public boolean sync() {
+        return sync;
+    }
+
+    public void sync(boolean sync) {
+        this.sync = sync;
+    }
+
+    public int getSyncTicks() {
+        return isContainerOpen() ? 10 : 0;
+    }
+
     public void markDirtyAndSync() {
         if (this.world != null) {
             markDirty();
@@ -101,9 +123,48 @@ public abstract class TileBase extends TileEntity {
         return this.world != null && !this.world.isRemote;
     }
 
+    public Block getBlock() {
+        return getBlockState().getBlock();
+    }
+
+    @Override
+    public boolean hasCustomName() {
+        return this.customName != null;
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getName();
+    }
+
+    protected ITextComponent getDefaultName() {
+        return new TranslationTextComponent(this.defaultName);
+    }
+
+    public void setDefaultName(String defaultName) {
+        this.defaultName = defaultName;
+    }
+
+    @Nullable
+    @Override
+    public ITextComponent getCustomName() {
+        return customName;
+    }
+
     public ITextComponent getName() {
-        return new StringTextComponent("block." + Objects.requireNonNull(getType()
-                .getRegistryName()).toString().replace(':', '.'));
+        return this.customName != null ? this.customName : getDefaultName();
+    }
+
+    public void setCustomName(ITextComponent displayName) {
+        this.customName = displayName;
+    }
+
+    public void setContainerOpen(boolean b) {
+        this.isContainerOpen = b;
+    }
+
+    public boolean isContainerOpen() {
+        return isContainerOpen;
     }
 
     public static abstract class Tickable extends TileBase implements ITickableTileEntity {
@@ -114,8 +175,31 @@ public abstract class TileBase extends TileEntity {
         }
 
         @Override
-        public void tick() {
-            this.ticks++;
+        public final void tick() {
+            if (doTicks()) {
+                if (this.ticks == 0) {
+                    onFirstTick();
+                }
+                postTicks();
+                this.ticks++;
+                if (sync() && this.ticks % getSyncTicks() == 0) {
+                    markDirtyAndSync();
+                    sync(false);
+                }
+            }
+        }
+
+        protected boolean doTicks() {
+            return true;
+        }
+
+        protected void onFirstTick() {
+        }
+
+        protected abstract void postTicks();
+
+        public void resetTicks() {
+            this.ticks = 0;
         }
     }
 }

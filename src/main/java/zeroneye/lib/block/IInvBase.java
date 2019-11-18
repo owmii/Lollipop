@@ -1,24 +1,33 @@
 package zeroneye.lib.block;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.extensions.IForgeTileEntity;
+import net.minecraftforge.common.util.LazyOptional;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.stream.IntStream;
 
-public interface IInvBase extends ISidedInventory, IForgeTileEntity {
+public interface IInvBase extends ISidedInventory, IForgeTileEntity, INamedContainerProvider {
     default TileBase getTile() {
         return (TileBase) this;
     }
 
     @Override
     default int[] getSlotsForFace(Direction Direction) {
-        return IntStream.range(0, getSizeInventory() - 1).toArray();
+        return IntStream.range(0, getSizeInventory()).toArray();
     }
 
     @Override
@@ -66,8 +75,8 @@ public interface IInvBase extends ISidedInventory, IForgeTileEntity {
     default void setInventorySlotContents(int index, ItemStack itemStack) {
         ItemStack oldStack = getStackInSlot(index);
         getTile().stacks.set(index, itemStack);
-        if (itemStack.getCount() > this.getInventoryStackLimit()) {
-            itemStack.setCount(this.getInventoryStackLimit());
+        if (itemStack.getCount() > maxStackSize(index)) {
+            itemStack.setCount(maxStackSize(index));
         }
         markDirty();
         if (!oldStack.isItemEqual(itemStack)) {
@@ -76,6 +85,10 @@ public interface IInvBase extends ISidedInventory, IForgeTileEntity {
     }
 
     default void onInventoryChanged(int index) {
+    }
+
+    default int maxStackSize(int index) {
+        return getInventoryStackLimit();
     }
 
     @Override
@@ -110,4 +123,51 @@ public interface IInvBase extends ISidedInventory, IForgeTileEntity {
             }
         }
     }
+
+    @Override
+    default ITextComponent getDisplayName() {
+        return getTile().getName();
+    }
+
+    @Nullable
+    @Override
+    default Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        if (getTile().getBlock() instanceof BlockBase) {
+            return ((BlockBase) getTile().getBlock()).getContainer(i, playerInventory, this);
+        }
+        return null;
+    }
+
+    IInvBase EMPTY = new IInvBase() {
+        @Override
+        public int getSizeInventory() {
+            return 0;
+        }
+
+        @Override
+        public void markDirty() {
+        }
+
+        @Override
+        public CompoundNBT getTileData() {
+            return new CompoundNBT();
+        }
+
+        @Nonnull
+        @Override
+        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+            return LazyOptional.empty();
+        }
+
+        @Nullable
+        @Override
+        public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+            return null;
+        }
+
+        @Override
+        public ITextComponent getDisplayName() {
+            return new StringTextComponent("");
+        }
+    };
 }
