@@ -97,11 +97,11 @@ public abstract class TileBase extends TileEntity implements INameable {
         return compound;
     }
 
-    public boolean sync() {
+    public boolean isReadyToSync() {
         return sync;
     }
 
-    public void sync(boolean sync) {
+    public void setReadyToSync(boolean sync) {
         this.sync = sync;
     }
 
@@ -176,15 +176,20 @@ public abstract class TileBase extends TileEntity implements INameable {
 
         @Override
         public final void tick() {
+            if (this.world == null) return;
+
             if (doTicks()) {
                 if (this.ticks == 0) {
                     onFirstTick();
                 }
-                postTicks();
+                if (postTicks()) {
+                    markDirty();
+                    setReadyToSync(true);
+                }
                 this.ticks++;
-                if (sync() && this.ticks % getSyncTicks() == 0) {
+                if (isReadyToSync() && this.ticks % getSyncTicks() == 0) {
                     markDirtyAndSync();
-                    sync(false);
+                    setReadyToSync(false);
                 }
             }
         }
@@ -196,7 +201,7 @@ public abstract class TileBase extends TileEntity implements INameable {
         protected void onFirstTick() {
         }
 
-        protected abstract void postTicks();
+        protected abstract boolean postTicks();
 
         public void resetTicks() {
             this.ticks = 0;

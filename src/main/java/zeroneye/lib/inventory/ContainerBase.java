@@ -22,12 +22,14 @@ public abstract class ContainerBase<I extends TileBase> extends Container {
         super(containerType, id);
         this.inv = inv;
         this.inv.setContainerOpen(true);
+        this.inv.markDirtyAndSync();
     }
 
     @SuppressWarnings("unchecked")
     protected ContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(containerType, id, playerInventory, (I) getInventory(playerInventory, buffer.readBlockPos()));
         this.inv.setContainerOpen(true);
+        this.inv.markDirtyAndSync();
     }
 
     @Override
