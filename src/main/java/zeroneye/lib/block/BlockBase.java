@@ -2,25 +2,30 @@ package zeroneye.lib.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.stats.Stats;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import zeroneye.lib.inventory.ContainerBase;
@@ -29,6 +34,7 @@ import zeroneye.lib.util.NBT;
 import javax.annotation.Nullable;
 
 public class BlockBase extends Block implements IBlockBase {
+    public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final DirectionProperty H_FACING = HorizontalBlock.HORIZONTAL_FACING;
 
     public BlockBase(Properties properties) {
@@ -39,15 +45,53 @@ public class BlockBase extends Block implements IBlockBase {
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         if (getFacingType().equals(FacingType.HORIZONTAL)) {
-            return this.getDefaultState().with(H_FACING, context.getPlacementHorizontalFacing().getOpposite());
+            if (!playerFacing()) {
+                return bFacing(context, false);
+            } else {
+                return this.getDefaultState().with(H_FACING, context.getPlacementHorizontalFacing().getOpposite());
+            }
+        } else if (getFacingType().equals(FacingType.ALL)) {
+            if (!playerFacing()) {
+                return bFacing(context, true);
+            } else {
+                return this.getDefaultState().with(FACING, context.getNearestLookingDirection().getOpposite());
+            }
         }
         return super.getStateForPlacement(context);
+    }
+
+    @Nullable
+    private BlockState bFacing(BlockItemUseContext context, boolean b) {
+        BlockState blockstate = this.getDefaultState();
+        IWorldReader iworldreader = context.getWorld();
+        BlockPos blockpos = context.getPos();
+        Direction[] adirection = context.getNearestLookingDirections();
+        for (Direction direction : adirection) {
+            if (b || direction.getAxis().isHorizontal()) {
+                Direction direction1 = direction.getOpposite();
+                blockstate = blockstate.with(getFacingType().equals(FacingType.ALL) ? FACING : H_FACING, direction1);
+                if (blockstate.isValidPosition(iworldreader, blockpos)) {
+                    return blockstate;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if ((getFacingType().equals(FacingType.ALL) || (getFacingType().equals(FacingType.HORIZONTAL))) && !playerFacing()) {
+            return facing.getOpposite() == stateIn.get(getFacingType().equals(FacingType.ALL) ? FACING : H_FACING) && !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : stateIn;
+        }
+        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
     public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
         if (getFacingType().equals(FacingType.HORIZONTAL)) {
             return state.with(H_FACING, direction.rotate(state.get(H_FACING)));
+        } else if (getFacingType().equals(FacingType.ALL)) {
+            return state.with(FACING, direction.rotate(state.get(FACING)));
         }
         return state.rotate(direction);
     }
@@ -56,6 +100,8 @@ public class BlockBase extends Block implements IBlockBase {
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
         if (getFacingType().equals(FacingType.HORIZONTAL)) {
             return state.rotate(mirrorIn.toRotation(state.get(H_FACING)));
+        } else if (getFacingType().equals(FacingType.ALL)) {
+            return state.rotate(mirrorIn.toRotation(state.get(FACING)));
         }
         return super.mirror(state, mirrorIn);
     }
@@ -64,8 +110,8 @@ public class BlockBase extends Block implements IBlockBase {
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         if (getFacingType().equals(FacingType.HORIZONTAL)) {
             builder.add(H_FACING);
-        } else {
-            super.fillStateContainer(builder);
+        } else if (getFacingType().equals(FacingType.ALL)) {
+            builder.add(FACING);
         }
     }
 
@@ -73,10 +119,12 @@ public class BlockBase extends Block implements IBlockBase {
         return FacingType.NORMAL;
     }
 
+    private boolean playerFacing() {
+        return false;
+    }
+
     protected enum FacingType {
-        HORIZONTAL,
-        ALL,
-        NORMAL
+        HORIZONTAL, ALL, NORMAL
     }
 
     @Override
@@ -116,6 +164,22 @@ public class BlockBase extends Block implements IBlockBase {
 
     protected boolean shouldStorNBTFromStack(CompoundNBT compound) {
         return true;
+    }
+
+    @Override
+    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            TileEntity tileentity = worldIn.getTileEntity(pos);
+            if (tileentity instanceof TileBase) {
+                if (tileentity instanceof IInvBase) {
+                    if (((TileBase) tileentity).dropInventoryOnBreak()) {
+                        InventoryHelper.dropInventoryItems(worldIn, pos, (IInvBase) tileentity);
+                        worldIn.updateComparatorOutputLevel(pos, this);
+                    }
+                }
+            }
+        }
+        super.onReplaced(state, worldIn, pos, newState, isMoving);
     }
 
     @Override

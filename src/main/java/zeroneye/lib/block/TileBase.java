@@ -25,9 +25,19 @@ public abstract class TileBase extends TileEntity implements INameable {
     public String defaultName = "";
     protected boolean isContainerOpen;
     protected boolean sync;
+    protected boolean isServerWorld;
 
     public TileBase(TileEntityType<?> tileEntityType) {
         super(tileEntityType);
+        if (this.world != null) {
+            if (!this.world.isRemote) {
+                this.isServerWorld = true;
+            }
+        }
+    }
+
+    protected void initInvStacks(int size) {
+        this.stacks = NonNullList.withSize(size, ItemStack.EMPTY);
     }
 
     @Override
@@ -65,9 +75,8 @@ public abstract class TileBase extends TileEntity implements INameable {
         if (compound.contains("CustomName", 8)) {
             this.customName = ITextComponent.Serializer.fromJson(compound.getString("CustomName"));
         }
-        if (this instanceof IInvBase) {
-            this.stacks = Inventory.readItems(compound, (IInvBase) this);
-            ((IInvBase) this).onInventoryChanged(0);
+        if (dropInventoryOnBreak()) {
+            readInventory(compound);
         }
         readStorable(compound);
     }
@@ -79,23 +88,48 @@ public abstract class TileBase extends TileEntity implements INameable {
         if (this.customName != null) {
             compound.putString("CustomName", ITextComponent.Serializer.toJson(this.customName));
         }
-        if (this instanceof IInvBase) {
-            Inventory.writeItems(compound, (IInventory) this);
+        if (dropInventoryOnBreak()) {
+            writeInventory(compound);
         }
         writeStorable(compound);
         return compound;
+    }
+
+    public void readStorable(CompoundNBT compound) {
+        if (!dropInventoryOnBreak()) {
+            readInventory(compound);
+        }
+    }
+
+    public CompoundNBT writeStorable(CompoundNBT compound) {
+        if (!dropInventoryOnBreak()) {
+            writeInventory(compound);
+        }
+        return compound;
+    }
+
+    private void readInventory(CompoundNBT compound) {
+        if (this instanceof IInvBase) {
+            this.stacks = Inventory.readItems(compound, (IInvBase) this);
+            ((IInvBase) this).onInventoryChanged(0);
+        }
+    }
+
+    private CompoundNBT writeInventory(CompoundNBT compound) {
+        if (this instanceof IInvBase) {
+            Inventory.writeItems(compound, (IInventory) this);
+        }
+        return compound;
+    }
+
+    public boolean dropInventoryOnBreak() {
+        return true;
     }
 
     public int getSizeInventory() {
         return 0;
     }
 
-    public void readStorable(CompoundNBT compound) {
-    }
-
-    public CompoundNBT writeStorable(CompoundNBT compound) {
-        return compound;
-    }
 
     public boolean isReadyToSync() {
         return sync;
@@ -177,7 +211,9 @@ public abstract class TileBase extends TileEntity implements INameable {
         @Override
         public final void tick() {
             if (this.world == null) return;
-
+            if (!this.world.isRemote) {
+                this.isServerWorld = true;
+            }
             if (doTicks()) {
                 if (this.ticks == 0) {
                     onFirstTick();
