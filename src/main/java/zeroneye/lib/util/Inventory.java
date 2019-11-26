@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.NonNullList;
-import zeroneye.lib.block.IInvBase;
+import zeroneye.lib.block.TileBase;
 
 public class Inventory {
     public static CompoundNBT writeItems(CompoundNBT tag, IInventory inv) {
@@ -29,7 +29,7 @@ public class Inventory {
         return tag;
     }
 
-    public static NonNullList<ItemStack> readItems(CompoundNBT tag, IInvBase inv) {
+    public static NonNullList<ItemStack> readItems(CompoundNBT tag, TileBase.TickableInv inv) {
         NonNullList<ItemStack> stacks = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
         ListNBT nbttaglist = tag.getList("Items", 10);
         for (int i = 0; i < nbttaglist.size(); ++i) {

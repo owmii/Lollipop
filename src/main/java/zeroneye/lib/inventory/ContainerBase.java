@@ -8,14 +8,14 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import zeroneye.lib.block.IInvBase;
 import zeroneye.lib.block.TileBase;
 
 import javax.annotation.Nullable;
 
-public abstract class ContainerBase<I extends TileBase> extends Container {
+public class ContainerBase<I extends TileBase.TickableInv> extends Container {
     protected final I inv;
 
     protected ContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, I inv) {
@@ -25,9 +25,8 @@ public abstract class ContainerBase<I extends TileBase> extends Container {
         this.inv.markDirtyAndSync();
     }
 
-    @SuppressWarnings("unchecked")
     protected ContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, PacketBuffer buffer) {
-        this(containerType, id, playerInventory, (I) getInventory(playerInventory, buffer.readBlockPos()));
+        this(containerType, id, playerInventory, getInventory(playerInventory, buffer.readBlockPos()));
         this.inv.setContainerOpen(true);
         this.inv.markDirtyAndSync();
     }
@@ -39,12 +38,12 @@ public abstract class ContainerBase<I extends TileBase> extends Container {
     }
 
     @SuppressWarnings("unchecked")
-    protected static <T extends IInvBase> T getInventory(PlayerInventory playerInv, BlockPos pos) {
+    protected static <T extends TileBase.TickableInv> T getInventory(PlayerInventory playerInv, BlockPos pos) {
         World world = playerInv.player.getEntityWorld();
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof IInvBase)
+        if (tile instanceof TileBase.TickableInv)
             return (T) tile;
-        return (T) IInvBase.EMPTY;
+        return (T) new TileBase.TickableInv(TileEntityType.SIGN); //TODO remove
     }
 
     protected void addPlayerInv(PlayerInventory playerInventory, int x, int hY, int iY) {

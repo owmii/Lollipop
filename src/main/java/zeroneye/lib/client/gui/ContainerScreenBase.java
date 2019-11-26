@@ -12,7 +12,7 @@ import zeroneye.lib.inventory.ContainerBase;
 
 import javax.annotation.Nullable;
 
-public abstract class ContainerScreenBase<T extends ContainerBase> extends ContainerScreen<T> {
+public class ContainerScreenBase<T extends ContainerBase> extends ContainerScreen<T> {
     public int x, y;
 
     public ContainerScreenBase(T container, PlayerInventory playerInventory, ITextComponent name) {
@@ -57,12 +57,25 @@ public abstract class ContainerScreenBase<T extends ContainerBase> extends Conta
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+    protected final void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+        drawBackground(partialTicks, mouseX, mouseY);
+    }
+
+    protected void drawBackground(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         if (getBackGroundImage() != null) {
             bindTexture(getBackGroundImage());
             this.blit(this.x, this.y, 0, 0, this.xSize, this.ySize);
         }
+    }
+
+    @Override
+    protected final void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+        drawForeground(mouseX, mouseY);
+    }
+
+    protected void drawForeground(int mouseX, int mouseY) {
     }
 
     @Override
@@ -91,5 +104,7 @@ public abstract class ContainerScreenBase<T extends ContainerBase> extends Conta
     }
 
     @Nullable
-    protected abstract ResourceLocation getBackGroundImage();
+    protected ResourceLocation getBackGroundImage() {
+        return null;
+    }
 }

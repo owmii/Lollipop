@@ -141,7 +141,7 @@ public class BlockBase extends Block implements IBlockBase {
     }
 
     @Nullable
-    public ContainerBase getContainer(int id, PlayerInventory playerInventory, IInvBase inv) {
+    public ContainerBase getContainer(int id, PlayerInventory playerInventory, TileBase.TickableInv inv) {
         return null;
     }
 
@@ -149,7 +149,7 @@ public class BlockBase extends Block implements IBlockBase {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         TileEntity tileentity = worldIn.getTileEntity(pos);
         if (tileentity instanceof TileBase) {
-            TileBase tile = (TileBase) tileentity;
+            TileBase.TickableInv tile = (TileBase.TickableInv) tileentity;
             if (stack.hasDisplayName()) {
                 tile.setCustomName(stack.getDisplayName());
             } else {
@@ -171,9 +171,9 @@ public class BlockBase extends Block implements IBlockBase {
         if (state.getBlock() != newState.getBlock()) {
             TileEntity tileentity = worldIn.getTileEntity(pos);
             if (tileentity instanceof TileBase) {
-                if (tileentity instanceof IInvBase) {
+                if (tileentity instanceof TileBase.TickableInv) {
                     if (((TileBase) tileentity).dropInventoryOnBreak()) {
-                        InventoryHelper.dropInventoryItems(worldIn, pos, (IInvBase) tileentity);
+                        InventoryHelper.dropInventoryItems(worldIn, pos, (TileBase.TickableInv) tileentity);
                         worldIn.updateComparatorOutputLevel(pos, this);
                     }
                 }
@@ -193,8 +193,10 @@ public class BlockBase extends Block implements IBlockBase {
                 tag.put(NBT.TAG_STACK, storable);
                 stack1.setTag(tag);
             }
-            if (tile.hasCustomName()) {
-                stack1.setDisplayName(tile.getCustomName());
+            if (tile instanceof TileBase.TickableInv) {
+                if (((TileBase.TickableInv) tile).hasCustomName()) {
+                    stack1.setDisplayName(((TileBase.TickableInv) tile).getCustomName());
+                }
             }
             spawnAsEntity(world, pos, stack1);
             player.addStat(Stats.BLOCK_MINED.get(this));
