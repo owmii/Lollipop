@@ -9,7 +9,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.Arrays;
 import java.util.Collection;
 
-@OnlyIn(Dist.CLIENT)
 public interface IItemColorHolder {
     @OnlyIn(Dist.CLIENT)
     IItemColor getItemColor();
