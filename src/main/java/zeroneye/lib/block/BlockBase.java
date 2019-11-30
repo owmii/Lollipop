@@ -170,12 +170,10 @@ public class BlockBase extends Block implements IBlockBase {
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             TileEntity tileentity = worldIn.getTileEntity(pos);
-            if (tileentity instanceof TileBase) {
-                if (tileentity instanceof TileBase.TickableInv) {
-                    if (((TileBase) tileentity).dropInventoryOnBreak()) {
-                        InventoryHelper.dropInventoryItems(worldIn, pos, (TileBase.TickableInv) tileentity);
-                        worldIn.updateComparatorOutputLevel(pos, this);
-                    }
+            if (tileentity instanceof TileBase.TickableInv) {
+                if (((TileBase.TickableInv) tileentity).dropInventoryOnBreak()) {
+                    InventoryHelper.dropInventoryItems(worldIn, pos, (TileBase.TickableInv) tileentity);
+                    worldIn.updateComparatorOutputLevel(pos, this);
                 }
             }
         }

@@ -82,11 +82,6 @@ public class TileBase extends TileEntity {
         return compound;
     }
 
-
-    public boolean dropInventoryOnBreak() {
-        return true;
-    }
-
     public boolean isReadyToSync() {
         return sync;
     }
@@ -180,6 +175,10 @@ public class TileBase extends TileEntity {
                 writeInventory(compound);
             }
             return compound;
+        }
+
+        public boolean dropInventoryOnBreak() {
+            return true;
         }
 
         private void readInventory(CompoundNBT compound) {

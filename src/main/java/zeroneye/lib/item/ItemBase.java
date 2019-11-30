@@ -8,6 +8,7 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import zeroneye.lib.client.renderer.item.TEItemRenderer;
 
@@ -18,19 +19,19 @@ public class ItemBase extends Item implements IItemBase {
 
     @Override
     public ActionResultType onItemUse(ItemUseContext context) {
-        return context.getPlayer() != null ? onItemUse(context.getWorld(), context.getPos(), context.getPlayer(), context.getHand(), context.getFace()) : super.onItemUse(context);
+        return context.getPlayer() != null ? onItemUse(context.getWorld(), context.getPos(), context.getPlayer(), context.getHand(), context.getFace(), context.getHitVec()) : super.onItemUse(context);
     }
 
-    public ActionResultType onItemUse(World world, BlockPos pos, PlayerEntity player, Hand hand, Direction direction) {
+    public ActionResultType onItemUse(World world, BlockPos pos, PlayerEntity player, Hand hand, Direction direction, Vec3d hit) {
         return ActionResultType.PASS;
     }
 
     @Override
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
-        return context.getPlayer() != null ? onItemUseFirst(stack, context.getWorld(), context.getPos(), context.getPlayer(), context.getHand(), context.getFace()) : super.onItemUseFirst(stack, context);
+        return context.getPlayer() != null ? onItemUseFirst(stack, context.getWorld(), context.getPos(), context.getPlayer(), context.getHand(), context.getFace(), context.getHitVec()) : super.onItemUseFirst(stack, context);
     }
 
-    public ActionResultType onItemUseFirst(ItemStack stack, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction direction) {
+    public ActionResultType onItemUseFirst(ItemStack stack, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction direction, Vec3d hit) {
         return ActionResultType.PASS;
     }
 }

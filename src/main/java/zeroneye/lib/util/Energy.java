@@ -70,7 +70,7 @@ public class Energy {
         return stack.getCapability(CapabilityEnergy.ENERGY, direction);
     }
 
-    public static LazyOptional<IEnergyStorage> getForgeEnergy(TileEntity tile, @Nullable Direction direction) {
-        return tile.getCapability(CapabilityEnergy.ENERGY, direction);
+    public static LazyOptional<IEnergyStorage> getForgeEnergy(@Nullable TileEntity tile, @Nullable Direction direction) {
+        return tile == null ? LazyOptional.empty() : tile.getCapability(CapabilityEnergy.ENERGY, direction);
     }
 }
