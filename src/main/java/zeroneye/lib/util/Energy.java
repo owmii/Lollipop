@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 public class Energy {
     public static int receive(ItemStack stack, int energy, boolean simulate) {
         final int[] i = {0};
-        if (getForgeEnergy(stack).isPresent()) {
+        if (hasEnergy(stack)) {
             getForgeEnergy(stack).ifPresent(iEnergyStorage -> {
                 i[0] = iEnergyStorage.receiveEnergy(energy, simulate);
             });
@@ -24,7 +24,7 @@ public class Energy {
 
     public static int extract(ItemStack stack, int energy, boolean simulate) {
         final int[] i = {0};
-        if (getForgeEnergy(stack).isPresent()) {
+        if (hasEnergy(stack)) {
             getForgeEnergy(stack).ifPresent(iEnergyStorage -> {
                 i[0] = iEnergyStorage.extractEnergy(energy, simulate);
             });
@@ -62,15 +62,27 @@ public class Energy {
         return i[0];
     }
 
-    public static LazyOptional<IEnergyStorage> getForgeEnergy(ItemStack stack) {
-        return getForgeEnergy(stack, null);
+    public static boolean hasEnergy(ItemStack stack) {
+        return getForgeEnergy(stack).isPresent();
     }
 
-    public static LazyOptional<IEnergyStorage> getForgeEnergy(ItemStack stack, @Nullable Direction direction) {
-        return stack.getCapability(CapabilityEnergy.ENERGY, direction);
+    public static LazyOptional<IEnergyStorage> getForgeEnergy(ItemStack stack) {
+        return stack.getCapability(CapabilityEnergy.ENERGY, null);
+    }
+
+    public static boolean hasEnergy(World world, BlockPos pos, @Nullable Direction direction) {
+        return getForgeEnergy(world, pos, direction).isPresent();
+    }
+
+    public static boolean hasEnergy(@Nullable TileEntity tile, @Nullable Direction direction) {
+        return getForgeEnergy(tile, direction).isPresent();
+    }
+
+    public static LazyOptional<IEnergyStorage> getForgeEnergy(World world, BlockPos pos, @Nullable Direction direction) {
+        return getForgeEnergy(world.getTileEntity(pos), direction);
     }
 
     public static LazyOptional<IEnergyStorage> getForgeEnergy(@Nullable TileEntity tile, @Nullable Direction direction) {
-        return tile == null ? LazyOptional.empty() : tile.getCapability(CapabilityEnergy.ENERGY, direction);
+        return tile == null ? LazyOptional.empty() : tile.getCapability(CapabilityEnergy.ENERGY, direction != null ? direction.getOpposite() : null);
     }
 }

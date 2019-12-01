@@ -46,13 +46,13 @@ public class BlockBase extends Block implements IBlockBase {
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         if (getFacingType().equals(FacingType.HORIZONTAL)) {
             if (!playerFacing()) {
-                return bFacing(context, false);
+                return facing(context, false);
             } else {
                 return this.getDefaultState().with(H_FACING, context.getPlacementHorizontalFacing().getOpposite());
             }
         } else if (getFacingType().equals(FacingType.ALL)) {
             if (!playerFacing()) {
-                return bFacing(context, true);
+                return facing(context, true);
             } else {
                 return this.getDefaultState().with(FACING, context.getNearestLookingDirection().getOpposite());
             }
@@ -61,7 +61,7 @@ public class BlockBase extends Block implements IBlockBase {
     }
 
     @Nullable
-    private BlockState bFacing(BlockItemUseContext context, boolean b) {
+    private BlockState facing(BlockItemUseContext context, boolean b) {
         BlockState blockstate = this.getDefaultState();
         IWorldReader iworldreader = context.getWorld();
         BlockPos blockpos = context.getPos();
@@ -171,7 +171,7 @@ public class BlockBase extends Block implements IBlockBase {
         if (state.getBlock() != newState.getBlock()) {
             TileEntity tileentity = worldIn.getTileEntity(pos);
             if (tileentity instanceof TileBase.TickableInv) {
-                if (((TileBase.TickableInv) tileentity).dropInventoryOnBreak()) {
+                if (((TileBase.TickableInv) tileentity).dropInventoryOnBreak() || !((TileBase.TickableInv) tileentity).isNBTStorable()) {
                     InventoryHelper.dropInventoryItems(worldIn, pos, (TileBase.TickableInv) tileentity);
                     worldIn.updateComparatorOutputLevel(pos, this);
                 }
@@ -187,7 +187,7 @@ public class BlockBase extends Block implements IBlockBase {
             ItemStack stack1 = new ItemStack(this);
             CompoundNBT tag = stack1.getTag() != null ? stack1.getTag() : new CompoundNBT();
             CompoundNBT storable = tile.writeStorable(new CompoundNBT());
-            if (!storable.isEmpty()) {
+            if (!storable.isEmpty() && tile.isNBTStorable()) {
                 tag.put(NBT.TAG_STACK, storable);
                 stack1.setTag(tag);
             }

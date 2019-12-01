@@ -26,7 +26,6 @@ import java.util.stream.IntStream;
 
 public class TileBase extends TileEntity {
     protected boolean isContainerOpen;
-    protected boolean sync;
     protected boolean isServerWorld;
 
     public TileBase(TileEntityType<?> tileEntityType) {
@@ -82,16 +81,8 @@ public class TileBase extends TileEntity {
         return compound;
     }
 
-    public boolean isReadyToSync() {
-        return sync;
-    }
-
-    public void setReadyToSync(boolean sync) {
-        this.sync = sync;
-    }
-
-    public int getSyncTicks() {
-        return isContainerOpen() ? 10 : 0;
+    public boolean isNBTStorable() {
+        return true;
     }
 
     public void markDirtyAndSync() {
@@ -333,6 +324,7 @@ public class TileBase extends TileEntity {
     }
 
     public static class Tickable extends TileBase implements ITickableTileEntity {
+        protected boolean sync;
         public int ticks;
 
         public Tickable(TileEntityType<?> type) {
@@ -374,6 +366,18 @@ public class TileBase extends TileEntity {
 
         public void resetTicks() {
             this.ticks = 0;
+        }
+
+        public boolean isReadyToSync() {
+            return sync;
+        }
+
+        public void setReadyToSync(boolean sync) {
+            this.sync = sync;
+        }
+
+        public int getSyncTicks() {
+            return isContainerOpen() ? 10 : 0;
         }
     }
 

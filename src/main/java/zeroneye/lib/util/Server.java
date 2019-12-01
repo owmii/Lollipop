@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DimensionSavedDataManager;
@@ -32,6 +33,14 @@ public class Server {
 
     public static <T extends WorldSavedData> T getData(Supplier<T> supplier) {
         return getData(supplier, 0);
+    }
+
+    public static <T extends WorldSavedData> T getData(Supplier<T> supplier, Dimension dim) {
+        return getData(supplier, dim.getType());
+    }
+
+    public static <T extends WorldSavedData> T getData(Supplier<T> supplier, DimensionType dim) {
+        return getData(supplier, dim.getId());
     }
 
     @SuppressWarnings("unchecked")

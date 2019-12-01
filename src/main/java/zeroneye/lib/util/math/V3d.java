@@ -1,9 +1,6 @@
 package zeroneye.lib.util.math;
 
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +27,17 @@ public class V3d extends Vec3d {
 
     public static V3d from(Vec3i vector) {
         return new V3d(vector);
+    }
+
+    public float distance(Vec3i vec3i) {
+        return distance(new Vec3d(vec3i));
+    }
+
+    public float distance(Vec3d vec3d) {
+        float f = (float) (this.x - vec3d.x);
+        float f1 = (float) (this.y - vec3d.y);
+        float f2 = (float) (this.z - vec3d.z);
+        return MathHelper.sqrt(f * f + f1 * f1 + f2 * f2);
     }
 
     public V3d up() {
