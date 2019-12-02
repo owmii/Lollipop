@@ -14,21 +14,25 @@ import javax.annotation.Nullable;
 public class Energy {
     public static int receive(ItemStack stack, int energy, boolean simulate) {
         final int[] i = {0};
-        if (hasEnergy(stack)) {
-            getForgeEnergy(stack).ifPresent(iEnergyStorage -> {
-                i[0] = iEnergyStorage.receiveEnergy(energy, simulate);
-            });
-        }
+        getForgeEnergy(stack).ifPresent(iEnergyStorage -> {
+            i[0] = iEnergyStorage.receiveEnergy(energy, simulate);
+        });
         return i[0];
     }
 
     public static int extract(ItemStack stack, int energy, boolean simulate) {
         final int[] i = {0};
-        if (hasEnergy(stack)) {
-            getForgeEnergy(stack).ifPresent(iEnergyStorage -> {
-                i[0] = iEnergyStorage.extractEnergy(energy, simulate);
-            });
-        }
+        getForgeEnergy(stack).ifPresent(iEnergyStorage -> {
+            i[0] = iEnergyStorage.extractEnergy(energy, simulate);
+        });
+        return i[0];
+    }
+
+    public static int getStored(ItemStack stack) {
+        final int[] i = {0};
+        getForgeEnergy(stack).ifPresent(iEnergyStorage -> {
+            i[0] = iEnergyStorage.getEnergyStored();
+        });
         return i[0];
     }
 
