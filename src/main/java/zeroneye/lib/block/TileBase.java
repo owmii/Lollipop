@@ -26,15 +26,9 @@ import java.util.stream.IntStream;
 
 public class TileBase extends TileEntity {
     protected boolean isContainerOpen;
-    protected boolean isServerWorld;
 
     public TileBase(TileEntityType<?> tileEntityType) {
         super(tileEntityType);
-        if (this.world != null) {
-            if (!this.world.isRemote) {
-                this.isServerWorld = true;
-            }
-        }
     }
 
     @Override
@@ -334,9 +328,6 @@ public class TileBase extends TileEntity {
         @Override
         public void tick() {
             if (this.world == null) return;
-            if (!this.world.isRemote) {
-                this.isServerWorld = true;
-            }
             if (doTicks()) {
                 if (this.ticks == 0) {
                     onFirstTick();

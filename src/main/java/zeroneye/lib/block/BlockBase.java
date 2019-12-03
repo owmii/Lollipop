@@ -8,11 +8,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -24,6 +27,7 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
@@ -36,28 +40,52 @@ import javax.annotation.Nullable;
 public class BlockBase extends Block implements IBlockBase {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final DirectionProperty H_FACING = HorizontalBlock.HORIZONTAL_FACING;
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public BlockBase(Properties properties) {
         super(properties);
     }
 
+    @Override
+    public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos) {
+        if (waterLogged()) {
+            return !state.get(WATERLOGGED);
+        }
+        return super.propagatesSkylightDown(state, reader, pos);
+    }
+
+    @Override
+    public IFluidState getFluidState(BlockState state) {
+        if (waterLogged()) {
+            return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+        }
+        return super.getFluidState(state);
+    }
+
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
+        BlockState state = getDefaultState();
         if (getFacingType().equals(FacingType.HORIZONTAL)) {
             if (!playerFacing()) {
-                return facing(context, false);
+                state = facing(context, false);
             } else {
-                return this.getDefaultState().with(H_FACING, context.getPlacementHorizontalFacing().getOpposite());
+                state = getDefaultState().with(H_FACING, context.getPlacementHorizontalFacing().getOpposite());
             }
         } else if (getFacingType().equals(FacingType.ALL)) {
             if (!playerFacing()) {
-                return facing(context, true);
+                state = facing(context, true);
             } else {
-                return this.getDefaultState().with(FACING, context.getNearestLookingDirection().getOpposite());
+                state = getDefaultState().with(FACING, context.getNearestLookingDirection().getOpposite());
             }
         }
-        return super.getStateForPlacement(context);
+
+        if (waterLogged()) {
+            IFluidState ifluidstate = context.getWorld().getFluidState(context.getPos());
+            state = state.with(WATERLOGGED, ifluidstate.getFluid() == Fluids.WATER);
+        }
+
+        return state;
     }
 
     @Nullable
@@ -80,6 +108,11 @@ public class BlockBase extends Block implements IBlockBase {
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (waterLogged()) {
+            if (stateIn.get(WATERLOGGED)) {
+                worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+            }
+        }
         if ((getFacingType().equals(FacingType.ALL) || (getFacingType().equals(FacingType.HORIZONTAL))) && !playerFacing()) {
             return facing.getOpposite() == stateIn.get(getFacingType().equals(FacingType.ALL) ? FACING : H_FACING) && !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : stateIn;
         }
@@ -108,11 +141,9 @@ public class BlockBase extends Block implements IBlockBase {
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        if (getFacingType().equals(FacingType.HORIZONTAL)) {
-            builder.add(H_FACING);
-        } else if (getFacingType().equals(FacingType.ALL)) {
-            builder.add(FACING);
-        }
+        if (getFacingType().equals(FacingType.HORIZONTAL)) builder.add(H_FACING);
+        else if (getFacingType().equals(FacingType.ALL)) builder.add(FACING);
+        if (waterLogged()) builder.add(WATERLOGGED);
     }
 
     protected FacingType getFacingType() {
@@ -125,6 +156,10 @@ public class BlockBase extends Block implements IBlockBase {
 
     protected enum FacingType {
         HORIZONTAL, ALL, NORMAL
+    }
+
+    protected boolean waterLogged() {
+        return false;
     }
 
     @Override
