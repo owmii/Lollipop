@@ -82,7 +82,9 @@ public class BlockBase extends Block implements IBlockBase {
 
         if (waterLogged()) {
             IFluidState ifluidstate = context.getWorld().getFluidState(context.getPos());
-            state = state.with(WATERLOGGED, ifluidstate.getFluid() == Fluids.WATER);
+            if (state != null) {
+                state = state.with(WATERLOGGED, ifluidstate.getFluid() == Fluids.WATER);
+            }
         }
 
         return state;
@@ -120,7 +122,7 @@ public class BlockBase extends Block implements IBlockBase {
     }
 
     @Override
-    public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
+    public BlockState rotate(BlockState state, Rotation direction) {
         if (getFacingType().equals(FacingType.HORIZONTAL)) {
             return state.with(H_FACING, direction.rotate(state.get(H_FACING)));
         } else if (getFacingType().equals(FacingType.ALL)) {
