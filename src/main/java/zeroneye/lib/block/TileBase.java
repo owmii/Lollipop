@@ -19,6 +19,11 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import zeroneye.lib.util.Inventory;
 
 import javax.annotation.Nullable;
@@ -110,6 +115,8 @@ public class TileBase extends TileEntity {
         @Nullable
         public ITextComponent customName;
         public String publicName = "";
+
+        private LazyOptional<IItemHandlerModifiable> invHandler = LazyOptional.empty();
 
         public TickableInv(TileEntityType<?> type) {
             super(type);
@@ -314,6 +321,17 @@ public class TileBase extends TileEntity {
                 return ((BlockBase) getBlock()).getContainer(i, playerInventory, this);
             }
             return null;
+        }
+
+        @Override
+        public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
+            if (!this.removed && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+                if (this.invHandler.equals(LazyOptional.empty())) {
+                    this.invHandler = LazyOptional.of(() -> new InvWrapper(this));
+                }
+                return this.invHandler.cast();
+            }
+            return super.getCapability(cap, side);
         }
     }
 
