@@ -95,10 +95,10 @@ public class BlockBase extends Block implements IBlockBase {
         BlockState blockstate = this.getDefaultState();
         IWorldReader iworldreader = context.getWorld();
         BlockPos blockpos = context.getPos();
-        Direction[] adirection = context.getNearestLookingDirections();
-        for (Direction direction : adirection) {
+        Direction[] directions = context.getNearestLookingDirections();
+        for (Direction direction : directions) {
             if (b || direction.getAxis().isHorizontal()) {
-                Direction direction1 = direction.getOpposite();
+                Direction direction1 = b ? direction : direction.getOpposite();
                 blockstate = blockstate.with(getFacingType().equals(FacingType.ALL) ? FACING : H_FACING, direction1);
                 if (blockstate.isValidPosition(iworldreader, blockpos)) {
                     return blockstate;
@@ -116,7 +116,7 @@ public class BlockBase extends Block implements IBlockBase {
             }
         }
         if ((getFacingType().equals(FacingType.ALL) || (getFacingType().equals(FacingType.HORIZONTAL))) && !playerFacing()) {
-            return facing.getOpposite() == stateIn.get(getFacingType().equals(FacingType.ALL) ? FACING : H_FACING) && !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : stateIn;
+            return !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : stateIn;
         }
         return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
@@ -128,7 +128,7 @@ public class BlockBase extends Block implements IBlockBase {
         } else if (getFacingType().equals(FacingType.ALL)) {
             return state.with(FACING, direction.rotate(state.get(FACING)));
         }
-        return state.rotate(direction);
+        return state;
     }
 
     @Override
