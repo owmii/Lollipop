@@ -1,16 +1,12 @@
 package zeroneye.lib.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.HorizontalBlock;
+import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
@@ -48,7 +44,7 @@ public class BlockBase extends Block implements IBlockBase {
 
     @Override
     public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos) {
-        if (waterLogged()) {
+        if (waterLoggable()) {
             return !state.get(WATERLOGGED);
         }
         return super.propagatesSkylightDown(state, reader, pos);
@@ -56,7 +52,7 @@ public class BlockBase extends Block implements IBlockBase {
 
     @Override
     public IFluidState getFluidState(BlockState state) {
-        if (waterLogged()) {
+        if (waterLoggable()) {
             return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
         }
         return super.getFluidState(state);
@@ -80,7 +76,7 @@ public class BlockBase extends Block implements IBlockBase {
             }
         }
 
-        if (waterLogged()) {
+        if (waterLoggable()) {
             IFluidState ifluidstate = context.getWorld().getFluidState(context.getPos());
             if (state != null) {
                 state = state.with(WATERLOGGED, ifluidstate.getFluid() == Fluids.WATER);
@@ -110,7 +106,7 @@ public class BlockBase extends Block implements IBlockBase {
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (waterLogged()) {
+        if (waterLoggable()) {
             if (stateIn.get(WATERLOGGED)) {
                 worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
             }
@@ -145,7 +141,7 @@ public class BlockBase extends Block implements IBlockBase {
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         if (getFacingType().equals(FacingType.HORIZONTAL)) builder.add(H_FACING);
         else if (getFacingType().equals(FacingType.ALL)) builder.add(FACING);
-        if (waterLogged()) builder.add(WATERLOGGED);
+        if (waterLoggable()) builder.add(WATERLOGGED);
     }
 
     protected FacingType getFacingType() {
@@ -160,8 +156,8 @@ public class BlockBase extends Block implements IBlockBase {
         HORIZONTAL, ALL, NORMAL
     }
 
-    protected boolean waterLogged() {
-        return false;
+    protected boolean waterLoggable() {
+        return this instanceof IWaterLoggable;
     }
 
     @Override
@@ -178,7 +174,7 @@ public class BlockBase extends Block implements IBlockBase {
     }
 
     @Nullable
-    public ContainerBase getContainer(int id, PlayerInventory playerInventory, TileBase.TickableInv inv) {
+    public ContainerBase getContainer(int id, PlayerInventory playerInventory, TileBase inv) {
         return null;
     }
 
@@ -186,7 +182,7 @@ public class BlockBase extends Block implements IBlockBase {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         TileEntity tileentity = worldIn.getTileEntity(pos);
         if (tileentity instanceof TileBase) {
-            TileBase.TickableInv tile = (TileBase.TickableInv) tileentity;
+            TileBase tile = (TileBase) tileentity;
             if (stack.hasDisplayName()) {
                 tile.setCustomName(stack.getDisplayName());
             } else {
@@ -207,9 +203,10 @@ public class BlockBase extends Block implements IBlockBase {
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             TileEntity tileentity = worldIn.getTileEntity(pos);
-            if (tileentity instanceof TileBase.TickableInv) {
-                if (((TileBase.TickableInv) tileentity).dropInventoryOnBreak() || !((TileBase.TickableInv) tileentity).isNBTStorable()) {
-                    InventoryHelper.dropInventoryItems(worldIn, pos, (TileBase.TickableInv) tileentity);
+            if (tileentity instanceof TileBase) {
+                TileBase tileBase = (TileBase) tileentity;
+                if (!tileBase.keepInventory() || !tileBase.isNBTStorable()) {
+                    tileBase.getInventory().drop(worldIn, pos);
                     worldIn.updateComparatorOutputLevel(pos, this);
                 }
             }
@@ -228,10 +225,8 @@ public class BlockBase extends Block implements IBlockBase {
                 tag.put(NBT.TAG_STACK, storable);
                 stack1.setTag(tag);
             }
-            if (tile instanceof TileBase.TickableInv) {
-                if (((TileBase.TickableInv) tile).hasCustomName()) {
-                    stack1.setDisplayName(((TileBase.TickableInv) tile).getCustomName());
-                }
+            if (tile.hasCustomName()) {
+                stack1.setDisplayName(tile.getCustomName());
             }
             spawnAsEntity(world, pos, stack1);
             player.addStat(Stats.BLOCK_MINED.get(this));

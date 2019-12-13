@@ -11,7 +11,11 @@ public class Ticker {
         this.max = max;
     }
 
-    public boolean done() {
+    public boolean ended() {
+        return this.ticks >= this.max;
+    }
+
+    public boolean onward() {
         if (this.ticks < this.max) {
             this.ticks++;
             return false;

@@ -13,7 +13,7 @@ public class Time {
         return String.format("%03d:%02d:%02d:%02d", days, hours, minutes, seconds);
     }
 
-    public static boolean isDayTime(World world) {
+    public static boolean isDay(World world) {
         long t = world.getDayTime();
         return t > 23460 || t < 12769;
     }

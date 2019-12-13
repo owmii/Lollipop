@@ -5,7 +5,7 @@ issueTrackerURL="https://github.com/zeroneye/Lollipop/issues"
 [[mods]]
 modId="lollipop"
 version="${file.jarVersion}"
-textFormatting="Lollipop"
+displayName="Lollipop"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/lollipop"
 authors="zeroneye"
 description='''

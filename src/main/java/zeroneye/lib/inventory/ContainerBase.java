@@ -15,7 +15,7 @@ import zeroneye.lib.block.TileBase;
 
 import javax.annotation.Nullable;
 
-public class ContainerBase<I extends TileBase.TickableInv> extends Container {
+public class ContainerBase<I extends TileBase> extends Container {
     protected final I inv;
 
     protected ContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, I inv) {
@@ -38,12 +38,12 @@ public class ContainerBase<I extends TileBase.TickableInv> extends Container {
     }
 
     @SuppressWarnings("unchecked")
-    protected static <T extends TileBase.TickableInv> T getInventory(PlayerInventory playerInv, BlockPos pos) {
+    protected static <T extends TileBase> T getInventory(PlayerInventory playerInv, BlockPos pos) {
         World world = playerInv.player.getEntityWorld();
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileBase.TickableInv)
+        if (tile instanceof TileBase)
             return (T) tile;
-        return (T) new TileBase.TickableInv(TileEntityType.SIGN); //TODO remove
+        return (T) new TileBase(TileEntityType.SIGN); //TODO remove
     }
 
     protected void addPlayerInv(PlayerInventory playerInventory, int x, int hY, int iY) {
@@ -64,11 +64,11 @@ public class ContainerBase<I extends TileBase.TickableInv> extends Container {
         if (slot != null && slot.getHasStack()) {
             ItemStack stack1 = slot.getStack();
             stack = stack1.copy();
-            if (index < this.inv.getSizeInventory()) {
-                if (!this.mergeItemStack(stack1, this.inv.getSizeInventory(), this.inventorySlots.size(), true)) {
+            if (index < this.inv.getInventory().getSlots()) {
+                if (!this.mergeItemStack(stack1, this.inv.getInventory().getSlots(), this.inventorySlots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(stack1, 0, this.inv.getSizeInventory(), false)) {
+            } else if (!this.mergeItemStack(stack1, 0, this.inv.getInventory().getSlots(), false)) {
                 return ItemStack.EMPTY;
             }
 

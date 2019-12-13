@@ -141,6 +141,22 @@ public class V3d extends Vec3d {
         return new V3d(this.x + x, this.y + y, this.z + z);
     }
 
+    public double hMagSqrt() {
+        return MathHelper.sqrt(hMag());
+    }
+
+    public double hMag() {
+        return this.x * this.x + this.z * this.z;
+    }
+
+    public double magSqrt() {
+        return MathHelper.sqrt(mag());
+    }
+
+    public double mag() {
+        return this.x * this.x + this.y * this.y + this.z * this.z;
+    }
+
     public List<V3d> circled(int count, double radius) {
         return circled(count, radius, 0, 0.0D);
     }

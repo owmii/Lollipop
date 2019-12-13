@@ -15,7 +15,7 @@ public class BlockItemBase extends BlockItem implements IItemBase {
     @SuppressWarnings("ConstantConditions")
     public BlockItemBase(Block block, Properties properties, @Nullable ItemGroup group) {
         super(block, properties.group(block instanceof IBlockBase && ((IBlockBase) block).hideGroup() ? null : group)
-                .setTEISR(() -> TEItemRenderer::new));
+                .setTEISR(() -> TEItemRenderer::new).maxStackSize(((IBlockBase) block).stackSize()));
     }
 
     @Override

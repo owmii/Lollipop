@@ -7,13 +7,13 @@ public class CubeModel extends Model {
     private final RendererModel cube;
 
     public CubeModel(int pixels) {
-        this.textureWidth = 64;
-        this.textureHeight = 32;
+        this.textureWidth = pixels * 4;
+        this.textureHeight = pixels * 2;
         this.cube = new RendererModel(this, 0, 0);
         float offset = -(pixels / 2.0F);
         this.cube.addBox(offset, offset, offset, pixels, pixels, pixels);
         this.cube.setRotationPoint(0F, 0F, 0F);
-        this.cube.setTextureSize(64, 32);
+        this.cube.setTextureSize(this.textureWidth, this.textureHeight);
         this.cube.mirror = true;
     }
 

@@ -25,6 +25,10 @@ public interface IBlockBase extends IForgeBlock {
         return false;
     }
 
+    default int stackSize() {
+        return 64;
+    }
+
     @OnlyIn(Dist.CLIENT)
     default void renderByItem(ItemStack stack) {
     }
