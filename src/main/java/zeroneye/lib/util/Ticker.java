@@ -52,7 +52,7 @@ public class Ticker {
     }
 
     public int getMax() {
-        return max;
+        return this.max;
     }
 
     public void setMax(int max) {
@@ -60,7 +60,7 @@ public class Ticker {
     }
 
     public int getTicks() {
-        return ticks;
+        return this.ticks;
     }
 
     public void setTicks(int ticks) {

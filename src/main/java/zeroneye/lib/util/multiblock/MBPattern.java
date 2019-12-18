@@ -62,6 +62,6 @@ public class MBPattern {
     }
 
     public List<List<BlockPos>> getShapes() {
-        return shapes;
+        return this.shapes;
     }
 }

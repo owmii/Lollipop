@@ -119,7 +119,7 @@ public class TileBase extends TileEntity implements INamedContainerProvider {
     }
 
     public boolean isContainerOpen() {
-        return isContainerOpen;
+        return this.isContainerOpen;
     }
 
     public void onSlotChanged(int index) {
@@ -142,7 +142,7 @@ public class TileBase extends TileEntity implements INamedContainerProvider {
     }
 
     public Inventory getInventory() {
-        return inv;
+        return this.inv;
     }
 
     public boolean hasCustomName() {
@@ -164,7 +164,7 @@ public class TileBase extends TileEntity implements INamedContainerProvider {
 
     @Nullable
     public ITextComponent getCustomName() {
-        return customName;
+        return this.customName;
     }
 
     public ITextComponent getName() {

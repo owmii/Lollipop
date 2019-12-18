@@ -82,7 +82,7 @@ public class ContainerBase<I extends TileBase> extends Container {
     }
 
     public I getInv() {
-        return inv;
+        return this.inv;
     }
 
     @Override

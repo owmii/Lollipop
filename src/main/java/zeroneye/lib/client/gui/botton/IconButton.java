@@ -66,7 +66,7 @@ public class IconButton extends Button {
     }
 
     public List<String> getTooltip() {
-        return tooltip;
+        return this.tooltip;
     }
 
     public void renderButton(int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {

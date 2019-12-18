@@ -98,7 +98,7 @@ public class Inventory extends ItemStackHandler {
 
     @Nullable
     public TileBase getTile() {
-        return tile;
+        return this.tile;
     }
 
     public boolean isEmpty() {
