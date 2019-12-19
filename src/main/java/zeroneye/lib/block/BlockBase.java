@@ -165,10 +165,12 @@ public class BlockBase extends Block implements IBlockBase {
         TileEntity tileentity = world.getTileEntity(pos);
         if (tileentity instanceof INamedContainerProvider) {
             INamedContainerProvider provider = (INamedContainerProvider) tileentity;
-            if (player instanceof ServerPlayerEntity && provider.createMenu(0, player.inventory, player) != null) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, provider, pos);
+            if (provider.createMenu(0, player.inventory, player) != null) {
+                if (player instanceof ServerPlayerEntity) {
+                    NetworkHooks.openGui((ServerPlayerEntity) player, provider, pos);
+                }
+                return true;
             }
-            return true;
         }
         return super.onBlockActivated(state, world, pos, player, hand, blockRayTraceResult);
     }
