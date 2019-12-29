@@ -1,4 +1,4 @@
-package owmii.lib.client.gui.botton;
+package owmii.lib.client.screen.botton;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;

@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 public class TileBase extends TileEntity implements INamedContainerProvider {
     protected final Inventory inv = Inventory.createBlank(this);
     private final LazyOptional<Inventory> invHandler = LazyOptional.of(() -> this.inv);
+    public boolean isNew = true;
     protected boolean isContainerOpen;
 
     @Nullable
@@ -75,6 +76,7 @@ public class TileBase extends TileEntity implements INamedContainerProvider {
             this.inv.deserializeNBT(compound);
         }
         readStorable(compound);
+        this.isNew = compound.getBoolean("IsNew");
     }
 
     public CompoundNBT writeSync(CompoundNBT compound) {
@@ -88,6 +90,7 @@ public class TileBase extends TileEntity implements INamedContainerProvider {
             compound.merge(this.inv.serializeNBT());
         }
         writeStorable(compound);
+        compound.putBoolean("IsNew", this.isNew);
         return compound;
     }
 
@@ -217,7 +220,10 @@ public class TileBase extends TileEntity implements INamedContainerProvider {
             if (this.world == null) return;
             if (doTick()) {
                 if (this.ticks == 0) {
-                    onFirstTick();
+                    if (this.isNew) {
+                        absFirstTick();
+                    }
+                    firstTick();
                 }
 
                 if (postTicks()) {
@@ -235,13 +241,20 @@ public class TileBase extends TileEntity implements INamedContainerProvider {
                     markDirtyAndSync();
                 }
             }
+            if (this.isNew) {
+                this.isNew = false;
+                markDirtyAndSync();
+            }
         }
 
         protected boolean doTick() {
             return true;
         }
 
-        protected void onFirstTick() {
+        protected void firstTick() {
+        }
+
+        protected void absFirstTick() {
         }
 
         protected boolean postTicks() {

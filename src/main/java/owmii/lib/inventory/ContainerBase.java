@@ -2,6 +2,7 @@ package owmii.lib.inventory;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
@@ -11,6 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 import owmii.lib.block.TileBase;
 
 import javax.annotation.Nullable;
@@ -79,6 +81,16 @@ public class ContainerBase<I extends TileBase> extends Container {
             }
         }
         return stack;
+    }
+
+    protected boolean refresh(PlayerEntity player) {
+        if (player instanceof ServerPlayerEntity) {
+            if (this.te.createMenu(0, player.inventory, player) != null) {
+                NetworkHooks.openGui((ServerPlayerEntity) player, this.te, this.te.getPos());
+                return true;
+            }
+        }
+        return false;
     }
 
     public I getTile() {

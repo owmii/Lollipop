@@ -70,7 +70,7 @@ public class Energy {
         final boolean[] flag = {false};
         if (tile != null) {
             getForgeEnergy(tile, direction).ifPresent(storage -> {
-                flag[0] = storage.canExtract() && storage.extractEnergy(Integer.MAX_VALUE, true) > 0;
+                flag[0] = storage.canExtract();
             });
         }
         return flag[0];
@@ -80,7 +80,7 @@ public class Energy {
         final boolean[] flag = {false};
         if (tile != null) {
             getForgeEnergy(tile, direction).ifPresent(storage -> {
-                flag[0] = storage.canReceive() && storage.receiveEnergy(Integer.MAX_VALUE, true) > 0;
+                flag[0] = storage.canReceive();
             });
         }
         return flag[0];

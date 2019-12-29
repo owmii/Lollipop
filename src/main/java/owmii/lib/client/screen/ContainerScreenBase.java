@@ -1,9 +1,11 @@
-package owmii.lib.client.gui;
+package owmii.lib.client.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.ResourceLocation;
@@ -13,6 +15,9 @@ import owmii.lib.inventory.ContainerBase;
 import javax.annotation.Nullable;
 
 public class ContainerScreenBase<T extends ContainerBase> extends ContainerScreen<T> {
+    protected Minecraft mc = Minecraft.getInstance();
+    protected ClientWorld world = this.mc.world;
+    protected ClientPlayerEntity player = this.mc.player;
     public int x, y;
 
     public ContainerScreenBase(T container, PlayerInventory playerInventory, ITextComponent name) {

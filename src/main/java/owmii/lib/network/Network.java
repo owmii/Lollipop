@@ -2,19 +2,13 @@ package owmii.lib.network;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import owmii.lib.Lollipop;
 import owmii.lib.util.Server;
-
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_CLIENT;
 
@@ -23,8 +17,9 @@ public class Network {
     private static final SimpleChannel CHANNEL;
     private static int id;
 
-    public <T> void register(Class<T> clazz, BiConsumer<T, PacketBuffer> encoder, Function<PacketBuffer, T> decoder, BiConsumer<T, Supplier<NetworkEvent.Context>> handle) {
-        CHANNEL.registerMessage(id++, clazz, encoder, decoder, handle);
+    @SuppressWarnings("unchecked")
+    public <T> void register(IPacket<T> message) {
+        CHANNEL.registerMessage(id++, (Class<T>) message.getClass(), message::encode, message::decode, message::handle);
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -1,6 +1,9 @@
 package owmii.lib.block;
 
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.HorizontalBlock;
+import net.minecraft.block.IWaterLoggable;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +34,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import owmii.lib.inventory.ContainerBase;
-import owmii.lib.util.NBT;
+import owmii.lib.util.Const;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -108,16 +111,46 @@ public class BlockBase extends Block implements IBlockBase {
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld world, BlockPos currentPos, BlockPos facingPos) {
         if (waterLoggable()) {
             if (stateIn.get(WATERLOGGED)) {
-                worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+                world.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
             }
         }
-        if ((getFacingType().equals(FacingType.ALL) || (getFacingType().equals(FacingType.HORIZONTAL))) && !playerFacing()) {
-            return !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : stateIn;
+        if (!stateIn.isValidPosition(world, currentPos)) {
+            TileEntity tileEntity = world.getTileEntity(currentPos);
+            if (!world.isRemote() && tileEntity instanceof TileBase) {
+                TileBase tile = (TileBase) tileEntity;
+                ItemStack stack = new ItemStack(this);
+                CompoundNBT tag = stack.getTag() != null ? stack.getTag() : new CompoundNBT();
+                CompoundNBT storable = tile.writeStorable(new CompoundNBT());
+                if (!storable.isEmpty() && tile.isNBTStorable()) {
+                    tag.put(Const.TAG_STORABLE, storable);
+                    stack.setTag(tag);
+                }
+                if (tile.hasCustomName()) {
+                    stack.setDisplayName(tile.getCustomName());
+                }
+                spawnAsEntity((World) world, currentPos, stack);
+                world.destroyBlock(currentPos, false);
+            }
         }
-        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+        return super.updatePostPlacement(stateIn, facing, facingState, world, currentPos, facingPos);
+    }
+
+
+    @Override
+    public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
+        if (!getFacingType().equals(FacingType.NORMAL)) {
+            for (Rotation rotation : Rotation.values()) {
+                if (!rotation.equals(Rotation.NONE)) {
+                    if (isValidPosition(super.rotate(state, world, pos, rotation), world, pos)) {
+                        return super.rotate(state, world, pos, rotation);
+                    }
+                }
+            }
+        }
+        return state;
     }
 
     @Override
@@ -195,7 +228,7 @@ public class BlockBase extends Block implements IBlockBase {
             }
             CompoundNBT tag = stack.getTag() != null ? stack.getTag() : new CompoundNBT();
             if (!tag.isEmpty() && shouldStoreNBTFromStack(tag)) {
-                tile.readStorable(tag.getCompound(NBT.TAG_STACK));
+                tile.readStorable(tag.getCompound(Const.TAG_STORABLE));
             }
         }
     }
@@ -227,7 +260,7 @@ public class BlockBase extends Block implements IBlockBase {
             CompoundNBT tag = stack1.getTag() != null ? stack1.getTag() : new CompoundNBT();
             CompoundNBT storable = tile.writeStorable(new CompoundNBT());
             if (!storable.isEmpty() && tile.isNBTStorable()) {
-                tag.put(NBT.TAG_STACK, storable);
+                tag.put(Const.TAG_STORABLE, storable);
                 stack1.setTag(tag);
             }
             if (tile.hasCustomName()) {
