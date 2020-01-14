@@ -1,0 +1,9 @@
+{
+  "info.lollipop.side.all": "Facing: %sAll",
+  "info.lollipop.side.up": "Facing: %sUp",
+  "info.lollipop.side.down": "Facing: %sDown",
+  "info.lollipop.side.north": "Facing: %sNorth",
+  "info.lollipop.side.south": "Facing: %sSouth",
+  "info.lollipop.side.west": "Facing: %sWest",
+  "info.lollipop.side.east": "Facing: %sEast"
+}

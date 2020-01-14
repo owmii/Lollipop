@@ -1,0 +1,20 @@
+modLoader="javafml" 
+loaderVersion="[30,)"
+issueTrackerURL="https://github.com/owmii/Lollipop/issues"
+
+[[mods]]
+modId="lollipop"
+version="${file.jarVersion}"
+displayName="Lollipop"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/lollipop"
+authors="owmii"
+description='''
+A Library mod.
+'''
+
+[[dependencies.lollipop]]
+    modId="forge"
+    mandatory=true
+    versionRange="[30.0.38,)"
+    ordering="NONE"
+    side="BOTH"
