@@ -37,6 +37,13 @@ public class Draw2D {
         }
     }
 
+    public static void gaugeV(int x, int y, int w, int h, int uvX, int uvY, double cap, double cur) {
+        if (cap > 0 && cur > 0) {
+            int i = (int) (((float) cur / cap) * h);
+            GuiUtils.drawTexturedModalRect(x, y + h - i, uvX, uvY + h - i, w, i, 0);
+        }
+    }
+
     public static void gaugeV(int x, int y, int w, int h, int uvX, int uvY, int cap, int cur) {
         if (cap > 0 && cur > 0) {
             int i = (int) (((float) cur / cap) * h);

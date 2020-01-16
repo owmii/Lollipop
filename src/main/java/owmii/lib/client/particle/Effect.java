@@ -87,7 +87,7 @@ public class Effect extends Particle {
     }
 
     public void render(float partialTicks, double x, double y, double z, double rotX, double rotZ, double rotYZ, double rotXY, double rotXZ) {
-        double d0 = 0.1F * this.scaleFactor; //TODO particle rotation
+        double d0 = 0.1F * this.scaleFactor;
         int i = getBrightnessForRender(partialTicks);
         int j = i >> 16 & 65535;
         int k = i & 65535;

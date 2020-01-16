@@ -34,7 +34,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import owmii.lib.inventory.ContainerBase;
-import owmii.lib.util.Const;
+import owmii.lib.util.Data;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -125,7 +125,7 @@ public class BlockBase extends Block implements IBlockBase {
                 CompoundNBT tag = stack.getTag() != null ? stack.getTag() : new CompoundNBT();
                 CompoundNBT storable = tile.writeStorable(new CompoundNBT());
                 if (!storable.isEmpty() && tile.isNBTStorable()) {
-                    tag.put(Const.TAG_STORABLE, storable);
+                    tag.put(Data.TAG_STORABLE, storable);
                     stack.setTag(tag);
                 }
                 if (tile.hasCustomName()) {
@@ -228,7 +228,7 @@ public class BlockBase extends Block implements IBlockBase {
             }
             CompoundNBT tag = stack.getTag() != null ? stack.getTag() : new CompoundNBT();
             if (!tag.isEmpty() && shouldStoreNBTFromStack(tag)) {
-                tile.readStorable(tag.getCompound(Const.TAG_STORABLE));
+                tile.readStorable(tag.getCompound(Data.TAG_STORABLE));
             }
         }
     }
@@ -260,7 +260,7 @@ public class BlockBase extends Block implements IBlockBase {
             CompoundNBT tag = stack1.getTag() != null ? stack1.getTag() : new CompoundNBT();
             CompoundNBT storable = tile.writeStorable(new CompoundNBT());
             if (!storable.isEmpty() && tile.isNBTStorable()) {
-                tag.put(Const.TAG_STORABLE, storable);
+                tag.put(Data.TAG_STORABLE, storable);
                 stack1.setTag(tag);
             }
             if (tile.hasCustomName()) {

@@ -22,6 +22,6 @@ public class CubeModel extends Model {
     }
 
     public void render(float scale) {
-        this.cube.render(0.0625f);
+        this.cube.render(scale);
     }
 }

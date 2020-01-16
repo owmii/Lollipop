@@ -1,6 +1,6 @@
 modLoader="javafml" 
 loaderVersion="[28,)"
-issueTrackerURL="https://github.com/zeroneye/Lollipop/issues"
+issueTrackerURL="https://github.com/owmii/Lollipop/issues"
 
 [[mods]]
 modId="lollipop"

@@ -4,23 +4,33 @@ import net.minecraft.nbt.CompoundNBT;
 
 public class Ticker {
 
-    private int max;
-    private int ticks;
+    private double max;
+    private double ticks;
 
-    public Ticker(int max) {
+    public Ticker(double max) {
         this.max = max;
+    }
+
+    public static Ticker empty() {
+        return new Ticker(0);
+    }
+
+    public boolean isEmpty() {
+        return this.ticks <= 0;
     }
 
     public boolean ended() {
         return this.ticks >= this.max;
     }
 
-    public boolean onward() {
+    public void add(double ticks) {
+        this.ticks = Math.min(Math.max(0, this.ticks + ticks), this.max);
+    }
+
+    public void onward() {
         if (this.ticks < this.max) {
             this.ticks++;
-            return false;
         }
-        return true;
     }
 
     public void back() {
@@ -29,7 +39,7 @@ public class Ticker {
         }
     }
 
-    public void back(int value) {
+    public void back(double value) {
         if (this.ticks > 0) {
             this.ticks -= Math.min(this.ticks, value);
         }
@@ -39,31 +49,38 @@ public class Ticker {
         this.ticks = 0;
     }
 
-    public static boolean delayed(int delay) {
+    public static boolean delayed(double delay) {
         return System.currentTimeMillis() % (delay * 5) == 0;
     }
 
     public void read(CompoundNBT compound, String key) {
-        this.ticks = compound.getInt(key);
+        this.ticks = compound.getDouble(key + "Ticks");
+        this.max = compound.getDouble(key + "Max");
     }
 
     public void write(CompoundNBT compound, String key) {
-        compound.putInt(key, this.ticks);
+        compound.putDouble(key + "Ticks", this.ticks);
+        compound.putDouble(key + "Max", this.max);
     }
 
-    public int getMax() {
+    public double getMax() {
         return this.max;
     }
 
-    public void setMax(int max) {
+    public void setMax(double max) {
         this.max = max;
     }
 
-    public int getTicks() {
+    public double getTicks() {
         return this.ticks;
     }
 
-    public void setTicks(int ticks) {
+    public void setTicks(double ticks) {
+        this.ticks = ticks;
+    }
+
+    public void setAll(double ticks) {
+        this.max = ticks;
         this.ticks = ticks;
     }
 }
