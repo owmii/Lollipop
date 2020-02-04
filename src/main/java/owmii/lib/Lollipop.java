@@ -3,8 +3,10 @@ package owmii.lib;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import owmii.lib.network.Network;
+import owmii.lib.network.Packets;
 
 import java.util.function.Consumer;
 
@@ -12,6 +14,14 @@ import java.util.function.Consumer;
 public class Lollipop {
     public static final Network NET = new Network();
     public static final String MOD_ID = "lollipop";
+
+    public Lollipop() {
+        addModListener(this::setup);
+    }
+
+    void setup(FMLCommonSetupEvent event) {
+        Packets.register();
+    }
 
     public static <T extends Event> void addModListener(Consumer<T> consumer) {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(consumer);

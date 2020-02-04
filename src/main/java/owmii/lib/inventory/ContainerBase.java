@@ -25,12 +25,14 @@ public class ContainerBase<I extends TileBase> extends Container {
         this.te = te;
         this.te.setContainerOpen(true);
         this.te.markDirtyAndSync();
+        addContainer(playerInventory, te);
     }
 
     protected ContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(containerType, id, playerInventory, getInventory(playerInventory, buffer.readBlockPos()));
         this.te.setContainerOpen(true);
         this.te.markDirtyAndSync();
+        addContainer(playerInventory, this.te);
     }
 
     @Override
@@ -39,13 +41,16 @@ public class ContainerBase<I extends TileBase> extends Container {
         this.te.setContainerOpen(false);
     }
 
+    protected void addContainer(PlayerInventory playerInventory, I te) {
+    }
+
     @SuppressWarnings("unchecked")
     protected static <T extends TileBase> T getInventory(PlayerInventory playerInv, BlockPos pos) {
         World world = playerInv.player.getEntityWorld();
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileBase)
             return (T) tile;
-        return (T) new TileBase(TileEntityType.SIGN); //TODO remove
+        return (T) new TileBase(TileEntityType.SIGN);
     }
 
     protected void addPlayerInv(PlayerInventory playerInventory, int x, int hY, int iY) {

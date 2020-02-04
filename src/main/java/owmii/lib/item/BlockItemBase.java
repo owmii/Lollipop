@@ -8,21 +8,38 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import owmii.lib.block.IBlock;
 import owmii.lib.client.renderer.item.TEItemRenderer;
+import owmii.lib.util.IVariant;
 
 import javax.annotation.Nullable;
 
-public class BlockItemBase extends BlockItem implements IItemBase {
+public class BlockItemBase<E extends IVariant, T extends Block & IBlock<E>> extends BlockItem implements IItemBase {
+    private final T block;
+
     @SuppressWarnings("ConstantConditions")
-    public BlockItemBase(Block block, Properties properties, @Nullable ItemGroup group) {
-        super(block, properties.group(block instanceof IBlock && ((IBlock) block).hideGroup() ? null : group)
-                .setTEISR(() -> TEItemRenderer::new).maxStackSize(((IBlock) block).stackSize()));
+    public BlockItemBase(T block, Properties properties, @Nullable ItemGroup group) {
+        super(block, properties.group(block instanceof IBlock && block.hideGroup() ? null : group)
+                .setISTER(() -> TEItemRenderer::new).maxStackSize(block.stackSize()));
+        this.block = block;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean hasEffect(ItemStack stack) {
+        return getBlock().hasEffect(stack);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void renderByItem(ItemStack stack) {
-        if (getBlock() instanceof IBlock) {
-            ((IBlock) getBlock()).renderByItem(stack);
-        }
+        getBlock().renderByItem(stack);
+    }
+
+    public E getVariant() {
+        return this.block.getVariant();
+    }
+
+    @Override
+    public T getBlock() {
+        return this.block;
     }
 }

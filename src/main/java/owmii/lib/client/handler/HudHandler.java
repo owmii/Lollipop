@@ -3,6 +3,7 @@ package owmii.lib.client.handler;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -18,23 +19,33 @@ import net.minecraftforge.fml.common.Mod;
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class HudHandler {
-
     @SubscribeEvent
     public static void renderHud(RenderGameOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && mc.currentScreen == null) {
             PlayerEntity player = mc.player;
             World world = mc.world;
-            RayTraceResult hit = mc.objectMouseOver;
-            if (hit instanceof BlockRayTraceResult) {
-                BlockRayTraceResult result = (BlockRayTraceResult) hit;
-                BlockPos pos = result.getPos();
-                Vec3d sHit = result.getHitVec();
-                BlockState state = world.getBlockState(pos);
-                if (state.getBlock() instanceof IHud) {
+            if (world != null && player != null) {
+                RayTraceResult hit = mc.objectMouseOver;
+                if (hit instanceof BlockRayTraceResult) {
+                    BlockRayTraceResult result = (BlockRayTraceResult) hit;
+                    BlockPos pos = result.getPos();
+                    Vec3d sHit = result.getHitVec();
+                    BlockState state = world.getBlockState(pos);
+                    if (state.getBlock() instanceof IHud) {
+                        for (Hand hand : Hand.values()) {
+                            if (((IHud) state.getBlock()).renderHud(state, world, pos, player, hand, result)) {
+                                break;
+                            }
+                        }
+                    }
+
                     for (Hand hand : Hand.values()) {
-                        if (((IHud) state.getBlock()).renderHud(state, world, player, hand, result)) {
-                            break;
+                        ItemStack stack = player.getHeldItem(hand);
+                        if (stack.getItem() instanceof IHudItem) {
+                            if (((IHudItem) stack.getItem()).renderHud(world, pos, player, hand, result.getFace(), result.getHitVec())) {
+                                break;
+                            }
                         }
                     }
                 }

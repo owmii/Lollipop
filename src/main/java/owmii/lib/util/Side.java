@@ -4,6 +4,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
 public class Side {
+    public static final Direction[] VERTICAL = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
+
     public static Direction fromNeighbor(BlockPos pos, BlockPos neighbor) {
         Direction direction = Direction.NORTH;
         if (neighbor.getX() > pos.getX() && neighbor.getX() != pos.getX()) {

@@ -75,6 +75,14 @@ public class Server {
         return !get().getPlayerList().getPlayers().isEmpty();
     }
 
+    public static boolean isSinglePlayer() {
+        return !isMultiPlayer();
+    }
+
+    public static boolean isMultiPlayer() {
+        return get().isDedicatedServer();
+    }
+
     public static MinecraftServer get() {
         return LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
     }

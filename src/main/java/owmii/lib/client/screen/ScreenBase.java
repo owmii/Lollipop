@@ -30,7 +30,9 @@ public class ScreenBase extends Screen {
         } else {
             InputMappings.Input code = InputMappings.getInputByCode(i, i1);
             if (i == 256 || Minecraft.getInstance().gameSettings.keyBindInventory.isActiveAndMatches(code)) {
-                Minecraft.getInstance().player.closeScreen();
+                if (this.mc.player != null) {
+                    this.mc.player.closeScreen();
+                }
                 return true;
             }
         }

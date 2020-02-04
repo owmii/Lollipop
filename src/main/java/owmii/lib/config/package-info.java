@@ -1,4 +1,4 @@
 @NonnullDefault
-package owmii.lib.client.screen.botton;
+package owmii.lib.config;
 
 import org.lwjgl.system.NonnullDefault;

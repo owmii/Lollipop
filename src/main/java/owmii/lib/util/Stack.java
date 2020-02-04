@@ -7,12 +7,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class Stack {
-    public static CompoundNBT checkShildNBT(ItemStack stack, String key) {
+    public static CompoundNBT getTagOrEmptyChild(ItemStack stack, String key) {
         CompoundNBT nbt = stack.getChildTag(key);
         return nbt != null ? nbt : new CompoundNBT();
     }
 
-    public static CompoundNBT checkNBT(ItemStack stack) {
+    public static CompoundNBT getTagOrEmpty(ItemStack stack) {
         CompoundNBT nbt = stack.getTag();
         return nbt != null ? nbt : new CompoundNBT();
     }

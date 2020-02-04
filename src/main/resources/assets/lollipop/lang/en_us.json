@@ -5,5 +5,19 @@
   "info.lollipop.side.north": "Facing: %sNorth",
   "info.lollipop.side.south": "Facing: %sSouth",
   "info.lollipop.side.west": "Facing: %sWest",
-  "info.lollipop.side.east": "Facing: %sEast"
+  "info.lollipop.side.east": "Facing: %sEast",
+  "info.lollipop.redstone.mode.ignore": "Redstone: %sIgnore",
+  "info.lollipop.redstone.mode.on": "Redstone: %sOn",
+  "info.lollipop.redstone.mode.off": "Redstone: %sOff",
+  "info.lollipop.configuration": "Configuration",
+  "info.lollipop.side.config.all": "I/O Mode: %sReceive/Extract",
+  "info.lollipop.side.config.out": "I/O Mode: %sExtract only",
+  "info.lollipop.side.config.in": "I/O Mode: %sReceive only",
+  "info.lollipop.side.config.off": "I/O Mode: %sOff",
+  "info.lollipop.upgrades": "Upgrades",
+  "info.lollipop.stored.energy.fe": "Stored: %s/%s FE",
+  "info.lollipop.max.extract.fe": "Max Extract: %s FE/t",
+  "info.lollipop.max.receive.fe": "Max Receive: %s FE/t",
+  "info.lollipop.max.transfer.fe": "Max I/O: %s FE/t",
+  "info.lollipop.buffer": "Buffer: %s"
 }

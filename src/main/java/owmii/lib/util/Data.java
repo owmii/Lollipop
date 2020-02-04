@@ -10,7 +10,7 @@ import owmii.lib.Lollipop;
 import java.util.Collection;
 
 public class Data {
-    public static final String TAG_STORABLE = Lollipop.MOD_ID + "_Storable_NBT";
+    public static final String TAG_TE_STORABLE = Lollipop.MOD_ID + "TileStorableNBT";
 
     public static <T extends Collection<BlockPos>> T readPosList(CompoundNBT nbt, String key, T list) {
         ListNBT listNBT = nbt.getList(key, Constants.NBT.TAG_COMPOUND);

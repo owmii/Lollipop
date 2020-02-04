@@ -22,7 +22,7 @@ public interface IItemBase extends IForgeItem {
         }
         if (!stack.equals(player.inventory.mainInventory.get(i), true))
             return;
-        if (i != j) {
+        if (i != j || i == 0 && !p.contains("ChatInfo")) {
             player.sendStatusMessage(component, true);
             p.putInt("ChatInfo", i);
         }

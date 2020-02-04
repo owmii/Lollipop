@@ -8,13 +8,17 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
 import owmii.lib.item.BlockItemBase;
+import owmii.lib.util.IVariant;
 
 import javax.annotation.Nullable;
 
-public interface IBlock extends IForgeBlock {
+public interface IBlock<E extends IVariant> extends IForgeBlock {
+    @SuppressWarnings("unchecked")
     default BlockItemBase getBlockItem(Item.Properties properties, @Nullable ItemGroup group) {
         return new BlockItemBase(getBlock(), properties, group);
     }
+
+    E getVariant();
 
     @Override
     default boolean hasTileEntity(BlockState state) {
@@ -30,6 +34,19 @@ public interface IBlock extends IForgeBlock {
     }
 
     @OnlyIn(Dist.CLIENT)
+    default boolean hasEffect(ItemStack stack) {
+        return false;
+    }
+
+    @OnlyIn(Dist.CLIENT)
     default void renderByItem(ItemStack stack) {
+    }
+
+    default ItemStack toStack() {
+        return new ItemStack(getBlock());
+    }
+
+    default ItemStack toStack(int count) {
+        return new ItemStack(getBlock(), count);
     }
 }

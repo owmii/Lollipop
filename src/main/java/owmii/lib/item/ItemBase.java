@@ -14,7 +14,7 @@ import owmii.lib.client.renderer.item.TEItemRenderer;
 
 public class ItemBase extends Item implements IItemBase {
     public ItemBase(Properties properties) {
-        super(properties.setTEISR(() -> TEItemRenderer::new));
+        super(properties.setISTER(() -> TEItemRenderer::new));
     }
 
     @Override
@@ -22,7 +22,7 @@ public class ItemBase extends Item implements IItemBase {
         return context.getPlayer() != null ? onItemUse(context.getWorld(), context.getPos(), context.getPlayer(), context.getHand(), context.getFace(), context.getHitVec()) : super.onItemUse(context);
     }
 
-    public ActionResultType onItemUse(World world, BlockPos pos, PlayerEntity player, Hand hand, Direction direction, Vec3d hit) {
+    public ActionResultType onItemUse(World world, BlockPos pos, PlayerEntity player, Hand hand, Direction side, Vec3d hit) {
         return ActionResultType.PASS;
     }
 
@@ -31,7 +31,7 @@ public class ItemBase extends Item implements IItemBase {
         return context.getPlayer() != null ? onItemUseFirst(stack, context.getWorld(), context.getPos(), context.getPlayer(), context.getHand(), context.getFace(), context.getHitVec()) : super.onItemUseFirst(stack, context);
     }
 
-    public ActionResultType onItemUseFirst(ItemStack stack, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction direction, Vec3d hit) {
+    public ActionResultType onItemUseFirst(ItemStack stack, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction side, Vec3d hit) {
         return ActionResultType.PASS;
     }
 }

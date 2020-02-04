@@ -14,6 +14,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
@@ -30,53 +31,110 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import owmii.lib.inventory.ContainerBase;
 import owmii.lib.util.Data;
+import owmii.lib.util.IVariant;
 import owmii.lib.util.Stack;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
-public abstract class AbstractBlock extends Block implements IBlock {
+public abstract class AbstractBlock<E extends IVariant> extends Block implements IBlock<E> {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
+
+    protected final E variant;
 
     public AbstractBlock(Properties properties) {
+        this(properties, IVariant.getEmpty());
+    }
+
+    public AbstractBlock(Properties properties, E variant) {
         super(properties);
+        this.variant = variant;
+    }
+
+    protected void setDefaultState() {
+        setStateProps(state -> {});
+    }
+
+    protected void setStateProps(Consumer<BlockState> consumer) {
+        BlockState state = this.stateContainer.getBaseState();
+        if (this instanceof IWaterLoggable) {
+            state = state.with(WATERLOGGED, false);
+        }
+        if (!getFacing().equals(Facing.NORMAL)) {
+            state = state.with(FACING, Direction.NORTH);
+        }
+        if (hasLitProp()) {
+            state = state.with(LIT, false);
+        }
+        consumer.accept(state);
+        setDefaultState(state);
+    }
+
+    @Override
+    public E getVariant() {
+        return this.variant;
     }
 
     @Nullable
-    public ContainerBase getContainer(int id, PlayerInventory inventory, TileBase te) {
+    public <T extends TileBase> ContainerBase getContainer(int id, PlayerInventory inventory, TileBase te) {
         return null;
     }
 
     @Override
-    public ActionResultType func_225533_a_(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileBase) {
+            ((TileBase) tile).onAdded(world, state, oldState, isMoving);
+        }
+    }
+
+    @Override
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileBase) {
+            ((TileBase) tile).onRemoved(world, state, newState, isMoving);
+        }
+        super.onReplaced(state, world, pos, newState, isMoving);
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileBase) {
+            ((TileBase) tile).neighborChanged(world, state, pos, block, fromPos, isMoving);
+        }
+        super.neighborChanged(state, world, pos, block, fromPos, isMoving);
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof INamedContainerProvider) {
             INamedContainerProvider provider = (INamedContainerProvider) tile;
             Container container = provider.createMenu(0, player.inventory, player);
             if (container != null) {
                 if (player instanceof ServerPlayerEntity) {
-                    NetworkHooks.openGui((ServerPlayerEntity) player, provider, pos);
+                    NetworkHooks.openGui((ServerPlayerEntity) player, provider, buffer -> {
+                        buffer.writeBlockPos(pos);
+                        additionalGuiData(buffer, state, world, pos, player, hand, result);
+                    });
                 }
                 return ActionResultType.SUCCESS;
             }
         }
-        return super.func_225533_a_(state, world, pos, player, hand, result);
+        return super.onBlockActivated(state, world, pos, player, hand, result);
+    }
+
+    protected void additionalGuiData(PacketBuffer buffer, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        TileEntity tileentity = worldIn.getTileEntity(pos);
-        if (tileentity instanceof TileBase) {
-            TileBase tile = (TileBase) tileentity;
-            if (stack.hasDisplayName()) {
-                tile.setCustomName(stack.getDisplayName());
-            } else {
-                tile.setDefaultName(getTranslationKey());
-            }
-            CompoundNBT tag = Stack.checkNBT(stack);
-            if (!tag.isEmpty()) {
-                tile.readStorable(tag.getCompound(Data.TAG_STORABLE));
-            }
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileBase) {
+            ((TileBase) tile).onPlaced(world, state, placer, stack);
         }
     }
 
@@ -85,10 +143,10 @@ public abstract class AbstractBlock extends Block implements IBlock {
         if (te instanceof TileBase) {
             TileBase tile = (TileBase) te;
             ItemStack stack1 = new ItemStack(this);
-            CompoundNBT tag = Stack.checkNBT(stack1);
+            CompoundNBT tag = Stack.getTagOrEmpty(stack1);
             CompoundNBT storable = tile.writeStorable(new CompoundNBT());
             if (!storable.isEmpty() && tile.isNBTStorable()) {
-                tag.put(Data.TAG_STORABLE, storable);
+                tag.put(Data.TAG_TE_STORABLE, storable);
                 stack1.setTag(tag);
             }
             if (tile.hasCustomName()) stack1.setDisplayName(tile.getCustomName());
@@ -110,10 +168,10 @@ public abstract class AbstractBlock extends Block implements IBlock {
             if (!world.isRemote() && tileEntity instanceof TileBase) {
                 TileBase tile = (TileBase) tileEntity;
                 ItemStack stack = new ItemStack(this);
-                CompoundNBT tag = Stack.checkNBT(stack);
+                CompoundNBT tag = Stack.getTagOrEmpty(stack);
                 CompoundNBT storable = tile.writeStorable(new CompoundNBT());
                 if (!storable.isEmpty() && tile.isNBTStorable()) {
-                    tag.put(Data.TAG_STORABLE, storable);
+                    tag.put(Data.TAG_TE_STORABLE, storable);
                     stack.setTag(tag);
                 }
                 if (tile.hasCustomName()) {
@@ -136,9 +194,9 @@ public abstract class AbstractBlock extends Block implements IBlock {
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         BlockState state = getDefaultState();
-        if (getFacing().equals(Facing.HORIZONTAL)) if (!placerFacing()) state = facing(context, false);
+        if (getFacing().equals(Facing.HORIZONTAL)) if (!isPlacerFacing()) state = facing(context, false);
         else state = getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
-        else if (getFacing().equals(Facing.ALL)) if (!placerFacing()) state = facing(context, true);
+        else if (getFacing().equals(Facing.ALL)) if (!isPlacerFacing()) state = facing(context, true);
         else state = getDefaultState().with(FACING, context.getNearestLookingDirection().getOpposite());
         if (state != null && this instanceof IWaterLoggable) {
             IFluidState ifluidstate = context.getWorld().getFluidState(context.getPos());
@@ -195,12 +253,16 @@ public abstract class AbstractBlock extends Block implements IBlock {
         return super.mirror(state, mirror);
     }
 
-    protected boolean placerFacing() {
+    protected boolean isPlacerFacing() {
         return false;
     }
 
     protected Facing getFacing() {
         return Facing.NORMAL;
+    }
+
+    protected boolean hasLitProp() {
+        return false;
     }
 
     @Override
@@ -216,8 +278,9 @@ public abstract class AbstractBlock extends Block implements IBlock {
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        if (getFacing().equals(Facing.ALL) || getFacing().equals(Facing.HORIZONTAL)) builder.add(WATERLOGGED);
+        if (getFacing().equals(Facing.ALL) || getFacing().equals(Facing.HORIZONTAL)) builder.add(FACING);
         if (this instanceof IWaterLoggable) builder.add(WATERLOGGED);
+        if (hasLitProp()) builder.add(LIT);
     }
 
     protected enum Facing {

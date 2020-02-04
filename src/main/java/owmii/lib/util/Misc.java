@@ -7,9 +7,9 @@ import net.minecraft.world.World;
 public class Misc {
     public static boolean canBlockSeeSky(World world, BlockPos pos) {
         BlockPos blockpos = new BlockPos(pos.getX(), world.getSeaLevel(), pos.getZ());
-        for (BlockPos blockpos1 = blockpos.down(); blockpos1.getY() > pos.getY(); blockpos1 = blockpos1.down()) {
-            BlockState blockstate = world.getBlockState(blockpos1);
-            if (blockstate.getOpacity(world, blockpos1) > 0 && !blockstate.getMaterial().isLiquid()) {
+        for (BlockPos down = blockpos.down(); down.getY() > pos.getY(); down = down.down()) {
+            BlockState blockstate = world.getBlockState(down);
+            if (blockstate.getOpacity(world, down) > 0 && !blockstate.getMaterial().isLiquid()) {
                 return false;
             }
         }

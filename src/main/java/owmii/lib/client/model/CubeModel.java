@@ -10,12 +10,12 @@ public class CubeModel extends Model {
     private final ModelRenderer cube;
 
     public CubeModel(int pixels) {
-        super(RenderType::func_228634_a_);
+        super(RenderType::entitySolid);
         this.textureWidth = pixels * 4;
         this.textureHeight = pixels * 2;
         this.cube = new ModelRenderer(this, 0, 0);
         float offset = -(pixels / 2.0F);
-        this.cube.func_228300_a_(offset, offset, offset, pixels, pixels, pixels);
+        this.cube.addBox(offset, offset, offset, pixels, pixels, pixels);
         this.cube.setRotationPoint(0F, 0F, 0F);
         this.cube.setTextureSize(this.textureWidth, this.textureHeight);
         this.cube.mirror = true;
@@ -30,7 +30,7 @@ public class CubeModel extends Model {
     }
 
     @Override
-    public void func_225598_a_(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_, float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
+    public void render(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_, float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
 
     }
 }
