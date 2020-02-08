@@ -13,7 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import owmii.lib.Lollipop;
 import owmii.lib.block.TileBase;
 import owmii.lib.client.screen.widget.IconButton;
-import owmii.lib.client.util.Draw2D;
+import owmii.lib.client.util.Draw;
 import owmii.lib.energy.SideConfig;
 import owmii.lib.inventory.EnergyContainerBase;
 import owmii.lib.inventory.slot.SlotBase;
@@ -31,10 +31,10 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
     private static final ResourceLocation GUI_WIDGET = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/energy_widget.png");
     private static final ResourceLocation GUI_SLOT = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/energy_slots.png");
     public static final ResourceLocation GUI_BUFFER = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/buffer.png");
-    private IconButton[] configButtons = new IconButton[6];
-    private IconButton configButtonAll = Empty.ICON_BUTTON;
-    private IconButton showConfigButton = Empty.ICON_BUTTON;
-    private IconButton redStoneButton = Empty.ICON_BUTTON;
+    protected IconButton[] configButtons = new IconButton[6];
+    protected IconButton configButtonAll = Empty.ICON_BUTTON;
+    protected IconButton showConfigButton = Empty.ICON_BUTTON;
+    protected IconButton redStoneButton = Empty.ICON_BUTTON;
     protected boolean configVisible;
 
     public EnergyScreenBase(C container, PlayerInventory playerInventory, ITextComponent name) {
@@ -95,7 +95,7 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
         for (int i = 0; i < this.configButtons.length; i++) {
             this.configButtons[i].visible = this.configVisible;
             this.configButtons[i].setIconDiff(this.te.getSideConfig().getType(Direction.byIndex(i)).getXuv());
-            if (this.configVisible) {
+            if (this.configVisible && this.configButtons[i].isHovered()) {
                 List<String> list = this.configButtons[i].getTooltip();
                 list.add(config.getType(Direction.byIndex(i)).getDisplayName());
                 list.remove(1);
@@ -140,7 +140,7 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
 
         if (this.te.defaultEnergyCapacity() > 0) {
             bindTexture(getBackGround());
-            Draw2D.gaugeV(this.x + 3, this.y + 3, 8, 66, 248, 0, this.te.getEnergyStorage());
+            Draw.gaugeV(this.x + 3, this.y + 3, 8, 66, 248, 0, this.te.getEnergyStorage());
         }
     }
 

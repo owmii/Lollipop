@@ -19,5 +19,9 @@
   "info.lollipop.max.extract.fe": "Max Extract: %s FE/t",
   "info.lollipop.max.receive.fe": "Max Receive: %s FE/t",
   "info.lollipop.max.transfer.fe": "Max I/O: %s FE/t",
-  "info.lollipop.buffer": "Buffer: %s"
+  "info.lollipop.buffer": "Buffer: %s",
+  "info.lollipop.fluid": "Fluid: %s",
+  "info.lollipop.fluid.stored": "Stored: %s/%s mb",
+  "info.lollipop.fluid.using.per.tick": "Using: %s mb/t",
+  "info.lollipop.energy.per.mb": "Gain FE/mb: %s/%s"
 }

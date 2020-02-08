@@ -7,7 +7,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import owmii.lib.client.util.Draw2D;
+import owmii.lib.client.util.Draw;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class Gauge {
             this.screen.blit(this.bx, this.by, this.bu, this.bv, this.bw, this.bh);
         }
         if (curr > 0 && cap >= curr) {
-            Draw2D.gaugeV(this.x, this.y, this.w, this.h, this.u, this.v, cap, curr);
+            Draw.gaugeV(this.x, this.y, this.w, this.h, this.u, this.v, cap, curr);
         }
     }
 

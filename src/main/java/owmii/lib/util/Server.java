@@ -10,8 +10,11 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.LogicalSidedProvider;
+import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -20,7 +23,17 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
+@Mod.EventBusSubscriber
 public class Server {
+    public static long ticks;
+
+    @SubscribeEvent
+    public static void tick(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            ticks++;
+        }
+    }
+
     public static void chatToAll(BiConsumer<PlayerEntity, List<ITextComponent>> biConsumer) {
         List<ITextComponent> textComponents = new ArrayList<>();
         get().getPlayerList().getPlayers().forEach(player -> {
