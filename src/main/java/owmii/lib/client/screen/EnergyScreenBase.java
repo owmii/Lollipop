@@ -14,6 +14,7 @@ import owmii.lib.Lollipop;
 import owmii.lib.block.TileBase;
 import owmii.lib.client.screen.widget.IconButton;
 import owmii.lib.client.util.Draw;
+import owmii.lib.energy.Energy;
 import owmii.lib.energy.SideConfig;
 import owmii.lib.inventory.EnergyContainerBase;
 import owmii.lib.inventory.slot.SlotBase;
@@ -144,9 +145,13 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
         }
         blit(this.x + 15, this.y, 15, 0, 161, 72);
 
-        if (this.te.defaultEnergyCapacity() > 0) {
+        drawEnergyGauge(0, 0, this.te.getEnergyStorage());
+    }
+
+    protected void drawEnergyGauge(int x, int y, Energy energy) {
+        if (energy.getCapacity() > 0) {
             bindTexture(getBackGround());
-            Draw.gaugeV(this.x + 4, this.y + 4, 10, 64, 0, 164, this.te.getEnergyStorage());
+            Draw.gaugeV(this.x + 4, this.y + 4, 10, 64, 0, 164, energy);
         }
     }
 
