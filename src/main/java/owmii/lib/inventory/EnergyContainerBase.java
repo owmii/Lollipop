@@ -9,11 +9,11 @@ import owmii.lib.inventory.slot.SlotBase;
 import javax.annotation.Nullable;
 
 public class EnergyContainerBase<I extends TileBase.EnergyStorage> extends ContainerBase<I> {
-    protected EnergyContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, I te) {
+    public EnergyContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, I te) {
         super(containerType, id, playerInventory, te);
     }
 
-    protected EnergyContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public EnergyContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, PacketBuffer buffer) {
         super(containerType, id, playerInventory, buffer);
     }
 
@@ -26,7 +26,7 @@ public class EnergyContainerBase<I extends TileBase.EnergyStorage> extends Conta
     @Override
     protected void addContainer(PlayerInventory playerInventory, I te) {
         super.addContainer(playerInventory, te);
-        addChargingInv(te, 26, 45);
+        addChargingInv(te, 28, 47);
         addPlayerInv(playerInventory, 8, 140, 82);
     }
 }

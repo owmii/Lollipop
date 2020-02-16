@@ -17,6 +17,7 @@ import net.minecraft.world.IWorldReader;
 import owmii.lib.api.energy.INoTileEnergy;
 import owmii.lib.config.IEnergyConfig;
 import owmii.lib.energy.Energy;
+import owmii.lib.energy.SideConfig;
 import owmii.lib.item.BlockItemBase;
 import owmii.lib.item.EnergyBlockItem;
 import owmii.lib.util.IVariant;
@@ -42,6 +43,10 @@ public abstract class AbstractEnergyBlock<E extends IVariant> extends AbstractBl
 
     public abstract IEnergyConfig<E> getEnergyConfig();
 
+    public SideConfig.Type getTransferType() {
+        return SideConfig.Type.ALL;
+    }
+
     @Override
     public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
         if (checkValidEnergySide()) {
@@ -63,19 +68,20 @@ public abstract class AbstractEnergyBlock<E extends IVariant> extends AbstractBl
         Energy.ifPresent(stack, storage -> {
             if (storage instanceof Energy.Item) {
                 Energy.Item energy = (Energy.Item) storage;
-                addEnergyInfo(energy, tooltip);
-                addEnergyTransferInfo(energy, tooltip);
+                addEnergyInfo(stack, energy, tooltip);
+                addEnergyTransferInfo(stack, energy, tooltip);
+                additionalEnergyInfo(stack, energy, tooltip);
                 tooltip.add(new StringTextComponent(""));
             }
         });
     }
 
-    public void addEnergyInfo(Energy.Item storage, List<ITextComponent> tooltip) {
+    public void addEnergyInfo(ItemStack stack, Energy.Item storage, List<ITextComponent> tooltip) {
         if (storage.getCapacity() > 0)
             tooltip.add(new TranslationTextComponent("info.lollipop.stored.energy.fe", TextFormatting.DARK_GRAY + Text.addCommas(storage.getStored()), Text.numFormat(storage.getCapacity())).applyTextStyle(TextFormatting.GRAY));
     }
 
-    public void addEnergyTransferInfo(Energy.Item storage, List<ITextComponent> tooltip) {
+    public void addEnergyTransferInfo(ItemStack stack, Energy.Item storage, List<ITextComponent> tooltip) {
         long ext = storage.getMaxExtract();
         long re = storage.getMaxReceive();
         if (ext + re > 0) {
@@ -89,4 +95,6 @@ public abstract class AbstractEnergyBlock<E extends IVariant> extends AbstractBl
             }
         }
     }
+
+    public void additionalEnergyInfo(ItemStack stack, Energy.Item energy, List<ITextComponent> tooltip) {}
 }

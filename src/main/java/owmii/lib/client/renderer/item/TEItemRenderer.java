@@ -18,17 +18,12 @@ public class TEItemRenderer extends ItemStackTileEntityRenderer {
     private static final Set<Item> ITEMS = new HashSet<>();
 
     @Override
-    public void render(ItemStack p_228364_1_, MatrixStack p_228364_2_, IRenderTypeBuffer p_228364_3_, int p_228364_4_, int p_228364_5_) {
-        super.render(p_228364_1_, p_228364_2_, p_228364_3_, p_228364_4_, p_228364_5_);
-    }
-
-    // @Override TODO
-    public void renderByItem(ItemStack stack) {
+    public void render(ItemStack stack, MatrixStack matrix, IRenderTypeBuffer rtb, int light, int ov) {
         final Item item = stack.getItem();
         if (item instanceof IItemBase) {
             IItemBase base = (IItemBase) item;
             if (ITEMS.contains(base)) {
-                base.renderByItem(stack);
+                base.renderByItem(stack, matrix, rtb, light, ov);
             }
         }
     }

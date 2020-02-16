@@ -46,37 +46,39 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
     @Override
     protected void init() {
         super.init();
-        mainButtons(this.x, this.y);
+        boolean b = showConfigButton();
+        mainButtons(this.x, this.y + (b ? 0 : -14));
         configButtons(this.x, this.y);
+        this.showConfigButton.visible = b;
+    }
+
+    protected boolean showConfigButton() {
+        return true;
     }
 
     protected void mainButtons(int x, int y) {
-        if (this.mc.world != null) {
-            this.showConfigButton = addIconButton(x + this.xSize - 18, y + 13, 15, 15, 15, 0, 15, getWidgetTexture(), (button) -> {
-                this.configVisible = !this.configVisible;
-            }).tooltip("info.lollipop.configuration", TextFormatting.GRAY);
-            this.redStoneButton = addIconButton(x + this.xSize - 18, y + 29, 15, 15, 30, 0, 15, getWidgetTexture(), (button) -> {
-                SNextRedstoneModePacket.send(this.mc.world, this.te.getPos());
-                this.te.nextRedstoneMode();
-            }).tooltip(this.te.getRedstone().getDisplayName());
-        }
+        this.showConfigButton = addIconButton(x + this.xSize - 18, y + 13, 15, 15, 15, 0, 15, getWidgetTexture(), (button) -> {
+            this.configVisible = !this.configVisible;
+        }).tooltip("info.lollipop.configuration", TextFormatting.GRAY);
+        this.redStoneButton = addIconButton(x + this.xSize - 18, y + 29, 15, 15, 30, 0, 15, getWidgetTexture(), (button) -> {
+            SNextRedstoneModePacket.send(this.mc.world, this.te.getPos());
+            this.te.nextRedstoneMode();
+        }).tooltip(this.te.getRedstoneMode().getDisplayName());
     }
 
     protected void configButtons(int x, int y) {
-        if (this.mc.world != null) {
-            this.configButtonAll = addIconButton(x + 151, y + 11, 15, 15, 30, 0, 15, getWidgetTexture(), (button) -> {
-                SNextEnergyConfigPacket.send(6, this.mc.world, this.te.getPos());
-                this.te.getSideConfig().nextTypeAllSides();
-            }).tooltip("info.lollipop.side.all", TextFormatting.GRAY, TextFormatting.DARK_GRAY).tooltip(this.te.getSideConfig().getType(Direction.UP).getDisplayName());
-            for (int i = 0; i < 6; i++) {
-                int xOffset = getSideButtonOffsets(18).get(i).getLeft();
-                int yOffset = getSideButtonOffsets(18).get(i).getRight();
-                final Direction side = Direction.byIndex(i);
-                this.configButtons[i] = addIconButton(x + 132 + xOffset, y + 28 + yOffset, 17, 17, 0, 30, 17, getWidgetTexture(), (button) -> {
-                    SNextEnergyConfigPacket.send(side.getIndex(), this.mc.world, this.te.getPos());
-                    this.te.getSideConfig().nextType(side);
-                }).tooltip("info.lollipop.side." + side.getName(), TextFormatting.GRAY, TextFormatting.DARK_GRAY).tooltip(this.te.getSideConfig().getType(side).getDisplayName());
-            }
+        this.configButtonAll = addIconButton(x + 151, y + 11, 15, 15, 30, 0, 15, getWidgetTexture(), (button) -> {
+            SNextEnergyConfigPacket.send(6, this.mc.world, this.te.getPos());
+            this.te.getSideConfig().nextTypeAllSides();
+        }).tooltip("info.lollipop.side.all", TextFormatting.GRAY, TextFormatting.DARK_GRAY).tooltip(this.te.getSideConfig().getType(Direction.UP).getDisplayName());
+        for (int i = 0; i < 6; i++) {
+            int xOffset = getSideButtonOffsets(18).get(i).getLeft();
+            int yOffset = getSideButtonOffsets(18).get(i).getRight();
+            final Direction side = Direction.byIndex(i);
+            this.configButtons[i] = addIconButton(x + 132 + xOffset, y + 28 + yOffset, 17, 17, 0, 30, 17, getWidgetTexture(), (button) -> {
+                SNextEnergyConfigPacket.send(side.getIndex(), this.mc.world, this.te.getPos());
+                this.te.getSideConfig().nextType(side);
+            }).tooltip("info.lollipop.side." + side.getName(), TextFormatting.GRAY, TextFormatting.DARK_GRAY).tooltip(this.te.getSideConfig().getType(side).getDisplayName());
         }
     }
 
@@ -101,10 +103,10 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
                 list.remove(1);
             }
         }
-        this.redStoneButton.setIconDiff(this.te.getRedstone().getXuv());
+        this.redStoneButton.setIconDiff(this.te.getRedstoneMode().getXuv());
         if (this.redStoneButton.isHovered()) {
             List<String> list = this.redStoneButton.getTooltip();
-            list.add(this.te.getRedstone().getDisplayName());
+            list.add(this.te.getRedstoneMode().getDisplayName());
             list.remove(0);
         }
         if (this.configVisible) {
@@ -135,12 +137,16 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
     @Override
     protected void drawBackground(float partialTicks, int mouseX, int mouseY) {
         super.drawBackground(partialTicks, mouseX, mouseY);
-        bindTexture(getMachineBackGround());
+        if (this.configVisible) {
+            bindTexture(getConfigBackGround());
+        } else {
+            bindTexture(getMachineBackGround());
+        }
         blit(this.x + 15, this.y, 15, 0, 161, 72);
 
         if (this.te.defaultEnergyCapacity() > 0) {
             bindTexture(getBackGround());
-            Draw.gaugeV(this.x + 3, this.y + 3, 8, 66, 248, 0, this.te.getEnergyStorage());
+            Draw.gaugeV(this.x + 4, this.y + 4, 10, 64, 0, 164, this.te.getEnergyStorage());
         }
     }
 
@@ -158,20 +164,24 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
 
     @Override
     protected boolean hideSlot(Slot slot) {
-        return slot instanceof SlotBase && this.configVisible;
+        return slot instanceof SlotBase && this.configVisible || super.hideSlot(slot);
     }
 
     @Override
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
         List<String> list = new ArrayList<>();
         this.te.getListedEnergyInfo(list);
-        if (!list.isEmpty() && isMouseOver(mouseX - 2, mouseY - 2, 10, 68)) {
+        if (!list.isEmpty() && isMouseOver(mouseX - 3, mouseY - 3, 12, 66)) {
             renderTooltip(list, mouseX, mouseY);
         }
         super.renderHoveredToolTip(mouseX, mouseY);
     }
 
     protected ResourceLocation getMachineBackGround() {
+        return GUI_MACHINE;
+    }
+
+    protected ResourceLocation getConfigBackGround() {
         return GUI_MACHINE;
     }
 

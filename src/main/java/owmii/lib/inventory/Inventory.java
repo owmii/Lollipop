@@ -167,5 +167,6 @@ public class Inventory extends ItemStackHandler {
         this.stacks.forEach(stack -> {
             InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), stack);
         });
+        clear();
     }
 }

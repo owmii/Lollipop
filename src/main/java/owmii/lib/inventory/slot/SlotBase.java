@@ -14,6 +14,7 @@ public class SlotBase extends SlotItemHandler {
     public int ovX;
     public int ovY;
     private boolean drawOv;
+    private boolean hide;
 
 
     public SlotBase(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
@@ -43,6 +44,15 @@ public class SlotBase extends SlotItemHandler {
         this.ovX = ovX;
         this.ovY = ovY;
         this.drawOv = true;
+        return this;
+    }
+
+    public boolean isHidden() {
+        return this.hide;
+    }
+
+    public SlotBase hide() {
+        this.hide = true;
         return this;
     }
 }

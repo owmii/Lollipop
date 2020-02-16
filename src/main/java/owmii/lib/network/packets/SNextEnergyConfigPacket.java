@@ -13,6 +13,7 @@ import owmii.lib.network.IPacket;
 import owmii.lib.util.Dim;
 import owmii.lib.util.Server;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -31,8 +32,10 @@ public class SNextEnergyConfigPacket implements IPacket<SNextEnergyConfigPacket>
         this(0, 0, BlockPos.ZERO);
     }
 
-    public static void send(int i, World world, BlockPos pos) {
-        Lollipop.NET.toServer(new SNextEnergyConfigPacket(i, Dim.id(world), pos));
+    public static void send(int i, @Nullable World world, BlockPos pos) {
+        if (world != null) {
+            Lollipop.NET.toServer(new SNextEnergyConfigPacket(i, Dim.id(world), pos));
+        }
     }
 
     @Override

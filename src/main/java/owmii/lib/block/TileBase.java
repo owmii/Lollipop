@@ -185,6 +185,9 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
     }
 
     public void onRemoved(World world, BlockState state, BlockState newState, boolean isMoving) {
+        if (!keepInventory() || !isNBTStorable()) {
+            getInventory().drop(world, this.pos);
+        }
     }
 
     public void neighborChanged(World world, BlockState state, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
@@ -319,7 +322,7 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             boolean flag = this.nextBuff > 0;
             boolean flag1 = super.postTicks(world);
             if (defaultGeneration() > 0) {
-                long toGenerate = Math.min(defaultGeneration(), this.energy.getEmpty());
+                long toGenerate = Math.min(defaultGeneration(), getEnergyStorage().getEmpty());
                 if (this.nextBuff > toGenerate) {
                     this.nextBuff -= toGenerate;
                     if (this.nextBuff <= 0) {
@@ -332,7 +335,7 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
                 }
                 generate(world);
                 if (toGenerate > 0) {
-                    this.energy.produce(toGenerate);
+                    produceEnergy(toGenerate);
                     flag1 = true;
                 }
             }
@@ -353,6 +356,10 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             return this.nextBuff;
         }
 
+        public long getGeneration() {
+            return defaultGeneration();
+        }
+
         public long defaultGeneration() {
             return getEnergyConfig().getGeneration(getVariant());
         }
@@ -368,8 +375,10 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
         }
 
         @Override
-        public SideConfig.Type getTransferType() {
-            return SideConfig.Type.OUT;
+        @OnlyIn(Dist.CLIENT)
+        public void getListedEnergyInfo(List<String> list) {
+            super.getListedEnergyInfo(list);
+            list.add(TextFormatting.GRAY + I18n.format("info.lollipop.max.generates", TextFormatting.DARK_GRAY + Text.numFormat(getGeneration())));
         }
     }
 
@@ -513,7 +522,7 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             if (canReceiveEnergy(side)) {
                 long energyReceived = Math.min(getEnergyStorage().getEmpty(), Math.min(getMaxEnergyReceive(), maxReceive));
                 if (!simulate) {
-                    getEnergyStorage().produce(energyReceived);
+                    produceEnergy(energyReceived);
                     if (energyReceived > 0) {
                         sync(getSyncTicks());
                     }
@@ -527,7 +536,7 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             if (canExtractEnergy(side)) {
                 long energyExtracted = Math.min(getEnergyStored(), Math.min(getMaxEnergyExtract(), maxExtract));
                 if (!simulate) {
-                    getEnergyStorage().consume(energyExtracted);
+                    consumeEnergy(energyExtracted);
                     if (energyExtracted > 0) {
                         sync(getSyncTicks());
                     }
@@ -537,6 +546,13 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             return 0;
         }
 
+        public void produceEnergy(long amount) {
+            getEnergyStorage().produce(amount);
+        }
+
+        public void consumeEnergy(long amount) {
+            getEnergyStorage().consume(amount);
+        }
 
         @Override
         public void onAdded(World world, BlockState state, BlockState oldState, boolean isMoving) {
@@ -545,19 +561,19 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
         }
 
         public boolean canReceiveEnergy(@Nullable Direction side) {
-            return checkRedstone() && this.energy.canReceive() && (this.sideConfig.getType(side).isIn() || side == null);
+            return checkRedstone() && getEnergyStorage().canReceive() && (this.sideConfig.getType(side).isIn() || side == null);
         }
 
         public boolean canExtractEnergy(@Nullable Direction side) {
-            return checkRedstone() && this.energy.canExtract() && (this.sideConfig.getType(side).isOut() || side == null);
+            return checkRedstone() && getEnergyStorage().canExtract() && (this.sideConfig.getType(side).isOut() || side == null);
         }
 
         public long getEnergyCapacity() {
-            return Math.min(this.energy.getCapacity(), defaultEnergyCapacity());
+            return getEnergyStorage().getCapacity();
         }
 
         public long getEnergyStored() {
-            return this.energy.getStored();
+            return getEnergyStorage().getStored();
         }
 
         public long getMaxEnergyExtract() {
@@ -590,11 +606,11 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
 
         public boolean checkRedstone() {
             boolean power = this.world != null && this.world.getRedstonePowerFromNeighbors(this.pos) > 0;
-            return Redstone.IGNORE.equals(getRedstone()) || power && Redstone.ON.equals(getRedstone()) || !power && Redstone.OFF.equals(getRedstone());
+            return Redstone.IGNORE.equals(getRedstoneMode()) || power && Redstone.ON.equals(getRedstoneMode()) || !power && Redstone.OFF.equals(getRedstoneMode());
         }
 
         @Override
-        public Redstone getRedstone() {
+        public Redstone getRedstoneMode() {
             return this.redstone;
         }
 
@@ -604,13 +620,13 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
         }
 
         public SideConfig.Type getTransferType() {
-            return SideConfig.Type.ALL;
+            return getBlock().getTransferType();
         }
 
         @Override
         public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
             if (cap == CapabilityEnergy.ENERGY && isEnergyPresent(side)) {
-                return LazyOptional.of(() -> new Energy(this.energy) {
+                return LazyOptional.of(() -> new Energy(getEnergyStorage()) {
                     @Override
                     public int extractEnergy(int maxExtract, boolean simulate) {
                         return Safe.integer(EnergyStorage.this.extractEnergy(maxExtract, simulate, side));
@@ -643,10 +659,18 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
         public void getListedEnergyInfo(List<String> list) {
             TextFormatting g = TextFormatting.GRAY, dg = TextFormatting.DARK_GRAY;
             list.add(g + I18n.format("info.lollipop.stored.energy.fe", dg + Text.addCommas(this.energy.getStored()), Text.numFormat(this.energy.getCapacity())));
-            if (getMaxEnergyExtract() > 0)
-                list.add(g + I18n.format("info.lollipop.max.extract.fe", dg + Text.numFormat(getMaxEnergyExtract())));
-            if (getMaxEnergyReceive() > 0)
-                list.add(g + I18n.format("info.lollipop.max.receive.fe", dg + Text.numFormat(getMaxEnergyReceive())));
+            long ext = getMaxEnergyExtract();
+            long re = getMaxEnergyReceive();
+            if (ext + re > 0) {
+                if (ext == re) {
+                    list.add(g + I18n.format("info.lollipop.max.transfer.fe", TextFormatting.DARK_GRAY + Text.numFormat(ext)));
+                } else {
+                    if (ext > 0)
+                        list.add(g + I18n.format("info.lollipop.max.extract.fe", dg + Text.numFormat(ext)));
+                    if (re > 0)
+                        list.add(g + I18n.format("info.lollipop.max.receive.fe", dg + Text.numFormat(re)));
+                }
+            }
         }
     }
 

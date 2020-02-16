@@ -13,6 +13,7 @@ import owmii.lib.network.IPacket;
 import owmii.lib.util.Dim;
 import owmii.lib.util.Server;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -29,8 +30,10 @@ public class SNextRedstoneModePacket implements IPacket<SNextRedstoneModePacket>
         this(0, BlockPos.ZERO);
     }
 
-    public static void send(World world, BlockPos pos) {
-        Lollipop.NET.toServer(new SNextRedstoneModePacket(Dim.id(world), pos));
+    public static void send(@Nullable World world, BlockPos pos) {
+        if (world != null) {
+            Lollipop.NET.toServer(new SNextRedstoneModePacket(Dim.id(world), pos));
+        }
     }
 
     @Override

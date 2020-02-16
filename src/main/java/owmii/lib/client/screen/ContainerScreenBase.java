@@ -13,6 +13,7 @@ import owmii.lib.block.TileBase;
 import owmii.lib.client.screen.widget.Gauge;
 import owmii.lib.client.screen.widget.IconButton;
 import owmii.lib.inventory.ContainerBase;
+import owmii.lib.inventory.slot.SlotBase;
 import owmii.lib.util.Empty;
 
 public class ContainerScreenBase<T extends TileBase, C extends ContainerBase<T>> extends ContainerScreen<C> {
@@ -133,7 +134,7 @@ public class ContainerScreenBase<T extends TileBase, C extends ContainerBase<T>>
     }
 
     protected boolean hideSlot(Slot slot) {
-        return false;
+        return slot instanceof SlotBase && ((SlotBase) slot).isHidden();
     }
 
     protected ResourceLocation getBackGround() {

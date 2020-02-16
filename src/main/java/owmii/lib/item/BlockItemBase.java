@@ -1,6 +1,8 @@
 package owmii.lib.item;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -30,7 +32,7 @@ public class BlockItemBase<E extends IVariant, T extends Block & IBlock<E>> exte
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void renderByItem(ItemStack stack) {
+    public void renderByItem(ItemStack stack, MatrixStack matrix, IRenderTypeBuffer rtb, int light, int ov) {
         getBlock().renderByItem(stack);
     }
 

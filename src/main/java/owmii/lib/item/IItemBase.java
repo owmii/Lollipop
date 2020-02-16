@@ -1,5 +1,7 @@
 package owmii.lib.item;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -10,7 +12,7 @@ import net.minecraftforge.common.extensions.IForgeItem;
 
 public interface IItemBase extends IForgeItem {
     @OnlyIn(Dist.CLIENT)
-    default void renderByItem(ItemStack stack) {
+    default void renderByItem(ItemStack stack, MatrixStack matrix, IRenderTypeBuffer rtb, int light, int ov) {
     }
 
     default void oneTimeInfo(PlayerEntity player, ItemStack stack, ITextComponent component) {

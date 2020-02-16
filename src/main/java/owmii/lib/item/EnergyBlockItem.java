@@ -7,6 +7,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import owmii.lib.block.AbstractEnergyBlock;
 import owmii.lib.config.IEnergyConfig;
 import owmii.lib.energy.Energy;
+import owmii.lib.energy.SideConfig;
 import owmii.lib.util.IVariant;
 
 import javax.annotation.Nullable;
@@ -21,6 +22,16 @@ public class EnergyBlockItem<E extends IVariant, T extends AbstractEnergyBlock<E
     @SuppressWarnings("unchecked")
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
         IEnergyConfig config = getBlock().getEnergyConfig();
-        return new Energy.Item.Provider(stack, config.getCapacity(getVariant()), config.getTransfer(getVariant()), config.getTransfer(getVariant()));
+        long ext = getTransferType().isOut() ? config.getTransfer(getVariant()) : 0L;
+        long rec = getTransferType().isIn() ? config.getTransfer(getVariant()) : 0L;
+        return new Energy.Item.Provider(stack, config.getCapacity(getVariant()), ext, rec);
+    }
+
+    public IEnergyConfig<E> getEnergyConfig() {
+        return getBlock().getEnergyConfig();
+    }
+
+    public SideConfig.Type getTransferType() {
+        return getBlock().getTransferType();
     }
 }

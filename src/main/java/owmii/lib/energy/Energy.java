@@ -56,12 +56,21 @@ public class Energy implements IEnergyStorage {
         return new Energy(capacity, maxExtract, maxReceive);
     }
 
+    public void readCapacity(CompoundNBT nbt) {
+        this.capacity = nbt.getLong("EnergyCapacity");
+    }
+
+    public CompoundNBT writeCapacity(CompoundNBT nbt) {
+        nbt.putLong("EnergyCapacity", this.capacity);
+        return nbt;
+    }
+
     public void readStored(CompoundNBT nbt) {
-        this.stored = nbt.getLong("StoredFEnergy");
+        this.stored = nbt.getLong("StoredEnergy");
     }
 
     public CompoundNBT writeStored(CompoundNBT nbt) {
-        nbt.putLong("StoredFEnergy", this.stored);
+        nbt.putLong("StoredEnergy", this.stored);
         return nbt;
     }
 
@@ -165,6 +174,18 @@ public class Energy implements IEnergyStorage {
         return this;
     }
 
+    public Energy setMaxTransfer() {
+        this.maxReceive = MAX;
+        this.maxExtract = MAX;
+        return this;
+    }
+
+    public Energy setTransfer(long transfer) {
+        this.maxReceive = transfer;
+        this.maxExtract = transfer;
+        return this;
+    }
+
     @Override
     public int getEnergyStored() {
         return Safe.integer(this.stored);
@@ -250,7 +271,7 @@ public class Energy implements IEnergyStorage {
             @Override
             public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
                 return cap == CapabilityEnergy.ENERGY ? LazyOptional.of(() -> {
-                    return new Energy.Item(this.stack, this.capacity, this.maxExtract, this.maxReceive);
+                    return new Item(this.stack, this.capacity, this.maxExtract, this.maxReceive);
                 }).cast() : LazyOptional.empty();
             }
         }

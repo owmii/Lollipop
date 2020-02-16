@@ -5,6 +5,8 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +15,8 @@ import java.util.Collection;
 import java.util.function.Function;
 
 public class Config {
+    public static final Marker MARKER = new MarkerManager.Log4jMarker("Config");
+
     public static String createConfigDir(String path) {
         try {
             Path configDir = Paths.get(FMLPaths.CONFIGDIR.get()

@@ -5,12 +5,15 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.util.ResourceLocation;
+
+import java.util.function.Function;
 
 public class CubeModel extends Model {
     private final ModelRenderer cube;
 
-    public CubeModel(int pixels) {
-        super(RenderType::entitySolid);
+    public CubeModel(int pixels, Function<ResourceLocation, RenderType> type) {
+        super(type);
         this.textureWidth = pixels * 4;
         this.textureHeight = pixels * 2;
         this.cube = new ModelRenderer(this, 0, 0);
@@ -21,16 +24,8 @@ public class CubeModel extends Model {
         this.cube.mirror = true;
     }
 
-    public void render() {
-        render(0.0625f);
-    }
-
-    public void render(float scale) {
-        // this.cube.render(scale); TODO
-    }
-
     @Override
-    public void render(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_, float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
-
+    public void render(MatrixStack matrix, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        this.cube.render(matrix, buffer, packedLight, packedOverlay);
     }
 }
