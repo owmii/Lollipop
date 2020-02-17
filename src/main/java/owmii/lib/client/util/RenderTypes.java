@@ -49,6 +49,14 @@ public class RenderTypes extends RenderType {
         return makeType("blend_bo_dept", DefaultVertexFormats.POSITION_TEX, 7, 256, true, true, state);
     }
 
+    public static RenderType getTextBlended(ResourceLocation locationIn) {
+        State state = State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false))
+                .alpha(DEFAULT_ALPHA)
+                .transparency(BLENDED)
+                .lightmap(LIGHTMAP_DISABLED).build(false);
+        return makeType("text_blended", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, 7, 256, false, true, state);
+    }
+
     public RenderTypes(String s, VertexFormat format, int i, int i1, boolean b, boolean b1, Runnable runnable, Runnable runnable1) {
         super(s, format, i, i1, b, b1, runnable, runnable1);
     }
