@@ -185,8 +185,10 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
     }
 
     public void onRemoved(World world, BlockState state, BlockState newState, boolean isMoving) {
-        if (!keepInventory() || !isNBTStorable()) {
-            getInventory().drop(world, this.pos);
+        if (state.getBlock() != newState.getBlock()) {
+            if (!keepInventory() || !isNBTStorable()) {
+                getInventory().drop(world, this.pos);
+            }
         }
     }
 

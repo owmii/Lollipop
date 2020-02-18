@@ -24,6 +24,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
@@ -38,6 +40,8 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public abstract class AbstractBlock<E extends IVariant> extends Block implements IBlock<E> {
+
+    public static final VoxelShape SEMI_FULL_SHAPE = makeCuboidShape(0.01D, 0.01D, 0.01D, 15.99D, 15.99D, 15.99D);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
@@ -51,6 +55,15 @@ public abstract class AbstractBlock<E extends IVariant> extends Block implements
     public AbstractBlock(Properties properties, E variant) {
         super(properties);
         this.variant = variant;
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return semiFullShape() ? SEMI_FULL_SHAPE : super.getShape(state, worldIn, pos, context);
+    }
+
+    protected boolean semiFullShape() {
+        return false;
     }
 
     protected void setDefaultState() {
@@ -70,6 +83,11 @@ public abstract class AbstractBlock<E extends IVariant> extends Block implements
         }
         consumer.accept(state);
         setDefaultState(state);
+    }
+
+    @Override
+    public boolean isTransparent(BlockState state) {
+        return !isSolid(state);
     }
 
     @Override
