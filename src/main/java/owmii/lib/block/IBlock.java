@@ -1,6 +1,8 @@
 package owmii.lib.block;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -39,7 +41,7 @@ public interface IBlock<E extends IVariant> extends IForgeBlock {
     }
 
     @OnlyIn(Dist.CLIENT)
-    default void renderByItem(ItemStack stack) {
+    default void renderByItem(ItemStack stack, MatrixStack matrix, IRenderTypeBuffer rtb, int light, int ov) {
     }
 
     default ItemStack toStack() {

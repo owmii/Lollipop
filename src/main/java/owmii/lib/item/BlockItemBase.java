@@ -33,7 +33,7 @@ public class BlockItemBase<E extends IVariant, T extends Block & IBlock<E>> exte
     @Override
     @OnlyIn(Dist.CLIENT)
     public void renderByItem(ItemStack stack, MatrixStack matrix, IRenderTypeBuffer rtb, int light, int ov) {
-        getBlock().renderByItem(stack);
+        getBlock().renderByItem(stack, matrix, rtb, light, ov);
     }
 
     public E getVariant() {
