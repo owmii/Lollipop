@@ -132,7 +132,10 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
 
     @Override
     protected void drawForeground(int mouseX, int mouseY) {
-        super.drawForeground(mouseX, mouseY);
+        String s = this.title.getFormattedText();
+        int sw = this.font.getStringWidth(s);
+        this.font.drawStringWithShadow(s, -(sw / 2) + (this.xSize / 2), -14.0F, 0x777777);
+
     }
 
     @Override
@@ -153,18 +156,6 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
             bindTexture(getBackGround());
             Draw.gaugeV(this.x + 4, this.y + 4, 10, 64, 0, 164, energy);
         }
-    }
-
-
-    @Override
-    public void drawSlot(Slot slot) {
-        if (hideSlot(slot))
-            return;
-        bindTexture(getSlotBackGround());
-        if (slot instanceof SlotBase) {
-            ((SlotBase) slot).drawBG(this);
-        }
-        super.drawSlot(slot);
     }
 
     @Override

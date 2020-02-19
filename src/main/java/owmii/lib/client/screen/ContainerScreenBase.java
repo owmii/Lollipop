@@ -95,6 +95,21 @@ public class ContainerScreenBase<T extends TileBase, C extends ContainerBase<T>>
     @Override
     protected final void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         drawBackground(partialTicks, mouseX, mouseY);
+
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef((float) this.x, (float) this.y, 0.0F);
+        for (int i1 = 0; i1 < this.container.inventorySlots.size(); ++i1) {
+            Slot slot = this.container.inventorySlots.get(i1);
+            if (slot.isEnabled()) {
+                if (hideSlot(slot))
+                    return;
+                bindTexture(getSlotBackGround());
+                if (slot instanceof SlotBase) {
+                    ((SlotBase) slot).drawBG(this);
+                }
+            }
+        }
+        RenderSystem.popMatrix();
     }
 
     protected void drawBackground(float partialTicks, int mouseX, int mouseY) {
@@ -113,10 +128,10 @@ public class ContainerScreenBase<T extends TileBase, C extends ContainerBase<T>>
     }
 
     @Override
-    public void drawSlot(Slot slotIn) {
-        if (hideSlot(slotIn))
+    public void drawSlot(Slot slot) {
+        if (hideSlot(slot))
             return;
-        super.drawSlot(slotIn);
+        super.drawSlot(slot);
     }
 
     @Override
