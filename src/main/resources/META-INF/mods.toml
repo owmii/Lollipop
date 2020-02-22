@@ -15,6 +15,6 @@ A Library mod.
 [[dependencies.lollipop]]
     modId="forge"
     mandatory=true
-    versionRange="[31.1.12,)"
+    versionRange="[31.1.14,)"
     ordering="NONE"
     side="BOTH"

@@ -26,6 +26,8 @@
   "info.lollipop.max.transfer.fe": "Max I/O: %s FE/t",
   "info.lollipop.max.generates": "Generates: %s FE/t",
   "info.lollipop.buffer": "Buffer: %s",
+  "info.lollipop.full": "Full",
+  "info.lollipop.empty": "Empty",
   "info.lollipop.amount": "Amount: %s",
   "info.lollipop.fluid": "Fluid: %s",
   "info.lollipop.fluid.stored": "Stored: %s/%s mb",

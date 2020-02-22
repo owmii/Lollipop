@@ -24,6 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
@@ -201,6 +202,23 @@ public abstract class AbstractBlock<E extends IVariant> extends Block implements
         }
 
         return super.updatePostPlacement(state, facing, facingState, world, currentPos, facingPos);
+    }
+
+    @Override
+    public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
+        TileEntity te = world.getTileEntity(pos);
+        ItemStack stack = new ItemStack(this);
+        if (te instanceof TileBase) {
+            TileBase tile = (TileBase) te;
+            CompoundNBT tag = Stack.getTagOrEmpty(stack);
+            CompoundNBT nbt = tile.writeStorable(new CompoundNBT());
+            if (!nbt.isEmpty()) {
+                tag.put(Data.TAG_TE_STORABLE, nbt);
+                stack.setTag(tag);
+            }
+            if (tile.hasCustomName()) stack.setDisplayName(tile.getCustomName());
+        }
+        return stack;
     }
 
     @Override

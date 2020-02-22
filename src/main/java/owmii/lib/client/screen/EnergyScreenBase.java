@@ -20,7 +20,6 @@ import owmii.lib.inventory.EnergyContainerBase;
 import owmii.lib.inventory.slot.SlotBase;
 import owmii.lib.network.packets.SNextEnergyConfigPacket;
 import owmii.lib.network.packets.SNextRedstoneModePacket;
-import owmii.lib.util.Empty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +32,9 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
     private static final ResourceLocation GUI_SLOT = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/energy_slots.png");
     public static final ResourceLocation GUI_BUFFER = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/buffer.png");
     protected IconButton[] configButtons = new IconButton[6];
-    protected IconButton configButtonAll = Empty.ICON_BUTTON;
-    protected IconButton showConfigButton = Empty.ICON_BUTTON;
-    protected IconButton redStoneButton = Empty.ICON_BUTTON;
+    protected IconButton configButtonAll = ICON_BUTTON;
+    protected IconButton showConfigButton = ICON_BUTTON;
+    protected IconButton redStoneButton = ICON_BUTTON;
     protected boolean configVisible;
 
     public EnergyScreenBase(C container, PlayerInventory playerInventory, ITextComponent name) {

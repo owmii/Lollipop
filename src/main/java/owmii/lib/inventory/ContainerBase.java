@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 public class ContainerBase<I extends TileBase> extends Container {
     protected final I te;
 
-    protected ContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, I te) {
+    public ContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, I te) {
         super(containerType, id);
         this.te = te;
         this.te.setContainerOpen(true);
@@ -28,7 +28,7 @@ public class ContainerBase<I extends TileBase> extends Container {
         addContainer(playerInventory, te);
     }
 
-    protected ContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerBase(@Nullable ContainerType<?> containerType, int id, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(containerType, id, playerInventory, getInventory(playerInventory, buffer.readBlockPos()));
         this.te.setContainerOpen(true);
         this.te.markDirtyAndSync();
