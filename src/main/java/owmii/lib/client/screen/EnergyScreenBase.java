@@ -27,9 +27,8 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends EnergyContainerBase<T>> extends ContainerScreenBase<T, C> {
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/energy.png");
-    private static final ResourceLocation GUI_MACHINE = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/blank.png");
-    private static final ResourceLocation GUI_WIDGET = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/energy_widget.png");
-    private static final ResourceLocation GUI_SLOT = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/energy_slots.png");
+    private static final ResourceLocation GUI_MACHINE = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/energy_blank.png");
+    private static final ResourceLocation GUI_WIDGET = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/widget.png");
     public static final ResourceLocation GUI_BUFFER = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/buffer.png");
     protected IconButton[] configButtons = new IconButton[6];
     protected IconButton configButtonAll = ICON_BUTTON;
@@ -187,10 +186,5 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
     @Override
     protected ResourceLocation getBackGround() {
         return GUI_TEXTURE;
-    }
-
-    @Override
-    protected ResourceLocation getSlotBackGround() {
-        return GUI_SLOT;
     }
 }

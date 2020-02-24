@@ -7,6 +7,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class Stack {
+    public static boolean isNBTEqual(ItemStack stack, ItemStack stack1) {
+        return getTagOrEmpty(stack).equals(getTagOrEmpty(stack1));
+    }
+
     public static CompoundNBT getTagOrEmptyChild(ItemStack stack, String key) {
         CompoundNBT nbt = stack.getChildTag(key);
         return nbt != null ? nbt : new CompoundNBT();

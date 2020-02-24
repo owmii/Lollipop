@@ -122,15 +122,20 @@ public class ContainerScreenBase<T extends TileBase, C extends ContainerBase<T>>
     public void drawSlot(Slot slot) {
         if (hideSlot(slot))
             return;
-        bindTexture(getSlotBackGround());
         if (slot instanceof SlotBase) {
             SlotBase slotBase = (SlotBase) slot;
             if (slotBase.drawBg || slotBase.drawOv) {
                 RenderSystem.pushMatrix();
                 RenderSystem.enableBlend();
                 RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-                if (slotBase.drawBg) blit(slotBase.xPos - 1, slotBase.yPos - 1, slotBase.bgX, slotBase.bgY, 18, 18);
-                if (slotBase.drawOv) blit(slotBase.xPos - 1, slotBase.yPos - 1, slotBase.ovX, slotBase.ovY, 18, 18);
+                if (slotBase.drawBg) {
+                    bindTexture(slotBase.bg.getLocation());
+                    blit(slotBase.xPos - 1, slotBase.yPos - 1, 0, 0, 18, 18, 18, 18);
+                }
+                if (slotBase.drawOv) {
+                    bindTexture(slotBase.ov.getLocation());
+                    blit(slotBase.xPos - 1, slotBase.yPos - 1, 0, 0, 18, 18, 18, 18);
+                }
                 RenderSystem.disableBlend();
                 RenderSystem.popMatrix();
             }
@@ -158,10 +163,6 @@ public class ContainerScreenBase<T extends TileBase, C extends ContainerBase<T>>
 
     protected ResourceLocation getBackGround() {
         return DEFAULT_BACKGROUND;
-    }
-
-    protected ResourceLocation getSlotBackGround() {
-        return Empty.LOCATION;
     }
 
     //TODO

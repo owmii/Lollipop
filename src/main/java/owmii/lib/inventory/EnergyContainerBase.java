@@ -5,6 +5,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;
 import owmii.lib.block.TileBase;
 import owmii.lib.inventory.slot.SlotBase;
+import owmii.lib.inventory.slot.SlotOverlay;
 
 import javax.annotation.Nullable;
 
@@ -19,7 +20,7 @@ public class EnergyContainerBase<I extends TileBase.EnergyStorage> extends Conta
 
     protected void addChargingInv(I te, int x, int y) {
         for (int i = 0; i < te.getChargingSlots(); i++) {
-            addSlot(new SlotBase(te.getInventory(), i, x + (i * 20), y).bg(0, 0).ov(18, 0));
+            addSlot(new SlotBase(te.getInventory(), i, x + (i * 20), y).bg(SlotOverlay.SLOT).ov(SlotOverlay.ENERGY));
         }
     }
 

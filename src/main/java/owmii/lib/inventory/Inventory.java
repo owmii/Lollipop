@@ -18,6 +18,10 @@ public class Inventory extends ItemStackHandler {
     @Nullable
     private final TileBase tile;
 
+    public Inventory(int size) {
+        this(size, null);
+    }
+
     Inventory(int size, @Nullable TileBase tile) {
         super(size);
         this.tile = tile;
@@ -41,7 +45,7 @@ public class Inventory extends ItemStackHandler {
 
     public void deserializeNBT(CompoundNBT nbt) {
         if (isBlank()) return;
-        nbt.putInt("Size", this.getSlots()); // TODO remove : 12/12/2019
+        nbt.putInt("Size", getSlots()); // TODO remove : 12/12/2019
         super.deserializeNBT(nbt);
     }
 
@@ -108,6 +112,15 @@ public class Inventory extends ItemStackHandler {
             }
         }
         return true;
+    }
+
+    public boolean hasEmptySlot() {
+        for (ItemStack stack : this.stacks) {
+            if (stack.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isSlotEmpty(int slot) {

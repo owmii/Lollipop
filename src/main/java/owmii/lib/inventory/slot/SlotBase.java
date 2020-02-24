@@ -4,11 +4,9 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class SlotBase extends SlotItemHandler {
-    public int bgX;
-    public int bgY;
+    public SlotOverlay bg = SlotOverlay.SLOT;
+    public SlotOverlay ov = SlotOverlay.FILTER;
     public boolean drawBg;
-    public int ovX;
-    public int ovY;
     public boolean drawOv;
     public boolean hide;
 
@@ -17,16 +15,14 @@ public class SlotBase extends SlotItemHandler {
         super(itemHandler, index, xPosition, yPosition);
     }
 
-    public SlotBase bg(int bgX, int bgY) {
-        this.bgX = bgX;
-        this.bgY = bgY;
+    public SlotBase bg(SlotOverlay bg) {
+        this.bg = bg;
         this.drawBg = true;
         return this;
     }
 
-    public SlotBase ov(int ovX, int ovY) {
-        this.ovX = ovX;
-        this.ovY = ovY;
+    public SlotBase ov(SlotOverlay ov) {
+        this.ov = ov;
         this.drawOv = true;
         return this;
     }

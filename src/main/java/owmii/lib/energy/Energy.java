@@ -298,7 +298,7 @@ public class Energy implements IEnergyStorage {
     }
 
     public static LazyOptional<IEnergyStorage> get(ItemStack stack) {
-        return stack.getCapability(CapabilityEnergy.ENERGY, null);
+        return !stack.isEmpty() ? stack.getCapability(CapabilityEnergy.ENERGY, null) : LazyOptional.empty();
     }
 
     public static int extract(@Nullable TileEntity tile, Direction direction, long energy, boolean simulate) {
