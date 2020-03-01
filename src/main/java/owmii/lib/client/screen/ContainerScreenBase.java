@@ -7,30 +7,26 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import owmii.lib.Lollipop;
-import owmii.lib.block.TileBase;
 import owmii.lib.client.screen.widget.Gauge;
 import owmii.lib.client.screen.widget.IconButton;
 import owmii.lib.client.screen.widget.TextField;
-import owmii.lib.inventory.ContainerBase;
 import owmii.lib.inventory.slot.SlotBase;
 import owmii.lib.util.Empty;
 
-public class ContainerScreenBase<T extends TileBase, C extends ContainerBase<T>> extends ContainerScreen<C> {
+public class ContainerScreenBase<C extends Container> extends ContainerScreen<C> {
     public static final ResourceLocation DEFAULT_BACKGROUND = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/background.png");
-    protected Minecraft mc = Minecraft.getInstance();
+    protected final Minecraft mc = Minecraft.getInstance();
     public int x, y;
-
-    protected final T te;
 
     public ContainerScreenBase(C container, PlayerInventory playerInventory, ITextComponent name) {
         super(container, playerInventory, name);
-        this.te = container.getTile();
     }
 
     @Override
@@ -127,7 +123,6 @@ public class ContainerScreenBase<T extends TileBase, C extends ContainerBase<T>>
             if (slotBase.drawBg || slotBase.drawOv) {
                 RenderSystem.pushMatrix();
                 RenderSystem.enableBlend();
-                RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
                 if (slotBase.drawBg) {
                     bindTexture(slotBase.bg.getLocation());
                     blit(slotBase.xPos - 1, slotBase.yPos - 1, 0, 0, 18, 18, 18, 18);

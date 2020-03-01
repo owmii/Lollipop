@@ -6,8 +6,11 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.apache.commons.lang3.tuple.Pair;
 import owmii.lib.block.TileBase;
+import owmii.lib.util.lambda.Checker;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,7 +48,7 @@ public class Inventory extends ItemStackHandler {
 
     public void deserializeNBT(CompoundNBT nbt) {
         if (isBlank()) return;
-        nbt.putInt("Size", getSlots()); // TODO remove : 12/12/2019
+        nbt.putInt("Size", getSlots());
         super.deserializeNBT(nbt);
     }
 
@@ -56,6 +59,7 @@ public class Inventory extends ItemStackHandler {
 
     public Inventory set(int size) {
         this.stacks = NonNullList.withSize(size, ItemStack.EMPTY);
+        onContentsChanged(0);
         return this;
     }
 
@@ -176,10 +180,82 @@ public class Inventory extends ItemStackHandler {
         return ItemStack.EMPTY;
     }
 
+    public Pair<Integer, ItemStack> firstNonEmpty() {
+        return firstNonEmpty(stack -> true);
+    }
+
+    public Pair<Integer, ItemStack> lastNonEmpty() {
+        return lastNonEmpty(stack -> true);
+    }
+
+    public Pair<Integer, ItemStack> firstNonEmpty(Checker<ItemStack> filter) {
+        for (int i = 0; i < getSlots(); i++) {
+            ItemStack stack = getStackInSlot(i);
+            if (!stack.isEmpty() && filter.check(stack))
+                return Pair.of(i, stack);
+        }
+        return Pair.of(0, ItemStack.EMPTY);
+    }
+
+    public Pair<Integer, ItemStack> lastNonEmpty(Checker<ItemStack> filter) {
+        for (int i = getSlots() - 1; i >= 0; i--) {
+            ItemStack stack = getStackInSlot(i);
+            if (!stack.isEmpty() && filter.check(stack))
+                return Pair.of(i, stack);
+        }
+        return Pair.of(0, ItemStack.EMPTY);
+    }
+
     public void drop(World world, BlockPos pos) {
         this.stacks.forEach(stack -> {
             InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), stack);
         });
         clear();
+    }
+
+    public void drop(int index, World world, BlockPos pos) {
+        ItemStack stack = getStackInSlot(index);
+        if (!stack.isEmpty()) {
+            InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+            setStack(index, ItemStack.EMPTY);
+        }
+    }
+
+    public static Inventory from(IItemHandler handler) {
+        Inventory inventory = new Inventory(handler.getSlots()) {
+            @Override
+            public ItemStack getStackInSlot(int slot) {
+                return handler.getStackInSlot(slot);
+            }
+
+            @Override
+            public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+                return handler.insertItem(slot, stack, simulate);
+            }
+
+            @Override
+            public ItemStack extractItem(int slot, int amount, boolean simulate) {
+                return handler.extractItem(slot, amount, true);
+            }
+
+            @Override
+            public int getSlotLimit(int slot) {
+                return handler.getSlotLimit(slot);
+            }
+
+            @Override
+            public boolean isItemValid(int slot, ItemStack stack) {
+                return handler.isItemValid(slot, stack);
+            }
+        };
+        return inventory;
+    }
+
+    public static NonNullList<ItemStack> toList(IItemHandler handler) {
+        NonNullList<ItemStack> stacks = NonNullList.withSize(handler.getSlots(), ItemStack.EMPTY);
+        for (int i = 0; i < handler.getSlots(); i++) {
+            stacks.set(i, handler.getStackInSlot(i));
+        }
+        return stacks;
     }
 }

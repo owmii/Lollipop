@@ -27,6 +27,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
@@ -96,11 +97,6 @@ public abstract class AbstractBlock<E extends IVariant> extends Block implements
         return this.variant;
     }
 
-    @Nullable
-    public <T extends TileBase> ContainerBase getContainer(int id, PlayerInventory inventory, TileBase te) {
-        return null;
-    }
-
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
         TileEntity tile = world.getTileEntity(pos);
@@ -130,8 +126,19 @@ public abstract class AbstractBlock<E extends IVariant> extends Block implements
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof INamedContainerProvider) {
-            INamedContainerProvider provider = (INamedContainerProvider) tile;
+        if (tile instanceof TileBase) {
+            INamedContainerProvider provider = new INamedContainerProvider() {
+                @Override
+                public ITextComponent getDisplayName() {
+                    return new ItemStack(AbstractBlock.this).getDisplayName();
+                }
+
+                @Nullable
+                @Override
+                public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                    return getContainer(i, playerInventory, (TileBase) tile, result);
+                }
+            };
             Container container = provider.createMenu(0, player.inventory, player);
             if (container != null) {
                 if (player instanceof ServerPlayerEntity) {
@@ -144,6 +151,11 @@ public abstract class AbstractBlock<E extends IVariant> extends Block implements
             }
         }
         return super.onBlockActivated(state, world, pos, player, hand, result);
+    }
+
+    @Nullable
+    public <T extends TileBase> ContainerBase getContainer(int id, PlayerInventory inventory, TileBase te, BlockRayTraceResult result) {
+        return null;
     }
 
     protected void additionalGuiData(PacketBuffer buffer, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {

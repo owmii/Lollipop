@@ -10,6 +10,8 @@ public class SlotOverlay {
     public static SlotOverlay BINDING_CARD = new SlotOverlay("ov_card");
     public static SlotOverlay FILTER = new SlotOverlay("ov_filter");
     public static SlotOverlay SPEED_UP = new SlotOverlay("ov_speed_up");
+    public static SlotOverlay STACK_UP = new SlotOverlay("ov_stack_up");
+    public static SlotOverlay BUCKET_UP = new SlotOverlay("ov_bucket_up");
 
     private ResourceLocation location;
 

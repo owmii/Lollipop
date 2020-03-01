@@ -4,10 +4,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -44,7 +40,7 @@ import java.util.stream.IntStream;
 
 import static owmii.lib.block.AbstractBlock.LIT;
 
-public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends TileEntity implements INamedContainerProvider {
+public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends TileEntity {
     protected final Inventory inv = Inventory.createBlank(this);
     private final LazyOptional<Inventory> holder = LazyOptional.of(() -> this.inv);
     protected E variant;
@@ -234,7 +230,6 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
         return this.customName != null;
     }
 
-    @Override
     public ITextComponent getDisplayName() {
         return getName();
     }
@@ -268,12 +263,6 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             }
         }
         return false;
-    }
-
-    @Nullable
-    @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return getBlock().getContainer(i, playerInventory, this);
     }
 
     @Override

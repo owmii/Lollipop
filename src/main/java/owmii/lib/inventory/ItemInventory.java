@@ -13,7 +13,7 @@ public class ItemInventory extends Inventory {
     }
 
     @Override
-    protected void onContentsChanged(int slot) {
+    public void onContentsChanged(int slot) {
         this.stack.getOrCreateTag().put("InventoryStacks", serializeNBT());
     }
 

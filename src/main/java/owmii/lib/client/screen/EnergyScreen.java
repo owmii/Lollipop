@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends EnergyContainerBase<T>> extends ContainerScreenBase<T, C> {
+public class EnergyScreen<T extends TileBase.EnergyStorage, C extends EnergyContainerBase<T>> extends TileContainerScreen<T, C> {
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/energy.png");
     private static final ResourceLocation GUI_MACHINE = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/energy_blank.png");
     private static final ResourceLocation GUI_WIDGET = new ResourceLocation(Lollipop.MOD_ID, "textures/gui/container/widget.png");
@@ -36,7 +36,7 @@ public class EnergyScreenBase<T extends TileBase.EnergyStorage, C extends Energy
     protected IconButton redStoneButton = ICON_BUTTON;
     protected boolean configVisible;
 
-    public EnergyScreenBase(C container, PlayerInventory playerInventory, ITextComponent name) {
+    public EnergyScreen(C container, PlayerInventory playerInventory, ITextComponent name) {
         super(container, playerInventory, name);
         this.xSize = 195;
         this.ySize = 164;

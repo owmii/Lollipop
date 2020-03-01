@@ -1,17 +1,15 @@
 package owmii.lib.client.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Optional;
 
-@OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class Client {
     public static long ticks;
@@ -23,11 +21,11 @@ public class Client {
         }
     }
 
-    public static Optional<ClientPlayerEntity> player() {
+    public static Optional<PlayerEntity> player() {
         return Optional.ofNullable(get().player);
     }
 
-    public static Optional<ClientWorld> world() {
+    public static Optional<World> world() {
         return Optional.ofNullable(get().world);
     }
 

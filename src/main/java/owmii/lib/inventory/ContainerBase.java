@@ -2,7 +2,6 @@ package owmii.lib.inventory;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
@@ -12,7 +11,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 import owmii.lib.block.TileBase;
 
 import javax.annotation.Nullable;
@@ -71,14 +69,14 @@ public class ContainerBase<I extends TileBase> extends Container {
         if (slot != null && slot.getHasStack()) {
             ItemStack stack1 = slot.getStack();
             stack = stack1.copy();
-            if (index < this.te.getInventory().getSlots()) {
-                if (!this.mergeItemStack(stack1, this.te.getInventory().getSlots(), this.inventorySlots.size(), true)) {
+            int size = this.te.getInventory().getSlots();
+            if (index < size) {
+                if (!mergeItemStack(stack1, size, this.inventorySlots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(stack1, 0, this.te.getInventory().getSlots(), false)) {
+            } else if (!mergeItemStack(stack1, 0, size, false)) {
                 return ItemStack.EMPTY;
             }
-
             if (stack1.isEmpty()) {
                 slot.putStack(ItemStack.EMPTY);
             } else {
@@ -86,16 +84,6 @@ public class ContainerBase<I extends TileBase> extends Container {
             }
         }
         return stack;
-    }
-
-    protected boolean refresh(PlayerEntity player) {
-        if (player instanceof ServerPlayerEntity) {
-            if (this.te.createMenu(0, player.inventory, player) != null) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, this.te, this.te.getPos());
-                return true;
-            }
-        }
-        return false;
     }
 
     public I getTile() {

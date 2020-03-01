@@ -7,6 +7,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class Stack {
+    public static boolean isFull(ItemStack stack) {
+        return stack.getCount() >= stack.getMaxStackSize();
+    }
+
     public static boolean isNBTEqual(ItemStack stack, ItemStack stack1) {
         return getTagOrEmpty(stack).equals(getTagOrEmpty(stack1));
     }

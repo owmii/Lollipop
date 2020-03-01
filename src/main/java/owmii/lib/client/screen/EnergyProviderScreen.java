@@ -5,8 +5,8 @@ import net.minecraft.util.text.ITextComponent;
 import owmii.lib.block.TileBase;
 import owmii.lib.inventory.EnergyContainerBase;
 
-public class EnergyProviderScreenBase<T extends TileBase.EnergyProvider, C extends EnergyContainerBase<T>> extends EnergyScreenBase<T, C> {
-    public EnergyProviderScreenBase(C container, PlayerInventory playerInventory, ITextComponent name) {
+public class EnergyProviderScreen<T extends TileBase.EnergyProvider, C extends EnergyContainerBase<T>> extends EnergyScreen<T, C> {
+    public EnergyProviderScreen(C container, PlayerInventory playerInventory, ITextComponent name) {
         super(container, playerInventory, name);
     }
 }
