@@ -82,6 +82,7 @@ public class SideConfig {
     public void setType(@Nullable Direction side, Type type) {
         if (side == null || this.storage.getTransferType().isOff() || !this.storage.isEnergyPresent(side)) return;
         this.sideTypes[side.getIndex()] = type;
+        this.storage.markDirty();
     }
 
     public enum Type {

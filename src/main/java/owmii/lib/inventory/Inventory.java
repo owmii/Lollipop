@@ -3,9 +3,13 @@ package owmii.lib.inventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
@@ -118,6 +122,15 @@ public class Inventory extends ItemStackHandler {
         return true;
     }
 
+    public boolean isFull() {
+        for (ItemStack stack : this.stacks) {
+            if (stack.getCount() < stack.getMaxStackSize()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean hasEmptySlot() {
         for (ItemStack stack : this.stacks) {
             if (stack.isEmpty()) {
@@ -189,18 +202,34 @@ public class Inventory extends ItemStackHandler {
     }
 
     public Pair<Integer, ItemStack> firstNonEmpty(Checker<ItemStack> filter) {
+        return firstNonEmpty(filter, i -> true);
+    }
+
+    public Pair<Integer, ItemStack> firstNonEmptySlot(Checker<Integer> index) {
+        return firstNonEmpty(stack -> true, index);
+    }
+
+    public Pair<Integer, ItemStack> firstNonEmpty(Checker<ItemStack> filter, Checker<Integer> index) {
         for (int i = 0; i < getSlots(); i++) {
             ItemStack stack = getStackInSlot(i);
-            if (!stack.isEmpty() && filter.check(stack))
+            if (!stack.isEmpty() && filter.check(stack) && index.check(i))
                 return Pair.of(i, stack);
         }
         return Pair.of(0, ItemStack.EMPTY);
     }
 
     public Pair<Integer, ItemStack> lastNonEmpty(Checker<ItemStack> filter) {
+        return lastNonEmpty(filter, i -> true);
+    }
+
+    public Pair<Integer, ItemStack> lastNonEmptySlot(Checker<Integer> index) {
+        return lastNonEmpty(stack -> true, index);
+    }
+
+    public Pair<Integer, ItemStack> lastNonEmpty(Checker<ItemStack> filter, Checker<Integer> index) {
         for (int i = getSlots() - 1; i >= 0; i--) {
             ItemStack stack = getStackInSlot(i);
-            if (!stack.isEmpty() && filter.check(stack))
+            if (!stack.isEmpty() && filter.check(stack) && index.check(i))
                 return Pair.of(i, stack);
         }
         return Pair.of(0, ItemStack.EMPTY);
@@ -257,5 +286,10 @@ public class Inventory extends ItemStackHandler {
             stacks.set(i, handler.getStackInSlot(i));
         }
         return stacks;
+    }
+
+    public static LazyOptional<IItemHandler> get(World world, BlockPos pos, Direction side) {
+        TileEntity te = world.getTileEntity(pos);
+        return te != null ? te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side) : LazyOptional.empty();
     }
 }

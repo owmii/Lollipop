@@ -7,15 +7,15 @@ public interface IEnergyConfig<E extends IVariant> extends IConfig {
 
     long getTransfer(E variant);
 
-    static IEnergyConfig getEmpty() {
-        return new IEnergyConfig() {
+    static IEnergyConfig<IVariant.Single> getEmpty() {
+        return new IEnergyConfig<IVariant.Single>() {
             @Override
-            public long getCapacity(IVariant variant) {
+            public long getCapacity(IVariant.Single variant) {
                 return 0;
             }
 
             @Override
-            public long getTransfer(IVariant variant) {
+            public long getTransfer(IVariant.Single variant) {
                 return 0;
             }
 

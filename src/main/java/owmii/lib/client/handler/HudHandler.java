@@ -33,11 +33,7 @@ public class HudHandler {
                     Vec3d sHit = result.getHitVec();
                     BlockState state = world.getBlockState(pos);
                     if (state.getBlock() instanceof IHud) {
-                        for (Hand hand : Hand.values()) {
-                            if (((IHud) state.getBlock()).renderHud(state, world, pos, player, hand, result)) {
-                                break;
-                            }
-                        }
+                        ((IHud) state.getBlock()).renderHud(state, world, pos, player, result, world.getTileEntity(pos));
                     }
 
                     for (Hand hand : Hand.values()) {

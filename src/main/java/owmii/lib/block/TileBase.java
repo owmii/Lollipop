@@ -312,26 +312,28 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             if (isRemote()) return false;
             boolean flag = this.nextBuff > 0;
             boolean flag1 = super.postTicks(world);
-            if (defaultGeneration() > 0) {
-                long toGenerate = Math.min(defaultGeneration(), getEnergyStorage().getEmpty());
-                if (this.nextBuff > toGenerate) {
-                    this.nextBuff -= toGenerate;
-                    if (this.nextBuff <= 0) {
+            if (doWorkingTicks(world)) {
+                if (defaultGeneration() > 0) {
+                    long toGenerate = Math.min(defaultGeneration(), getEnergyStorage().getEmpty());
+                    if (this.nextBuff > toGenerate) {
+                        this.nextBuff -= toGenerate;
+                        if (this.nextBuff <= 0) {
+                            this.buffer = 0;
+                        }
+                    } else {
+                        toGenerate = this.nextBuff;
+                        this.nextBuff = 0;
                         this.buffer = 0;
                     }
-                } else {
-                    toGenerate = this.nextBuff;
-                    this.nextBuff = 0;
-                    this.buffer = 0;
+                    generate(world);
+                    if (toGenerate > 0) {
+                        produceEnergy(toGenerate);
+                        flag1 = true;
+                    }
                 }
-                generate(world);
-                if (toGenerate > 0) {
-                    produceEnergy(toGenerate);
+                if (switchLitProp(flag, this.nextBuff > 0, false)) {
                     flag1 = true;
                 }
-            }
-            if (switchLitProp(flag, this.nextBuff > 0, false)) { // TODO
-                flag1 = true;
             }
             return flag1;
         }
@@ -373,10 +375,24 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
         }
     }
 
+    public static class Machine<E extends IVariant, B extends AbstractMachineBlock<E>> extends EnergyStorage<E, B> {
+        public Machine(TileEntityType<?> tileEntityType, E variant) {
+            super(tileEntityType, variant);
+        }
+
+        @Override
+        public long getMaxEnergyExtract() {
+            return 0L;
+        }
+
+        public Machine(TileEntityType<?> type) {
+            super(type);
+        }
+    }
+
     public static class EnergyStorage<E extends IVariant, B extends AbstractEnergyBlock<E>> extends Tickable<E, B> implements IRedstoneInteract {
         protected final Energy energy = Energy.create(0);
         protected SideConfig sideConfig = new SideConfig(this);
-        protected Redstone redstone = Redstone.IGNORE;
 
         public EnergyStorage(TileEntityType<?> tileEntityType, E variant) {
             super(tileEntityType, variant);
@@ -389,7 +405,6 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
 
         @Override
         public void readSync(CompoundNBT compound) {
-            this.redstone = Redstone.values()[compound.getInt("RedstoneMode")];
             this.sideConfig.read(compound);
             if (!keepEnergy()) {
                 this.energy.readStored(compound);
@@ -399,7 +414,6 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
 
         @Override
         public CompoundNBT writeSync(CompoundNBT compound) {
-            compound.putInt("RedstoneMode", this.redstone.ordinal());
             this.sideConfig.write(compound);
             if (!keepEnergy()) {
                 this.energy.writeStored(compound);
@@ -437,6 +451,7 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             if (!getTransferType().isInOnly()) {
                 this.energy.setMaxExtract(defaultTransfer());
             }
+            getSideConfig().init();
             sync(1);
         }
 
@@ -445,9 +460,12 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             return extractFromSides() + chargeItems() > 0;
         }
 
-        @Override
-        protected boolean doPostTicks(World world) {
+        protected boolean doWorkingTicks(World world) {
             return checkRedstone();
+        }
+
+        protected boolean doEnergyTransfer() {
+            return true;
         }
 
         protected long extractFromSides() {
@@ -548,15 +566,17 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
         @Override
         public void onAdded(World world, BlockState state, BlockState oldState, boolean isMoving) {
             super.onAdded(world, state, oldState, isMoving);
-            getSideConfig().init();
+            if (state.getBlock() != oldState.getBlock()) {
+                getSideConfig().init();
+            }
         }
 
         public boolean canReceiveEnergy(@Nullable Direction side) {
-            return checkRedstone() && getEnergyStorage().canReceive() && (this.sideConfig.getType(side).isIn() || side == null);
+            return doEnergyTransfer() && getEnergyStorage().canReceive() && (this.sideConfig.getType(side).isIn() || side == null);
         }
 
         public boolean canExtractEnergy(@Nullable Direction side) {
-            return checkRedstone() && getEnergyStorage().canExtract() && (this.sideConfig.getType(side).isOut() || side == null);
+            return doEnergyTransfer() && getEnergyStorage().canExtract() && (this.sideConfig.getType(side).isOut() || side == null);
         }
 
         public long getEnergyCapacity() {
@@ -593,21 +613,6 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
 
         public SideConfig getSideConfig() {
             return this.sideConfig;
-        }
-
-        public boolean checkRedstone() {
-            boolean power = this.world != null && this.world.getRedstonePowerFromNeighbors(this.pos) > 0;
-            return Redstone.IGNORE.equals(getRedstoneMode()) || power && Redstone.ON.equals(getRedstoneMode()) || !power && Redstone.OFF.equals(getRedstoneMode());
-        }
-
-        @Override
-        public Redstone getRedstoneMode() {
-            return this.redstone;
-        }
-
-        @Override
-        public void setRedstone(Redstone redstone) {
-            this.redstone = redstone;
         }
 
         public SideConfig.Type getTransferType() {
@@ -665,7 +670,8 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
         }
     }
 
-    public static class Tickable<E extends IVariant, B extends AbstractBlock<E>> extends TileBase<E, B> implements ITickableTileEntity {
+    public static class Tickable<E extends IVariant, B extends AbstractBlock<E>> extends TileBase<E, B> implements ITickableTileEntity, IRedstoneInteract {
+        protected Redstone redstone = Redstone.IGNORE;
         protected int syncTicks;
         public int ticks;
 
@@ -700,6 +706,18 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             }
         }
 
+        @Override
+        public void readSync(CompoundNBT compound) {
+            this.redstone = Redstone.values()[compound.getInt("RedstoneMode")];
+            super.readSync(compound);
+        }
+
+        @Override
+        public CompoundNBT writeSync(CompoundNBT compound) {
+            compound.putInt("RedstoneMode", this.redstone.ordinal());
+            return super.writeSync(compound);
+        }
+
         protected boolean doTicks(World world) {
             return true;
         }
@@ -732,6 +750,21 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
             }
         }
 
+        public boolean checkRedstone() {
+            boolean power = this.world != null && this.world.getRedstonePowerFromNeighbors(this.pos) > 0;
+            return Redstone.IGNORE.equals(getRedstoneMode()) || power && Redstone.ON.equals(getRedstoneMode()) || !power && Redstone.OFF.equals(getRedstoneMode());
+        }
+
+        @Override
+        public Redstone getRedstoneMode() {
+            return this.redstone;
+        }
+
+        @Override
+        public void setRedstone(Redstone redstone) {
+            this.redstone = redstone;
+        }
+
         public int getSyncTicks() {
             if (isContainerOpen()) {
                 if (!isRemote()) {
@@ -741,7 +774,7 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
                 }
                 return 3;
             }
-            return 100;
+            return 50;
         }
     }
 }

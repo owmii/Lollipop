@@ -63,7 +63,7 @@ public class Draw {
     public static void gaugeH(int x, int y, int w, int h, int uvX, int uvY, long cap, long cur) {
         if (cap > 0 && cur > 0) {
             int i = (int) (((float) cur / cap) * w);
-            GuiUtils.drawTexturedModalRect(x, y + w - i, uvX, uvY + w - i, w, i, 0);
+            GuiUtils.drawTexturedModalRect(x, y, uvX, uvY, i, h, 0);
         }
     }
 }

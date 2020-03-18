@@ -60,14 +60,14 @@ public class EnergyScreen<T extends TileBase.EnergyStorage, C extends EnergyCont
             this.configVisible = !this.configVisible;
         }).tooltip("info.lollipop.configuration", TextFormatting.GRAY);
         this.redStoneButton = addIconButton(x + this.xSize - 18, y + 29, 15, 15, 30, 0, 15, getWidgetTexture(), (button) -> {
-            SNextRedstoneModePacket.send(this.mc.world, this.te.getPos());
+            SNextRedstoneModePacket.send(this.te.getPos());
             this.te.nextRedstoneMode();
         }).tooltip(this.te.getRedstoneMode().getDisplayName());
     }
 
     protected void configButtons(int x, int y) {
         this.configButtonAll = addIconButton(x + 151, y + 11, 15, 15, 30, 0, 15, getWidgetTexture(), (button) -> {
-            SNextEnergyConfigPacket.send(6, this.mc.world, this.te.getPos());
+            SNextEnergyConfigPacket.send(6, this.te.getPos());
             this.te.getSideConfig().nextTypeAllSides();
         }).tooltip("info.lollipop.side.all", TextFormatting.GRAY, TextFormatting.DARK_GRAY).tooltip(this.te.getSideConfig().getType(Direction.UP).getDisplayName());
         for (int i = 0; i < 6; i++) {
@@ -75,7 +75,7 @@ public class EnergyScreen<T extends TileBase.EnergyStorage, C extends EnergyCont
             int yOffset = getSideButtonOffsets(18).get(i).getRight();
             final Direction side = Direction.byIndex(i);
             this.configButtons[i] = addIconButton(x + 132 + xOffset, y + 28 + yOffset, 17, 17, 0, 30, 17, getWidgetTexture(), (button) -> {
-                SNextEnergyConfigPacket.send(side.getIndex(), this.mc.world, this.te.getPos());
+                SNextEnergyConfigPacket.send(side.getIndex(), this.te.getPos());
                 this.te.getSideConfig().nextType(side);
             }).tooltip("info.lollipop.side." + side.getName(), TextFormatting.GRAY, TextFormatting.DARK_GRAY).tooltip(this.te.getSideConfig().getType(side).getDisplayName());
         }

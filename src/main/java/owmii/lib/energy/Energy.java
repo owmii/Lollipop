@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 public class Energy implements IEnergyStorage {
     public static final Energy EMPTY = Energy.create(0);
     public static final Long MAX = 9_000_000_000_000_000_000L;
-    public static final Long MIN = 1L;
+    public static final Long MIN = 0L;
 
     private long capacity;
     private long stored;
@@ -32,6 +32,7 @@ public class Energy implements IEnergyStorage {
 
     public Energy(Energy energy) {
         this(energy.capacity, energy.maxExtract, energy.maxReceive);
+        setStored(energy.stored);
     }
 
     public Energy(long capacity, long maxExtract, long maxReceive) {

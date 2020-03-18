@@ -5,20 +5,20 @@ import owmii.lib.util.IVariant;
 public interface IEnergyProviderConfig<E extends IVariant> extends IEnergyConfig<E> {
     long getGeneration(E variant);
 
-    static IEnergyProviderConfig getEmpty() {
-        return new IEnergyProviderConfig() {
+    static IEnergyProviderConfig<IVariant.Single> getEmpty() {
+        return new IEnergyProviderConfig<IVariant.Single>() {
             @Override
-            public long getGeneration(IVariant variant) {
+            public long getGeneration(IVariant.Single variant) {
                 return 0;
             }
 
             @Override
-            public long getCapacity(IVariant variant) {
+            public long getCapacity(IVariant.Single variant) {
                 return 0;
             }
 
             @Override
-            public long getTransfer(IVariant variant) {
+            public long getTransfer(IVariant.Single variant) {
                 return 0;
             }
 
