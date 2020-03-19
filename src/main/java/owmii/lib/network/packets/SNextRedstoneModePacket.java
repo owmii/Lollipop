@@ -9,14 +9,13 @@ import owmii.lib.Lollipop;
 import owmii.lib.block.TileBase;
 import owmii.lib.energy.IRedstoneInteract;
 import owmii.lib.network.IPacket;
-import owmii.lib.util.Packet;
 
 import java.util.function.Supplier;
 
 public class SNextRedstoneModePacket implements IPacket<SNextRedstoneModePacket> {
     private BlockPos pos;
 
-    SNextRedstoneModePacket(BlockPos pos) {
+    public SNextRedstoneModePacket(BlockPos pos) {
         this.pos = pos;
     }
 
@@ -30,12 +29,12 @@ public class SNextRedstoneModePacket implements IPacket<SNextRedstoneModePacket>
 
     @Override
     public void encode(SNextRedstoneModePacket msg, PacketBuffer buffer) {
-        Packet.writePos(msg.pos, buffer);
+        buffer.writeBlockPos(this.pos);
     }
 
     @Override
     public SNextRedstoneModePacket decode(PacketBuffer buffer) {
-        return new SNextRedstoneModePacket(Packet.readPos(buffer));
+        return new SNextRedstoneModePacket(buffer.readBlockPos());
     }
 
     @Override

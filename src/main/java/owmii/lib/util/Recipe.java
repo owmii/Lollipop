@@ -5,10 +5,36 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 public class Recipe {
+    public static <T extends IRecipe<?>> IRecipeType<T> register(ResourceLocation key) {
+        return Registry.register(Registry.RECIPE_TYPE, key, new IRecipeType<T>() {
+            public String toString() {
+                return key.toString();
+            }
+        });
+    }
+
+    public static Collection<? extends IRecipe<?>> getAll(@Nullable World world, IRecipeType<?> type) {
+        if (world != null) {
+            RecipeManager manager = world.getRecipeManager();
+            return manager.getRecipes().stream().filter(r -> r.getType() == type).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
     public static boolean matchTags(ItemStack stack, ItemStack other) {
         return matchTags(stack, other, true);
     }

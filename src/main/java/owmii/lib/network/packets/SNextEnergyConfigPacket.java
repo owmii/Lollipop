@@ -9,7 +9,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import owmii.lib.Lollipop;
 import owmii.lib.block.TileBase;
 import owmii.lib.network.IPacket;
-import owmii.lib.util.Packet;
 
 import java.util.function.Supplier;
 
@@ -17,7 +16,7 @@ public class SNextEnergyConfigPacket implements IPacket<SNextEnergyConfigPacket>
     private int i;
     private BlockPos pos;
 
-    SNextEnergyConfigPacket(int i, BlockPos pos) {
+    public SNextEnergyConfigPacket(int i, BlockPos pos) {
         this.i = i;
         this.pos = pos;
     }
@@ -33,12 +32,12 @@ public class SNextEnergyConfigPacket implements IPacket<SNextEnergyConfigPacket>
     @Override
     public void encode(SNextEnergyConfigPacket msg, PacketBuffer buffer) {
         buffer.writeInt(msg.i);
-        Packet.writePos(msg.pos, buffer);
+        buffer.writeBlockPos(this.pos);
     }
 
     @Override
     public SNextEnergyConfigPacket decode(PacketBuffer buffer) {
-        return new SNextEnergyConfigPacket(buffer.readInt(), Packet.readPos(buffer));
+        return new SNextEnergyConfigPacket(buffer.readInt(), buffer.readBlockPos());
     }
 
     @Override

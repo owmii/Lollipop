@@ -9,7 +9,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import owmii.lib.Lollipop;
 import owmii.lib.block.TileBase;
 import owmii.lib.network.IPacket;
-import owmii.lib.util.Packet;
 import owmii.lib.util.logic.ILogicHandler;
 
 import java.util.function.Supplier;
@@ -18,7 +17,7 @@ public class SNextTransferConfigPacket implements IPacket<SNextTransferConfigPac
     private int i;
     private BlockPos pos;
 
-    SNextTransferConfigPacket(int i, BlockPos pos) {
+    public SNextTransferConfigPacket(int i, BlockPos pos) {
         this.i = i;
         this.pos = pos;
     }
@@ -34,12 +33,12 @@ public class SNextTransferConfigPacket implements IPacket<SNextTransferConfigPac
     @Override
     public void encode(SNextTransferConfigPacket msg, PacketBuffer buffer) {
         buffer.writeInt(msg.i);
-        Packet.writePos(msg.pos, buffer);
+        buffer.writeBlockPos(this.pos);
     }
 
     @Override
     public SNextTransferConfigPacket decode(PacketBuffer buffer) {
-        return new SNextTransferConfigPacket(buffer.readInt(), Packet.readPos(buffer));
+        return new SNextTransferConfigPacket(buffer.readInt(), buffer.readBlockPos());
     }
 
     @Override
