@@ -33,7 +33,7 @@ public class SNextTransferConfigPacket implements IPacket<SNextTransferConfigPac
     @Override
     public void encode(SNextTransferConfigPacket msg, PacketBuffer buffer) {
         buffer.writeInt(msg.i);
-        buffer.writeBlockPos(this.pos);
+        buffer.writeBlockPos(msg.pos);
     }
 
     @Override

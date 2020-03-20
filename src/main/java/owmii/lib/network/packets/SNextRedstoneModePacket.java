@@ -29,7 +29,7 @@ public class SNextRedstoneModePacket implements IPacket<SNextRedstoneModePacket>
 
     @Override
     public void encode(SNextRedstoneModePacket msg, PacketBuffer buffer) {
-        buffer.writeBlockPos(this.pos);
+        buffer.writeBlockPos(msg.pos);
     }
 
     @Override

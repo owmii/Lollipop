@@ -32,7 +32,7 @@ public class SNextEnergyConfigPacket implements IPacket<SNextEnergyConfigPacket>
     @Override
     public void encode(SNextEnergyConfigPacket msg, PacketBuffer buffer) {
         buffer.writeInt(msg.i);
-        buffer.writeBlockPos(this.pos);
+        buffer.writeBlockPos(msg.pos);
     }
 
     @Override
