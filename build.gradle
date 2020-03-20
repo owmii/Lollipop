@@ -23,6 +23,16 @@ minecraft {
     accessTransformer = file('/src/main/resources/META-INF/accesstransformer.cfg')
 }
 
+tasks.withType(Jar) {
+    def out = file("../_JARS")
+    doFirst {
+        for (def file : out.listFiles()) {
+            delete(file)
+        }
+    }
+    destinationDir = out
+}
+
 repositories {
     maven { url = "http://dvs1.progwml6.com/files/maven" } //JEI
     maven { url = "http://maven.tterrag.com" } //TOP
