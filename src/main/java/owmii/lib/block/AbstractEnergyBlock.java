@@ -14,6 +14,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import owmii.lib.api.energy.INoTileEnergy;
 import owmii.lib.config.IEnergyConfig;
 import owmii.lib.energy.Energy;
@@ -57,6 +58,23 @@ public abstract class AbstractEnergyBlock<E extends IVariant> extends AbstractBl
             return state1.getBlock() instanceof INoTileEnergy || Energy.isPresent(tile, direction);
         }
         return super.isValidPosition(state, worldIn, pos);
+    }
+
+    @Override
+    public boolean hasComparatorInputOverride(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if (tile instanceof TileBase.EnergyStorage) {
+            TileBase.EnergyStorage storage = (TileBase.EnergyStorage) tile;
+            System.out.println(storage.getEnergyStorage().toPixels(15));
+
+            return storage.getEnergyStorage().toPixels(15);
+        }
+        return super.getComparatorInputOverride(blockState, worldIn, pos);
     }
 
     protected boolean checkValidEnergySide() {

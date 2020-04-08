@@ -6,9 +6,9 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public interface IPacket<T> {
-    void encode(T msg, PacketBuffer b);
+    void encode(T msg, PacketBuffer buffer);
 
-    T decode(PacketBuffer b);
+    T decode(PacketBuffer buffer);
 
-    void handle(T msg, Supplier<NetworkEvent.Context> cxt);
+    void handle(T msg, Supplier<NetworkEvent.Context> ctx);
 }

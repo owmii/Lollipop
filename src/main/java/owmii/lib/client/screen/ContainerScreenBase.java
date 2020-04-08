@@ -107,7 +107,6 @@ public class ContainerScreenBase<C extends Container> extends ContainerScreen<C>
 
     @Override
     protected final void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
         drawForeground(mouseX, mouseY);
     }
 
