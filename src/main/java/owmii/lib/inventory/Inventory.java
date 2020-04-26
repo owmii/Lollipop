@@ -177,7 +177,8 @@ public class Inventory extends ItemStackHandler {
     public ItemStack addNext(ItemStack stack) {
         for (int i = 0; i < getSlots(); ++i) {
             if (isItemValid(i, stack)) {
-                return insertItem(i, stack.copy(), false);
+                insertItem(i, stack.copy(), false);
+                return stack.copy();
             }
         }
         return ItemStack.EMPTY;

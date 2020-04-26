@@ -8,9 +8,29 @@ import net.minecraftforge.common.util.Constants;
 import owmii.lib.Lollipop;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public class Data {
-    public static final String TAG_TE_STORABLE = Lollipop.MOD_ID + "TileStorableNBT";
+    public static final String TAG_STORABLE = Lollipop.MOD_ID + "TileStorableNBT";
+
+    public static <T extends Collection<UUID>> T readUUIDList(CompoundNBT nbt, String key, T list) {
+        ListNBT listNBT = nbt.getList(key, Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < listNBT.size(); i++) {
+            CompoundNBT compound = listNBT.getCompound(i);
+            list.add(compound.getUniqueId("uuid"));
+        }
+        return list;
+    }
+
+    public static void writeUUIDList(CompoundNBT nbt, Collection<UUID> list, String key) {
+        ListNBT listNBT = new ListNBT();
+        list.forEach(pos -> {
+            CompoundNBT compound = new CompoundNBT();
+            compound.putUniqueId("uuid", pos);
+            listNBT.add(compound);
+        });
+        nbt.put(key, listNBT);
+    }
 
     public static <T extends Collection<BlockPos>> T readPosList(CompoundNBT nbt, String key, T list) {
         ListNBT listNBT = nbt.getList(key, Constants.NBT.TAG_COMPOUND);

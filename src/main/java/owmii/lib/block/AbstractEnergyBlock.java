@@ -70,8 +70,6 @@ public abstract class AbstractEnergyBlock<E extends IVariant> extends AbstractBl
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileBase.EnergyStorage) {
             TileBase.EnergyStorage storage = (TileBase.EnergyStorage) tile;
-            System.out.println(storage.getEnergyStorage().toPixels(15));
-
             return storage.getEnergyStorage().toPixels(15);
         }
         return super.getComparatorInputOverride(blockState, worldIn, pos);

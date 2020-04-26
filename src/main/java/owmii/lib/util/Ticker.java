@@ -83,4 +83,8 @@ public class Ticker {
         this.max = ticks;
         this.ticks = ticks;
     }
+
+    public double perCent() {
+        return this.ticks * 100.0D / this.max;
+    }
 }

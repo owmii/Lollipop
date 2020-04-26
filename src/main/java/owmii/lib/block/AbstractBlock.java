@@ -177,7 +177,7 @@ public abstract class AbstractBlock<E extends IVariant> extends Block implements
             CompoundNBT tag = Stack.getTagOrEmpty(stack1);
             CompoundNBT storable = tile.writeStorable(new CompoundNBT());
             if (!storable.isEmpty() && tile.isNBTStorable()) {
-                tag.put(Data.TAG_TE_STORABLE, storable);
+                tag.put(Data.TAG_STORABLE, storable);
                 stack1.setTag(tag);
             }
             if (tile.hasCustomName()) stack1.setDisplayName(tile.getCustomName());
@@ -202,7 +202,7 @@ public abstract class AbstractBlock<E extends IVariant> extends Block implements
                 CompoundNBT tag = Stack.getTagOrEmpty(stack);
                 CompoundNBT storable = tile.writeStorable(new CompoundNBT());
                 if (!storable.isEmpty() && tile.isNBTStorable()) {
-                    tag.put(Data.TAG_TE_STORABLE, storable);
+                    tag.put(Data.TAG_STORABLE, storable);
                     stack.setTag(tag);
                 }
                 if (tile.hasCustomName()) {
@@ -225,7 +225,7 @@ public abstract class AbstractBlock<E extends IVariant> extends Block implements
             CompoundNBT tag = Stack.getTagOrEmpty(stack);
             CompoundNBT nbt = tile.writeStorable(new CompoundNBT());
             if (!nbt.isEmpty()) {
-                tag.put(Data.TAG_TE_STORABLE, nbt);
+                tag.put(Data.TAG_STORABLE, nbt);
                 stack.setTag(tag);
             }
             if (tile.hasCustomName()) stack.setDisplayName(tile.getCustomName());

@@ -235,14 +235,14 @@ public class Energy implements IEnergyStorage {
         public Item(ItemStack stack, long capacity, long maxExtract, long maxReceive) {
             super(capacity, maxExtract, maxReceive);
             this.stack = stack;
-            readStored(Stack.getTagOrEmpty(stack).getCompound(Data.TAG_TE_STORABLE));
+            readStored(Stack.getTagOrEmpty(stack).getCompound(Data.TAG_STORABLE));
         }
 
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
             int energy = super.receiveEnergy(maxReceive, simulate);
             if (!simulate) {
-                writeStored(this.stack.getOrCreateChildTag(Data.TAG_TE_STORABLE));
+                writeStored(this.stack.getOrCreateChildTag(Data.TAG_STORABLE));
             }
             return energy;
         }
@@ -251,7 +251,7 @@ public class Energy implements IEnergyStorage {
         public int extractEnergy(int maxExtract, boolean simulate) {
             int energy = super.extractEnergy(maxExtract, simulate);
             if (!simulate) {
-                writeStored(this.stack.getOrCreateChildTag(Data.TAG_TE_STORABLE));
+                writeStored(this.stack.getOrCreateChildTag(Data.TAG_STORABLE));
             }
             return energy;
         }

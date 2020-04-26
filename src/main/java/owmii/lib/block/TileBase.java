@@ -173,7 +173,7 @@ public class TileBase<E extends IVariant, B extends AbstractBlock<E>> extends Ti
         }
         CompoundNBT tag = Stack.getTagOrEmpty(stack);
         if (!tag.isEmpty()) {
-            readStorable(tag.getCompound(Data.TAG_TE_STORABLE));
+            readStorable(tag.getCompound(Data.TAG_STORABLE));
         }
     }
 
