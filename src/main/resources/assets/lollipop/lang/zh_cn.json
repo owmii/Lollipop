@@ -26,7 +26,7 @@
   "info.lollipop.max.extract.fe": "最大输出: %s FE/t",
   "info.lollipop.max.receive.fe": "最大输入: %s FE/t",
   "info.lollipop.max.transfer.fe": "最大输入/输出: %s FE/t",
-  "info.lollipop.max.generates": "产能: %s FE/t",
+  "info.lollipop.generates": "产能: %s FE/t",
   "info.lollipop.buffer": "缓存: %s",
   "info.lollipop.full": "满",
   "info.lollipop.empty": "空",

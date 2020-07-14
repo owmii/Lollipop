@@ -1,43 +1,25 @@
 package owmii.lib;
 
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import owmii.lib.compat.top.TOPCompat;
+import owmii.lib.api.IMod;
 import owmii.lib.network.Network;
 import owmii.lib.network.Packets;
 
-import java.util.function.Consumer;
-
 @Mod(Lollipop.MOD_ID)
-public class Lollipop {
+public class Lollipop implements IMod {
     public static final String MOD_ID = "lollipop";
-    public static final Network NET = new Network(MOD_ID);
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+    public static final Network NET = new Network(MOD_ID);
 
     public Lollipop() {
-        addModListener(this::setup);
-        addModListener(this::imc);
+        loadListeners();
     }
 
-    void setup(FMLCommonSetupEvent event) {
+    @Override
+    public void setup(FMLCommonSetupEvent event) {
         Packets.register();
-    }
-
-    void imc(InterModEnqueueEvent event) {
-        TOPCompat.register();
-    }
-
-    public static <T extends Event> void addModListener(Consumer<T> consumer) {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(consumer);
-    }
-
-    public static <T extends Event> void addEventListener(Consumer<T> consumer) {
-        MinecraftForge.EVENT_BUS.addListener(consumer);
     }
 }

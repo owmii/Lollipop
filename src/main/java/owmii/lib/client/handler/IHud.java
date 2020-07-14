@@ -1,5 +1,6 @@
 package owmii.lib.client.handler;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -13,5 +14,5 @@ import javax.annotation.Nullable;
 
 public interface IHud {
     @OnlyIn(Dist.CLIENT)
-    boolean renderHud(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockRayTraceResult result, @Nullable TileEntity te);
+    boolean renderHud(MatrixStack matrix, BlockState state, World world, BlockPos pos, PlayerEntity player, BlockRayTraceResult result, @Nullable TileEntity te);
 }

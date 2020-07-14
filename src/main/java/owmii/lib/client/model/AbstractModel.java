@@ -5,12 +5,12 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
-import owmii.lib.block.TileBase;
+import owmii.lib.block.AbstractTileEntity;
 import owmii.lib.client.renderer.tile.AbstractTileRenderer;
 
 import java.util.function.Function;
 
-public abstract class AbstractModel<T extends TileBase, R extends AbstractTileRenderer<T>> extends EmptyModel {
+public abstract class AbstractModel<T extends AbstractTileEntity<?, ?>, R extends AbstractTileRenderer<T>> extends EmptyModel {
     public AbstractModel(Function<ResourceLocation, RenderType> function) {
         super(function);
     }

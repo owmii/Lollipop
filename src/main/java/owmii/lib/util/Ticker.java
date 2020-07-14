@@ -3,12 +3,11 @@ package owmii.lib.util;
 import net.minecraft.nbt.CompoundNBT;
 
 public class Ticker {
-
-    private double max;
+    private double maxTicks;
     private double ticks;
 
     public Ticker(double max) {
-        this.max = max;
+        this.maxTicks = max;
     }
 
     public static Ticker empty() {
@@ -20,15 +19,15 @@ public class Ticker {
     }
 
     public boolean ended() {
-        return this.ticks >= this.max;
+        return this.ticks >= this.maxTicks;
     }
 
     public void add(double ticks) {
-        this.ticks = Math.min(Math.max(0, this.ticks + ticks), this.max);
+        this.ticks = Math.min(Math.max(0, this.ticks + ticks), this.maxTicks);
     }
 
     public void onward() {
-        if (this.ticks < this.max) {
+        if (this.ticks < this.maxTicks) {
             this.ticks++;
         }
     }
@@ -54,21 +53,21 @@ public class Ticker {
     }
 
     public void read(CompoundNBT compound, String key) {
-        this.ticks = compound.getDouble(key + "Ticks");
-        this.max = compound.getDouble(key + "Max");
+        this.ticks = compound.getDouble(key + "_ticks");
+        this.maxTicks = compound.getDouble(key + "_max_ticks");
     }
 
     public void write(CompoundNBT compound, String key) {
-        compound.putDouble(key + "Ticks", this.ticks);
-        compound.putDouble(key + "Max", this.max);
+        compound.putDouble(key + "_ticks", this.ticks);
+        compound.putDouble(key + "_max_ticks", this.maxTicks);
     }
 
     public double getMax() {
-        return this.max;
+        return this.maxTicks;
     }
 
     public void setMax(double max) {
-        this.max = max;
+        this.maxTicks = max;
     }
 
     public double getTicks() {
@@ -80,11 +79,19 @@ public class Ticker {
     }
 
     public void setAll(double ticks) {
-        this.max = ticks;
+        this.maxTicks = ticks;
         this.ticks = ticks;
     }
 
+    public double getEmpty() {
+        return this.maxTicks - this.ticks;
+    }
+
     public double perCent() {
-        return this.ticks * 100.0D / this.max;
+        return this.ticks * 100.0D / this.maxTicks;
+    }
+
+    public float subSized() {
+        return (float) (this.ticks / this.maxTicks);
     }
 }

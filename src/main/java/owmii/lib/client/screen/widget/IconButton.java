@@ -1,82 +1,112 @@
 package owmii.lib.client.screen.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import owmii.lib.client.screen.Texture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class IconButton extends Button {
-    private final List<String> tooltip = new ArrayList<>();
-    private final ResourceLocation texture;
-    private final Screen screen;
-    private int xTexStart;
-    private int yTexStart;
-    private int yDiffText;
-    private final int uvw;
-    private final int uvh;
+    protected final Minecraft mc = Minecraft.getInstance();
+    private Screen screen;
+    private Texture texture;
+    private Texture hovering;
+    private Consumer<List<ITextComponent>> tooltipConsumer = stringList -> {};
 
-    public IconButton(int x, int y, int w, int h, int xTexStart, int yTexStart, int yDiffText, ResourceLocation icon, IPressable iPressable, Screen screen) {
-        this(x, y, w, h, xTexStart, yTexStart, yDiffText, icon, 256, 256, iPressable, screen);
+
+    public IconButton(int x, int y, Texture texture, IPressable onPress, Screen screen) {
+        this(x, y, texture, Texture.EMPTY, new StringTextComponent(""), onPress, screen);
     }
 
-    public IconButton(int x, int y, int w, int h, int xTexStart, int yTexStart, int yDiffText, ResourceLocation location, int uvw, int uvh, IPressable pressable, Screen screen) {
-        this(x, y, w, h, xTexStart, yTexStart, yDiffText, location, uvw, uvh, pressable, "", screen);
+    public IconButton(int x, int y, Texture texture, Texture hovering, IPressable onPress, Screen screen) {
+        this(x, y, texture, hovering, new StringTextComponent(""), onPress, screen);
     }
 
-    public IconButton(int x, int y, int w, int h, int xTexStart, int yTexStart, int yDiffText, ResourceLocation texture, int uvw, int uvh, IPressable p_i51136_11_, String p_i51136_12_, Screen screen) {
-        super(x, y, w, h, p_i51136_12_, p_i51136_11_);
-        this.uvw = uvw;
-        this.uvh = uvh;
-        this.xTexStart = xTexStart;
-        this.yTexStart = yTexStart;
-        this.yDiffText = yDiffText;
+    public IconButton(int x, int y, Texture texture, ITextComponent text, IPressable onPress, Screen screen) {
+        this(x, y, texture, Texture.EMPTY, text, onPress, screen);
+    }
+
+    public IconButton(int x, int y, Texture texture, Texture hovering, ITextComponent text, IPressable onPress, Screen screen) {
+        super(x, y, texture.getWidth(), texture.getHeight(), text, onPress);
         this.texture = texture;
         this.screen = screen;
+        this.hovering = hovering;
     }
 
     @Override
-    public void renderToolTip(int x, int y) {
-        super.renderToolTip(x, y);
-        this.screen.renderTooltip(this.tooltip, x, y);
+    public void func_230430_a_(MatrixStack matrix, int mouseX, int mouseY, float pt) {
+        if (this.field_230694_p_) {
+            this.field_230692_n_ = mouseX >= this.field_230690_l_ && mouseY >= this.field_230691_m_ && mouseX < this.field_230690_l_ + this.field_230688_j_ && mouseY < this.field_230691_m_ + this.field_230689_k_;
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            blit(matrix, this.texture, this.field_230690_l_, this.field_230691_m_);
+        }
     }
 
-    public IconButton tooltip(String s, Object... args) {
-        return tooltip(s, TextFormatting.RESET, args);
+    @Override
+    public void func_230443_a_(MatrixStack matrix, int mouseX, int mouseY) {
+        List<ITextComponent> tooltip = new ArrayList<>();
+        this.tooltipConsumer.accept(tooltip);
+        if (!tooltip.isEmpty()) {
+            this.screen.func_238654_b_(matrix, tooltip, mouseX, mouseY);
+        }
     }
 
-    public IconButton tooltip(String s, TextFormatting formatting, Object... args) {
-        this.tooltip.add(formatting + I18n.format(s, args));
+    public void blit(MatrixStack matrix, Texture texture, int x, int y) {
+        bindTexture(texture.getLocation());
+        func_238474_b_(matrix, x, y, texture.getU(), texture.getV(), texture.getWidth(), texture.getHeight());
+    }
+
+    public void bindTexture(ResourceLocation guiTexture) {
+        this.mc.getTextureManager().bindTexture(guiTexture);
+    }
+
+    public Screen getScreen() {
+        return this.screen;
+    }
+
+    public IconButton setScreen(Screen screen) {
+        this.screen = screen;
         return this;
     }
 
-    public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Texture getTexture() {
+        return this.texture;
     }
 
-    public void setIconDiff(int xTexStart) {
-        this.xTexStart = xTexStart;
+    public IconButton setTexture(Texture texture) {
+        this.texture = texture;
+        return this;
     }
 
-    public List<String> getTooltip() {
-        return this.tooltip;
+    public Texture getHovering() {
+        return this.hovering;
     }
 
-    public void renderButton(int x, int y, float p_renderButton_3_) {
-        Minecraft mc = Minecraft.getInstance();
-        mc.getTextureManager().bindTexture(this.texture);
-        RenderSystem.disableDepthTest();
-        int i = this.yTexStart;
-        if (this.isHovered()) {
-            i += this.yDiffText;
-        }
-        blit(this.x, this.y, (float) this.xTexStart, (float) i, this.width, this.height, this.uvw, this.uvh);
-        RenderSystem.enableDepthTest();
+    public IconButton setHovering(Texture hovering) {
+        this.hovering = hovering;
+        return this;
     }
+
+    public Consumer<List<ITextComponent>> getTooltip() {
+        return this.tooltipConsumer;
+    }
+
+    public IconButton setTooltip(Consumer<List<ITextComponent>> tooltipConsumer) {
+        this.tooltipConsumer = tooltipConsumer;
+        return this;
+    }
+
+    public static final IconButton EMPTY = new IconButton(0, 0, Texture.EMPTY, b -> {}, new ChatScreen(""));
 }

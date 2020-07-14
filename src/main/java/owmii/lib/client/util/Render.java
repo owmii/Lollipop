@@ -1,8 +1,8 @@
 package owmii.lib.client.util;
 
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.math.vector.Matrix4f;
 import owmii.lib.util.math.V3d;
 
 public class Render {
@@ -54,8 +54,16 @@ public class Render {
         buffer.pos(matrix4f, 0, 0, 0).color(r, g, b, a).tex(0.0F, 0.0F).lightmap(light).endVertex();
     }
 
+    public static void cube(Matrix4f matrix4f, IVertexBuilder builder, V3d v3d, TextureAtlasSprite sprite, double size, int light) {
+        cube(matrix4f, builder, v3d, sprite, size, light, 1.0F);
+    }
+
+    public static void cube(Matrix4f matrix4f, IVertexBuilder builder, V3d v3d, TextureAtlasSprite sprite, double size, int light, float a) {
+        cube(matrix4f, builder, v3d, sprite, size, light, 1.0F, 1.0F, 1.0F, a);
+    }
+
     public static void cube(Matrix4f matrix4f, IVertexBuilder builder, V3d v3d, TextureAtlasSprite sprite, double size, int light, float r, float g, float b, float a) {
-        float d = (float) (size / 2.0d);
+        final float d = (float) (size / 2.0d);
         builder.pos(matrix4f, (float) v3d.getX() - d, (float) v3d.getY() - d, (float) v3d.getZ() - d).color(r, g, b, a).tex(sprite.getMinU(), sprite.getMinV()).lightmap(light).endVertex();
         builder.pos(matrix4f, (float) v3d.getX() + d, (float) v3d.getY() - d, (float) v3d.getZ() - d).color(r, g, b, a).tex(sprite.getMaxU(), sprite.getMinV()).lightmap(light).endVertex();
         builder.pos(matrix4f, (float) v3d.getX() + d, (float) v3d.getY() - d, (float) v3d.getZ() + d).color(r, g, b, a).tex(sprite.getMaxU(), sprite.getMaxV()).lightmap(light).endVertex();
@@ -86,6 +94,14 @@ public class Render {
         builder.pos(matrix4f, (float) v3d.getX() + d, (float) v3d.getY() + d, (float) v3d.getZ() - d).color(r, g, b, a).tex(sprite.getMaxU(), sprite.getMaxV()).lightmap(light).endVertex();
         builder.pos(matrix4f, (float) v3d.getX() + d, (float) v3d.getY() - d, (float) v3d.getZ() - d).color(r, g, b, a).tex(sprite.getMaxU(), sprite.getMinV()).lightmap(light).endVertex();
 
+    }
+
+    public static void cube(Matrix4f matrix4f, IVertexBuilder builder, V3d v3d, double size, float u, float v, int light) {
+        cube(matrix4f, builder, v3d, size, u, v, light, 1.0F);
+    }
+
+    public static void cube(Matrix4f matrix4f, IVertexBuilder builder, V3d v3d, double size, float u, float v, int light, float a) {
+        cube(matrix4f, builder, v3d, size, u, v, light, 1.0F, 1.0F, 1.0F, a);
     }
 
     public static void cube(Matrix4f matrix4f, IVertexBuilder builder, V3d v3d, double size, float u, float v, int light, float r, float g, float b, float a) {

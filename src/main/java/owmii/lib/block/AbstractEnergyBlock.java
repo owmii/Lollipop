@@ -5,6 +5,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -15,49 +16,29 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import owmii.lib.api.energy.INoTileEnergy;
+import owmii.lib.api.energy.IEnergyConnector;
+import owmii.lib.config.IConfigHolder;
 import owmii.lib.config.IEnergyConfig;
-import owmii.lib.energy.Energy;
-import owmii.lib.energy.SideConfig;
-import owmii.lib.item.BlockItemBase;
 import owmii.lib.item.EnergyBlockItem;
-import owmii.lib.util.IVariant;
-import owmii.lib.util.Text;
+import owmii.lib.logistics.energy.Energy;
+import owmii.lib.util.Util;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class AbstractEnergyBlock<E extends IVariant> extends AbstractBlock<E> {
-    public AbstractEnergyBlock(Properties properties, E variant) {
-        super(properties, variant);
+public abstract class AbstractEnergyBlock<V extends IVariant<?>, C extends IEnergyConfig<V>> extends AbstractBlock<V> implements IConfigHolder<V, C> {
+    public AbstractEnergyBlock(Properties properties) {
+        this(properties, IVariant.getEmpty());
     }
 
-    public AbstractEnergyBlock(Properties properties) {
-        super(properties);
+    public AbstractEnergyBlock(Properties properties, V variant) {
+        super(properties, variant);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public BlockItemBase getBlockItem(Item.Properties properties, @Nullable ItemGroup group) {
+    public EnergyBlockItem getBlockItem(Item.Properties properties, @Nullable ItemGroup group) {
         return new EnergyBlockItem(this, properties, group);
-    }
-
-    public abstract IEnergyConfig<E> getEnergyConfig();
-
-    public SideConfig.Type getTransferType() {
-        return SideConfig.Type.ALL;
-    }
-
-    @Override
-    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-        if (checkValidEnergySide()) {
-            Direction direction = state.get(FACING);
-            BlockPos blockpos = pos.offset(direction);
-            BlockState state1 = worldIn.getBlockState(blockpos);
-            TileEntity tile = worldIn.getTileEntity(blockpos);
-            return state1.getBlock() instanceof INoTileEnergy || Energy.isPresent(tile, direction);
-        }
-        return super.isValidPosition(state, worldIn, pos);
     }
 
     @Override
@@ -66,13 +47,23 @@ public abstract class AbstractEnergyBlock<E extends IVariant> extends AbstractBl
     }
 
     @Override
-    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
-        TileEntity tile = worldIn.getTileEntity(pos);
-        if (tile instanceof TileBase.EnergyStorage) {
-            TileBase.EnergyStorage storage = (TileBase.EnergyStorage) tile;
-            return storage.getEnergyStorage().toPixels(15);
+    public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof AbstractEnergyStorage) {
+            return ((AbstractEnergyStorage) tile).getEnergy().toComparatorPower();
         }
-        return super.getComparatorInputOverride(blockState, worldIn, pos);
+        return super.getComparatorInputOverride(state, world, pos);
+    }
+
+    @Override
+    public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
+        if (checkValidEnergySide()) {
+            Direction side = state.get(BlockStateProperties.FACING);
+            BlockPos pos1 = pos.offset(side);
+            return world.getBlockState(pos1).getBlock() instanceof IEnergyConnector
+                    || Energy.isPresent(world.getTileEntity(pos1), side);
+        }
+        return super.isValidPosition(state, world, pos);
     }
 
     protected boolean checkValidEnergySide() {
@@ -94,7 +85,7 @@ public abstract class AbstractEnergyBlock<E extends IVariant> extends AbstractBl
 
     public void addEnergyInfo(ItemStack stack, Energy.Item storage, List<ITextComponent> tooltip) {
         if (storage.getCapacity() > 0)
-            tooltip.add(new TranslationTextComponent("info.lollipop.stored.energy.fe", TextFormatting.DARK_GRAY + Text.addCommas(storage.getStored()), Text.numFormat(storage.getCapacity())).applyTextStyle(TextFormatting.GRAY));
+            tooltip.add(new TranslationTextComponent("info.lollipop.stored.energy.fe", Util.addCommas(storage.getStored()), Util.numFormat(storage.getCapacity())).func_240699_a_(TextFormatting.DARK_GRAY));
     }
 
     public void addEnergyTransferInfo(ItemStack stack, Energy.Item storage, List<ITextComponent> tooltip) {
@@ -102,15 +93,16 @@ public abstract class AbstractEnergyBlock<E extends IVariant> extends AbstractBl
         long re = storage.getMaxReceive();
         if (ext + re > 0) {
             if (ext == re) {
-                tooltip.add(new TranslationTextComponent("info.lollipop.max.transfer.fe", TextFormatting.DARK_GRAY + Text.numFormat(ext)).applyTextStyle(TextFormatting.GRAY));
+                tooltip.add(new TranslationTextComponent("info.lollipop.max.transfer.fe", Util.numFormat(ext)).func_240699_a_(TextFormatting.DARK_GRAY));
             } else {
                 if (ext > 0)
-                    tooltip.add(new TranslationTextComponent("info.lollipop.max.extract.fe", TextFormatting.DARK_GRAY + Text.numFormat(ext)).applyTextStyle(TextFormatting.GRAY));
+                    tooltip.add(new TranslationTextComponent("info.lollipop.max.extract.fe", Util.numFormat(ext)).func_240699_a_(TextFormatting.DARK_GRAY));
                 if (re > 0)
-                    tooltip.add(new TranslationTextComponent("info.lollipop.max.receive.fe", TextFormatting.DARK_GRAY + Text.numFormat(re)).applyTextStyle(TextFormatting.GRAY));
+                    tooltip.add(new TranslationTextComponent("info.lollipop.max.receive.fe", Util.numFormat(re)).func_240699_a_(TextFormatting.DARK_GRAY));
             }
         }
     }
 
     public void additionalEnergyInfo(ItemStack stack, Energy.Item energy, List<ITextComponent> tooltip) {}
+
 }

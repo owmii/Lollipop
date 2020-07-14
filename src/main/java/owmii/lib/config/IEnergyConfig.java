@@ -1,28 +1,13 @@
 package owmii.lib.config;
 
-import owmii.lib.util.IVariant;
+import owmii.lib.block.IVariant;
 
-public interface IEnergyConfig<E extends IVariant> extends IConfig {
-    long getCapacity(E variant);
+public interface IEnergyConfig<V extends IVariant<?>> extends IConfig<V> {
+    long getCapacity(V variant);
 
-    long getTransfer(E variant);
+    long getTransfer(V variant);
 
-    static IEnergyConfig<IVariant.Single> getEmpty() {
-        return new IEnergyConfig<IVariant.Single>() {
-            @Override
-            public long getCapacity(IVariant.Single variant) {
-                return 0;
-            }
-
-            @Override
-            public long getTransfer(IVariant.Single variant) {
-                return 0;
-            }
-
-            @Override
-            public void reload() {
-
-            }
-        };
+    default long getGeneration(V variant) {
+        return 0;
     }
 }

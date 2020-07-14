@@ -1,11 +1,15 @@
 package owmii.lib.util.math;
 
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class V3d extends Vec3d {
+public class V3d extends Vector3d {
 
     public static final V3d ZERO = new V3d(0.0D, 0.0D, 0.0D);
 
@@ -13,30 +17,41 @@ public class V3d extends Vec3d {
         super(x, y, z);
     }
 
-    public V3d(Vec3d vector) {
+    public V3d(Vector3d vector) {
         this(vector.x, vector.y, vector.z);
     }
 
-    public V3d(Vec3i vector) {
+    public V3d(Vector3f vector) {
         super(vector);
     }
 
-    public static V3d from(Vec3d vector) {
+    public static V3d from(Vector3d vector) {
         return new V3d(vector);
     }
 
-    public static V3d from(Vec3i vector) {
+    public static V3d from(Vector3f vector) {
         return new V3d(vector);
     }
 
-    public float distance(Vec3i vec3i) {
-        return distance(new Vec3d(vec3i));
+    public static V3d from(BlockPos pos) {
+        return new V3d(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public float distance(Vec3d vec3d) {
+    public float distance(Vector3f vec3i) {
+        return distance(new Vector3d(vec3i));
+    }
+
+    public float distance(Vector3d vec3d) {
         float f = (float) (this.x - vec3d.x);
         float f1 = (float) (this.y - vec3d.y);
         float f2 = (float) (this.z - vec3d.z);
+        return MathHelper.sqrt(f * f + f1 * f1 + f2 * f2);
+    }
+
+    public float distance(BlockPos pos) {
+        float f = (float) (this.x - pos.getX());
+        float f1 = (float) (this.y - pos.getY());
+        float f2 = (float) (this.z - pos.getZ());
         return MathHelper.sqrt(f * f + f1 * f1 + f2 * f2);
     }
 
@@ -132,7 +147,7 @@ public class V3d extends Vec3d {
     }
 
     @Override
-    public V3d add(Vec3d vec) {
+    public V3d add(Vector3d vec) {
         return add(vec.x, vec.y, vec.z);
     }
 

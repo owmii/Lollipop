@@ -8,7 +8,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -30,10 +30,10 @@ public class HudHandler {
                 if (hit instanceof BlockRayTraceResult) {
                     BlockRayTraceResult result = (BlockRayTraceResult) hit;
                     BlockPos pos = result.getPos();
-                    Vec3d sHit = result.getHitVec();
+                    Vector3d sHit = result.getHitVec();
                     BlockState state = world.getBlockState(pos);
                     if (state.getBlock() instanceof IHud) {
-                        ((IHud) state.getBlock()).renderHud(state, world, pos, player, result, world.getTileEntity(pos));
+                        ((IHud) state.getBlock()).renderHud(event.getMatrixStack(), state, world, pos, player, result, world.getTileEntity(pos));
                     }
 
                     for (Hand hand : Hand.values()) {

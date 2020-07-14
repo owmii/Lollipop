@@ -7,9 +7,9 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.world.ClientWorld;
-import owmii.lib.block.TileBase;
+import owmii.lib.block.AbstractTileEntity;
 
-public abstract class AbstractTileRenderer<T extends TileBase> extends TileEntityRenderer<T> {
+public abstract class AbstractTileRenderer<T extends AbstractTileEntity<?, ?>> extends TileEntityRenderer<T> {
 
     public AbstractTileRenderer(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);

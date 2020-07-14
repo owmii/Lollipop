@@ -1,37 +1,44 @@
 package owmii.lib.item;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import owmii.lib.block.AbstractEnergyBlock;
+import owmii.lib.block.IVariant;
+import owmii.lib.config.IConfigHolder;
 import owmii.lib.config.IEnergyConfig;
-import owmii.lib.energy.Energy;
-import owmii.lib.energy.SideConfig;
-import owmii.lib.util.IVariant;
+import owmii.lib.logistics.energy.Energy;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
-public class EnergyBlockItem<E extends IVariant, T extends AbstractEnergyBlock<E>> extends BlockItemBase<E, T> {
-    public EnergyBlockItem(T block, Properties properties, @Nullable ItemGroup group) {
-        super(block, properties, group);
+public class EnergyBlockItem<V extends IVariant<?>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C>> extends ItemBlock<V, B> implements IConfigHolder<V, C> {
+    public EnergyBlockItem(B block, Properties builder, @Nullable ItemGroup group) {
+        super(block, builder, group);
     }
 
     @Nullable
     @Override
-    @SuppressWarnings("unchecked")
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        IEnergyConfig config = getBlock().getEnergyConfig();
-        long ext = getTransferType().isOut() ? config.getTransfer(getVariant()) : 0L;
-        long rec = getTransferType().isIn() ? config.getTransfer(getVariant()) : 0L;
-        return new Energy.Item.Provider(stack, config.getCapacity(getVariant()), ext, rec);
+        long transfer = getConfig().getTransfer(getVariant());
+        return new Energy.Item.Provider(stack, getConfig().getCapacity(getVariant()), transfer, transfer);
     }
 
-    public IEnergyConfig<E> getEnergyConfig() {
-        return getBlock().getEnergyConfig();
+    @Override
+    public C getConfig() {
+        return getBlock().getConfig();
     }
 
-    public SideConfig.Type getTransferType() {
-        return getBlock().getTransferType();
+    public V getVariant() {
+        return getBlock().getVariant();
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 }

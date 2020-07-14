@@ -9,12 +9,10 @@ import net.minecraft.util.ResourceLocation;
 import java.util.function.Function;
 
 class EmptyModel extends Model {
-    public EmptyModel(Function<ResourceLocation, RenderType> renderTypeIn) {
-        super(renderTypeIn);
+    public EmptyModel(Function<ResourceLocation, RenderType> function) {
+        super(function);
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
-
-    }
+    public void render(MatrixStack matrix, IVertexBuilder buffer, int light, int ov, float red, float green, float blue, float alpha) {}
 }

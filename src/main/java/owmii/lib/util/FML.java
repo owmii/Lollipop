@@ -8,10 +8,6 @@ public class FML {
         return ModLoadingContext.get().getActiveNamespace();
     }
 
-    public static boolean isServer() {
-        return !isClient();
-    }
-
     public static boolean isClient() {
         return FMLEnvironment.dist.isClient();
     }

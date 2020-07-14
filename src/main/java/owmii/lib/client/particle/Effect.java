@@ -1,4 +1,4 @@
-//package owmii.lib.client.particle;
+package owmii.lib.client.particle;//package owmii.lib.client.particle;
 //
 //import com.mojang.blaze3d.platform.GlStateManager;
 //import net.minecraft.client.Minecraft;
