@@ -89,7 +89,7 @@ public class AbstractEnergyScreen<T extends AbstractEnergyStorage<?, ?, ?> & IIn
         super.drawForeground(matrix, mouseX, mouseY);
         String title = this.field_230704_d_.getString();
         int width = this.field_230712_o_.getStringWidth(title);
-        this.field_230712_o_.func_238405_a_(matrix, title, this.xSize / 2 - width / 2, -14.0F, 0x555555);
+        this.field_230712_o_.func_238405_a_(matrix, title, this.xSize / 2 - width / 2, -14.0F, 0x777777);
     }
 
     @Override
