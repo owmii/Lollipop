@@ -11,6 +11,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import owmii.lib.compat.curios.CuriosCompat;
 import owmii.lib.util.NBT;
 import owmii.lib.util.Player;
 import owmii.lib.util.Stack;
@@ -150,15 +151,15 @@ public class Energy implements IEnergyStorage {
             int received = Energy.receive(stack1, amount, false);
             l += extractEnergy(received, false);
         }
-//        if (CuriosCompat.isLoaded()) {
-//            for (ItemStack stack1 : CuriosCompat.getAllStacks(player)) {
-//                if (stack1.isEmpty() || !isPresent(stack1) || !checker.check(stack1)) continue;
-//                long amount = Math.min(getMaxExtract(), getEnergyStored());
-//                if (amount <= 0) break;
-//                int received = Energy.receive(stack1, amount, false);
-//                l += extractEnergy(received, false);
-//            }
-//        }
+        if (CuriosCompat.isLoaded()) {
+            for (ItemStack stack1 : CuriosCompat.getAllStacks(player)) {
+                if (stack1.isEmpty() || !isPresent(stack1) || !checker.test(stack1)) continue;
+                long amount = Math.min(getMaxExtract(), getEnergyStored());
+                if (amount <= 0) break;
+                int received = Energy.receive(stack1, amount, false);
+                l += extractEnergy(received, false);
+            }
+        }
         return l;
     }
 
