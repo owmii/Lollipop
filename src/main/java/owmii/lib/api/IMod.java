@@ -1,7 +1,5 @@
 package owmii.lib.api;
 
-import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.command.CommandSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -29,10 +27,7 @@ public interface IMod {
     default void aboutToStar(FMLServerAboutToStartEvent event) {}
 
     default void starting(FMLServerStartingEvent event) {
-        registerCommands(event.getCommandDispatcher());
     }
-
-    default void registerCommands(CommandDispatcher<CommandSource> cd) {}
 
     default void started(FMLServerStartedEvent event) {}
 

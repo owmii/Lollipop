@@ -1,6 +1,7 @@
 package owmii.lib.util;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -14,5 +15,9 @@ public class Misc {
             }
         }
         return true;
+    }
+
+    public static BlockPos getPos(Entity entity) {
+        return new BlockPos(entity.getPosX(), entity.getPosY(), entity.getPosZ());
     }
 }
