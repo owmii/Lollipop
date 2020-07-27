@@ -108,8 +108,7 @@ public class AbstractBlock<V extends IVariant> extends Block implements IBlock<V
         if (te instanceof AbstractTileEntity) {
             AbstractTileEntity tile = (AbstractTileEntity) te;
             ItemStack stack = tile.storeToStack(new ItemStack(this));
-            spawnAsEntity((World) world, pos, stack);
-            return stack;
+            return tile.storeToStack(new ItemStack(this));
         }
         return super.getPickBlock(state, target, world, pos, player);
     }

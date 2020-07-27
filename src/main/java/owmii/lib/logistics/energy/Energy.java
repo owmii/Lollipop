@@ -259,6 +259,10 @@ public class Energy implements IEnergyStorage {
         return this.stored > 0 && this.stored >= this.capacity;
     }
 
+    public long getPercent() {
+        return (long) (((float) this.stored / this.capacity) * 100);
+    }
+
     public static class Item extends Energy {
         private final ItemStack stack;
 

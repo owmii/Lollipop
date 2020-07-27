@@ -2,6 +2,7 @@ package owmii.lib.logistics;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraftforge.common.util.Constants;
 import owmii.lib.block.AbstractEnergyStorage;
 
 import javax.annotation.Nullable;
@@ -14,23 +15,27 @@ import static owmii.lib.logistics.TransferType.NONE;
 public class SideConfig {
     private final TransferType[] sideTypes = new TransferType[]{NONE, NONE, NONE, NONE, NONE, NONE};
     private final AbstractEnergyStorage storage;
+    private boolean isSetFromNBT;
 
     public SideConfig(AbstractEnergyStorage storage) {
         this.storage = storage;
     }
 
     public void init() {
-        for (Direction side : Direction.values()) {
-            setType(side, this.storage.getTransferType());
+        if (!this.isSetFromNBT) {
+            for (Direction side : Direction.values()) {
+                setType(side, this.storage.getTransferType());
+            }
         }
     }
 
     public void read(CompoundNBT nbt) {
-        if (nbt.contains("side_transfer_type", 11)) {
+        if (nbt.contains("side_transfer_type", Constants.NBT.TAG_INT_ARRAY)) {
             int[] arr = nbt.getIntArray("side_transfer_type");
             for (int i = 0; i < arr.length; i++) {
                 this.sideTypes[i] = TransferType.values()[arr[i]];
             }
+            this.isSetFromNBT = true;
         }
     }
 
