@@ -44,28 +44,28 @@ public class IconButton extends Button {
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrix, int mouseX, int mouseY, float pt) {
-        if (this.field_230694_p_) {
-            this.field_230692_n_ = mouseX >= this.field_230690_l_ && mouseY >= this.field_230691_m_ && mouseX < this.field_230690_l_ + this.field_230688_j_ && mouseY < this.field_230691_m_ + this.field_230689_k_;
+    public void render(MatrixStack matrix, int mouseX, int mouseY, float pt) {
+        if (this.visible) {
+            this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            blit(matrix, this.texture, this.field_230690_l_, this.field_230691_m_);
+            blit(matrix, this.texture, this.x, this.y);
         }
     }
 
     @Override
-    public void func_230443_a_(MatrixStack matrix, int mouseX, int mouseY) {
+    public void renderToolTip(MatrixStack matrix, int mouseX, int mouseY) {
         List<ITextComponent> tooltip = new ArrayList<>();
         this.tooltipConsumer.accept(tooltip);
         if (!tooltip.isEmpty()) {
-            this.screen.func_238654_b_(matrix, tooltip, mouseX, mouseY);
+            this.screen.renderTooltip(matrix, tooltip, mouseX, mouseY);
         }
     }
 
     public void blit(MatrixStack matrix, Texture texture, int x, int y) {
         bindTexture(texture.getLocation());
-        func_238474_b_(matrix, x, y, texture.getU(), texture.getV(), texture.getWidth(), texture.getHeight());
+        blit(matrix, x, y, texture.getU(), texture.getV(), texture.getWidth(), texture.getHeight());
     }
 
     public void bindTexture(ResourceLocation guiTexture) {

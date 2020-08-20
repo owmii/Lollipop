@@ -62,7 +62,7 @@ public class Server {
 //    }
 
     public static Optional<ServerWorld> getWorld(ResourceLocation dimName) {
-        return getWorld(RegistryKey.func_240903_a_(Registry.field_239699_ae_, dimName));
+        return getWorld(RegistryKey.func_240903_a_(Registry.WORLD_KEY, dimName));
     }
 
     public static Optional<ServerWorld> getWorld(@Nullable RegistryKey<World> dim) {

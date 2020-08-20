@@ -27,19 +27,19 @@ public class AbstractContainerScreen<C extends AbstractContainer> extends Contai
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
-        this.func_230446_a_(matrix);
-        super.func_230430_a_(matrix, mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(matrix);
+        super.render(matrix, mouseX, mouseY, partialTicks);
         this.func_230459_a_(matrix, mouseX, mouseY);
     }
 
     @Override
-    protected void func_230450_a_(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
         drawBackground(matrix, partialTicks, mouseX, mouseY);
     }
 
     @Override
-    protected void func_230451_b_(MatrixStack matrix, int mouseX, int mouseY) {
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrix, int mouseX, int mouseY) {
         drawForeground(matrix, mouseX, mouseY);
     }
 
@@ -47,9 +47,9 @@ public class AbstractContainerScreen<C extends AbstractContainer> extends Contai
     protected void func_230459_a_(MatrixStack matrix, int mouseX, int mouseY) {
         super.func_230459_a_(matrix, mouseX, mouseY);
 
-        for (Widget widget : this.field_230710_m_) {
-            if (widget.func_230449_g_()) {
-                widget.func_230443_a_(matrix, mouseX, mouseY);
+        for (Widget widget : this.buttons) {
+            if (widget.isHovered()) {
+                widget.renderToolTip(matrix, mouseX, mouseY);
                 return;
             }
         }

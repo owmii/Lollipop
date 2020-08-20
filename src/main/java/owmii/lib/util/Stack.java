@@ -1,9 +1,14 @@
 package owmii.lib.util;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class Stack {
@@ -57,5 +62,19 @@ public class Stack {
             }
         }
         return false;
+    }
+
+    public static void drop(Entity entity, ItemStack stack) {
+        drop(entity.world, entity.getPositionVec().add(0.0D, 0.3D, 0.0D), stack);
+    }
+
+    public static void drop(World world, BlockPos pos, ItemStack stack) {
+        drop(world, new Vector3d(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D), stack);
+    }
+
+    public static void drop(World world, Vector3d pos, ItemStack stack) {
+        ItemEntity entity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+        entity.setPickupDelay(8);
+        world.addEntity(entity);
     }
 }

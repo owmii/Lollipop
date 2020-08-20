@@ -21,6 +21,6 @@ public abstract class AbstractGeneratorBlock<V extends IVariant<?>, C extends IE
 
     @Override
     public void additionalEnergyInfo(ItemStack stack, Energy.Item energy, List<ITextComponent> tooltip) {
-        tooltip.add(new TranslationTextComponent("info.lollipop.generates", Util.numFormat(getConfig().getGeneration(this.variant))).func_240699_a_(TextFormatting.DARK_GRAY));
+        tooltip.add(new TranslationTextComponent("info.lollipop.generates", Util.numFormat(getConfig().getGeneration(this.variant))).mergeStyle(TextFormatting.DARK_GRAY));
     }
 }

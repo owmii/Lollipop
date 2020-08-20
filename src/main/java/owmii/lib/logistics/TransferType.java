@@ -36,6 +36,6 @@ public enum TransferType {
 
 
     public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("info.lollipop.side.config." + name().toLowerCase(), this.color).func_240699_a_(TextFormatting.GRAY);
+        return new TranslationTextComponent("info.lollipop.side.config." + name().toLowerCase(), this.color).mergeStyle(TextFormatting.GRAY);
     }
 }

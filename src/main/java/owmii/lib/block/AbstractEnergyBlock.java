@@ -85,7 +85,7 @@ public abstract class AbstractEnergyBlock<V extends IVariant<?>, C extends IEner
 
     public void addEnergyInfo(ItemStack stack, Energy.Item storage, List<ITextComponent> tooltip) {
         if (storage.getCapacity() > 0)
-            tooltip.add(new TranslationTextComponent("info.lollipop.stored.energy.fe", Util.addCommas(storage.getStored()), Util.numFormat(storage.getCapacity())).func_240699_a_(TextFormatting.DARK_GRAY));
+            tooltip.add(new TranslationTextComponent("info.lollipop.stored.energy.fe", Util.addCommas(storage.getStored()), Util.numFormat(storage.getCapacity())).mergeStyle(TextFormatting.DARK_GRAY));
     }
 
     public void addEnergyTransferInfo(ItemStack stack, Energy.Item storage, List<ITextComponent> tooltip) {
@@ -93,12 +93,12 @@ public abstract class AbstractEnergyBlock<V extends IVariant<?>, C extends IEner
         long re = storage.getMaxReceive();
         if (ext + re > 0) {
             if (ext == re) {
-                tooltip.add(new TranslationTextComponent("info.lollipop.max.transfer.fe", Util.numFormat(ext)).func_240699_a_(TextFormatting.DARK_GRAY));
+                tooltip.add(new TranslationTextComponent("info.lollipop.max.transfer.fe", Util.numFormat(ext)).mergeStyle(TextFormatting.DARK_GRAY));
             } else {
                 if (ext > 0)
-                    tooltip.add(new TranslationTextComponent("info.lollipop.max.extract.fe", Util.numFormat(ext)).func_240699_a_(TextFormatting.DARK_GRAY));
+                    tooltip.add(new TranslationTextComponent("info.lollipop.max.extract.fe", Util.numFormat(ext)).mergeStyle(TextFormatting.DARK_GRAY));
                 if (re > 0)
-                    tooltip.add(new TranslationTextComponent("info.lollipop.max.receive.fe", Util.numFormat(re)).func_240699_a_(TextFormatting.DARK_GRAY));
+                    tooltip.add(new TranslationTextComponent("info.lollipop.max.receive.fe", Util.numFormat(re)).mergeStyle(TextFormatting.DARK_GRAY));
             }
         }
     }

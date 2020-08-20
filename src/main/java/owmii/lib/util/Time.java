@@ -14,7 +14,7 @@ public class Time {
     }
 
     public static boolean isDay(World world) {
-        float celestialAngle = world.getCelestialAngle(1.0F);
+        float celestialAngle = world.getCelestialAngleRadians(1.0F);
         return celestialAngle < 0.25F || celestialAngle > 0.75F;
     }
 }

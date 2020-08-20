@@ -20,21 +20,21 @@ public class AbstractTileScreen<T extends AbstractTileEntity<?, ?> & IInventoryH
     }
 
     protected void addRedstoneButton(int x, int y) {
-        this.redStoneButton = func_230480_a_(new IconButton(this.guiLeft + this.xSize + x + 2, this.guiTop + y + 3, Texture.REDSTONE.get(this.te.getRedstoneMode()), b -> {
+        this.redStoneButton = addButton(new IconButton(this.guiLeft + this.xSize + x + 2, this.guiTop + y + 3, Texture.REDSTONE.get(this.te.getRedstoneMode()), b -> {
             Lollipop.NET.toServer(new NextRedstoneModePacket(this.te.getPos()));
             this.te.setRedstoneMode(this.te.getRedstoneMode().next());
         }, this).setTooltip(tooltip -> tooltip.add(this.te.getRedstoneMode().getDisplayName())));
     }
 
     @Override
-    public void func_231023_e_() {
-        super.func_231023_e_();
+    public void tick() {
+        super.tick();
         this.redStoneButton.setTexture(Texture.REDSTONE.get(this.te.getRedstoneMode()));
     }
 
     @Override
     protected void drawBackground(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
         super.drawBackground(matrix, partialTicks, mouseX, mouseY);
-        Texture.REDSTONE_BTN_BG.draw(matrix, this.redStoneButton.field_230690_l_ - 2, this.redStoneButton.field_230691_m_ - 4);
+        Texture.REDSTONE_BTN_BG.draw(matrix, this.redStoneButton.x - 2, this.redStoneButton.y - 4);
     }
 }

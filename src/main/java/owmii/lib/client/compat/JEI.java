@@ -28,6 +28,7 @@ public class JEI implements IModPlugin {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addGuiContainerHandler(AbstractContainerScreen.class, new GuiContainerHandler());
     }

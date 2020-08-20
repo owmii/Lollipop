@@ -61,7 +61,7 @@ public class Texture extends AbstractGui {
     public void draw(MatrixStack matrix, int x, int y) {
         if (!isEmpty()) {
             bindTexture(getLocation());
-            func_238474_b_(matrix, x, y, getU(), getV(), getWidth(), getHeight());
+            blit(matrix, x, y, getU(), getV(), getWidth(), getHeight());
         }
     }
 

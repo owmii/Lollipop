@@ -27,8 +27,8 @@ public class AbstractEnergyScreen<T extends AbstractEnergyStorage<?, ?, ?> & IIn
     }
 
     @Override
-    protected void func_231160_c_() {
-        super.func_231160_c_();
+    protected void init() {
+        super.init();
         if (hasConfigButtons()) {
             addSideConfigButtons(0, 4);
         }
@@ -44,27 +44,27 @@ public class AbstractEnergyScreen<T extends AbstractEnergyStorage<?, ?, ?> & IIn
             int xOffset = offset.getLeft();
             int yOffset = offset.getRight();
             Direction side = Direction.byIndex(i);
-            this.configButtons[i] = func_230480_a_(new IconButton(this.guiLeft + xOffset + this.xSize + x + 8, this.guiTop + yOffset + y + 10, Texture.CONFIG.get(this.te.getSideConfig().getType(side)), button -> {
+            this.configButtons[i] = addButton(new IconButton(this.guiLeft + xOffset + this.xSize + x + 8, this.guiTop + yOffset + y + 10, Texture.CONFIG.get(this.te.getSideConfig().getType(side)), button -> {
                 Lollipop.NET.toServer(new NextEnergyConfigPacket(id, this.te.getPos()));
                 this.te.getSideConfig().nextType(side);
             }, this).setTooltip(tooltip -> {
-                tooltip.add(new TranslationTextComponent("info.lollipop.side." + side.func_176610_l(), TextFormatting.DARK_GRAY).func_240699_a_(TextFormatting.GRAY));
+                tooltip.add(new TranslationTextComponent("info.lollipop.side." + side.getString(), TextFormatting.DARK_GRAY).mergeStyle(TextFormatting.GRAY));
                 tooltip.add(this.te.getSideConfig().getType(side).getDisplayName());
             }));
         }
 
-        this.configButtonAll = func_230480_a_(new IconButton(this.guiLeft + this.xSize + x + 14, this.guiTop + y + 4, Texture.CONFIG_BTN, button -> {
+        this.configButtonAll = addButton(new IconButton(this.guiLeft + this.xSize + x + 14, this.guiTop + y + 4, Texture.CONFIG_BTN, button -> {
             Lollipop.NET.toServer(new NextEnergyConfigPacket(6, this.te.getPos()));
             this.te.getSideConfig().nextTypeAll();
         }, this).setTooltip(tooltip -> {
-            tooltip.add(new TranslationTextComponent("info.lollipop.side.all", TextFormatting.DARK_GRAY).func_240699_a_(TextFormatting.GRAY));
+            tooltip.add(new TranslationTextComponent("info.lollipop.side.all", TextFormatting.DARK_GRAY).mergeStyle(TextFormatting.GRAY));
             tooltip.add(this.te.getSideConfig().getType(Direction.UP).getDisplayName());
         }));
     }
 
     @Override
-    public void func_231023_e_() {
-        super.func_231023_e_();
+    public void tick() {
+        super.tick();
         if (hasConfigButtons()) {
             for (int i = 0; i < 6; i++) {
                 this.configButtons[i].setTexture(Texture.CONFIG.get(this.te.getSideConfig().getType(Direction.byIndex(i))));
@@ -80,16 +80,16 @@ public class AbstractEnergyScreen<T extends AbstractEnergyStorage<?, ?, ?> & IIn
     protected void drawBackground(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
         super.drawBackground(matrix, partialTicks, mouseX, mouseY);
         if (hasConfigButtons()) {
-            Texture.CONFIG_BTN_BG.draw(matrix, this.configButtons[1].field_230690_l_ - 8, this.configButtons[1].field_230691_m_ - 4);
+            Texture.CONFIG_BTN_BG.draw(matrix, this.configButtons[1].x - 8, this.configButtons[1].y - 4);
         }
     }
 
     @Override
     protected void drawForeground(MatrixStack matrix, int mouseX, int mouseY) {
         super.drawForeground(matrix, mouseX, mouseY);
-        String title = this.field_230704_d_.getString();
-        int width = this.field_230712_o_.getStringWidth(title);
-        this.field_230712_o_.func_238405_a_(matrix, title, this.xSize / 2 - width / 2, -14.0F, 0x777777);
+        String title = this.title.getString();
+        int width = this.font.getStringWidth(title);
+        this.font.drawString(matrix, title, this.xSize / 2 - width / 2, -14.0F, 0x777777);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class AbstractEnergyScreen<T extends AbstractEnergyStorage<?, ?, ?> & IIn
         final List<Rectangle2d> extraAreas = super.getExtraAreas();
         if (hasConfigButtons()) {
             Texture texture = Texture.CONFIG_BTN_BG;
-            extraAreas.add(new Rectangle2d(this.configButtons[1].field_230690_l_ - 8, this.configButtons[1].field_230691_m_ - 4, texture.getWidth(), texture.getHeight()));
+            extraAreas.add(new Rectangle2d(this.configButtons[1].x - 8, this.configButtons[1].y - 4, texture.getWidth(), texture.getHeight()));
         }
         return extraAreas;
     }
