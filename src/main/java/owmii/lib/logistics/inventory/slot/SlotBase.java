@@ -1,38 +1,33 @@
 package owmii.lib.logistics.inventory.slot;
 
-import net.minecraftforge.items.IItemHandler;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
+import owmii.lib.logistics.inventory.Inventory;
+
+import javax.annotation.Nonnull;
 
 public class SlotBase extends SlotItemHandler {
-    public SlotOverlay bg = SlotOverlay.SLOT;
-    public SlotOverlay ov = SlotOverlay.FILTER;
-    public boolean drawBg;
-    public boolean drawOv;
-    public boolean hide;
+    protected final Inventory<?> inv;
 
-
-    public SlotBase(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
-        super(itemHandler, index, xPosition, yPosition);
+    public SlotBase(Inventory<?> handler, int id, int x, int y) {
+        super(handler, id, x, y);
+        this.inv = handler;
     }
 
-    public SlotBase bg(SlotOverlay bg) {
-        this.bg = bg;
-        this.drawBg = true;
-        return this;
+    @Override
+    public boolean canTakeStack(PlayerEntity player) {
+        return !this.getItemHandler().extractItemFromSlot(getSlotIndex(), 1, true).isEmpty();
     }
 
-    public SlotBase ov(SlotOverlay ov) {
-        this.ov = ov;
-        this.drawOv = true;
-        return this;
+    @Nonnull
+    @Override
+    public ItemStack decrStackSize(int amount) {
+        return this.getItemHandler().extractItemFromSlot(getSlotIndex(), amount, false);
     }
 
-    public boolean isHidden() {
-        return this.hide;
-    }
-
-    public SlotBase hide() {
-        this.hide = true;
-        return this;
+    @Override
+    public Inventory<?> getItemHandler() {
+        return this.inv;
     }
 }

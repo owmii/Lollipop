@@ -15,9 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AbstractContainerScreen<C extends AbstractContainer> extends ContainerScreen<C> {
+    private final List<Rectangle2d> extraAreas = new ArrayList<>();
     protected final Minecraft mc = Minecraft.getInstance();
     protected final Texture backGround;
-    private List<Rectangle2d> extraAreas = new ArrayList<>();
+
 
     public AbstractContainerScreen(C container, PlayerInventory inv, ITextComponent title, Texture backGround) {
         super(container, inv, title);
@@ -30,7 +31,7 @@ public class AbstractContainerScreen<C extends AbstractContainer> extends Contai
     public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
         renderBackground(matrix);
         super.render(matrix, mouseX, mouseY, partialTicks);
-        this.func_230459_a_(matrix, mouseX, mouseY);
+        func_230459_a_(matrix, mouseX, mouseY);
     }
 
     @Override
@@ -46,7 +47,6 @@ public class AbstractContainerScreen<C extends AbstractContainer> extends Contai
     @Override
     protected void func_230459_a_(MatrixStack matrix, int mouseX, int mouseY) {
         super.func_230459_a_(matrix, mouseX, mouseY);
-
         for (Widget widget : this.buttons) {
             if (widget.isHovered()) {
                 widget.renderToolTip(matrix, mouseX, mouseY);

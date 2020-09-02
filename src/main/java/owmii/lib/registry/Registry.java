@@ -1,24 +1,17 @@
 package owmii.lib.registry;
 
 import net.minecraft.block.Block;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.particles.ParticleType;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import owmii.lib.block.IBlock;
 
@@ -31,18 +24,20 @@ import java.util.function.Supplier;
 @SuppressWarnings({"unchecked", "ConstantConditions"})
 public class Registry<T extends IForgeRegistryEntry<T>> {
     private final List<T> objects;
+    private final Class<T> clazz;
     private final String id;
     private boolean frozen;
 
-    public Registry(String id) {
-        this(id, new ArrayList<>());
+    public Registry(Class<T> clazz, String id) {
+        this(clazz, new ArrayList<>(), id);
     }
 
-    public Registry(String id, Registry<T> registry) {
-        this(id, registry.objects);
+    public Registry(Class<T> clazz, Registry<T> registry, String id) {
+        this(clazz, registry.objects, id);
     }
 
-    public Registry(String id, List<T> objects) {
+    public Registry(Class<T> clazz, List<T> objects, String id) {
+        this.clazz = clazz;
         this.id = id;
         this.objects = new ArrayList<>(objects);
     }
@@ -67,22 +62,12 @@ public class Registry<T extends IForgeRegistryEntry<T>> {
 
     public void init() {
         if (this.frozen) return;
-        this.objects.forEach(o -> {
-            if (o instanceof Block) ForgeRegistries.BLOCKS.register((Block) o);
-            else if (o instanceof Fluid) ForgeRegistries.FLUIDS.register((Fluid) o);
-            else if (o instanceof Item) ForgeRegistries.ITEMS.register((Item) o);
-            else if (o instanceof Effect) ForgeRegistries.POTIONS.register((Effect) o);
-            else if (o instanceof Potion) ForgeRegistries.POTION_TYPES.register((Potion) o);
-                // else if (o instanceof Biome) ForgeRegistries.BIOMES.register((Biome) o);TODO
-            else if (o instanceof SoundEvent) ForgeRegistries.SOUND_EVENTS.register((SoundEvent) o);
-            else if (o instanceof Enchantment) ForgeRegistries.ENCHANTMENTS.register((Enchantment) o);
-            else if (o instanceof EntityType<?>) ForgeRegistries.ENTITIES.register((EntityType<?>) o);
-            else if (o instanceof TileEntityType<?>) ForgeRegistries.TILE_ENTITIES.register((TileEntityType<?>) o);
-            else if (o instanceof ParticleType<?>) ForgeRegistries.PARTICLE_TYPES.register((ParticleType<?>) o);
-            else if (o instanceof ContainerType<?>) ForgeRegistries.CONTAINERS.register((ContainerType<?>) o);
-            else if (o instanceof Attribute) ForgeRegistries.ATTRIBUTES.register((Attribute) o);
-        });
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(this.clazz, this::registerAll);
         this.frozen = true;
+    }
+
+    public void registerAll(RegistryEvent.Register<T> event) {
+        this.objects.forEach(t -> event.getRegistry().register(t));
     }
 
     public void forEach(Consumer<T> action) {
@@ -90,7 +75,7 @@ public class Registry<T extends IForgeRegistryEntry<T>> {
     }
 
     public Registry<Item> getBlockItems(@Nullable ItemGroup group) {
-        Registry<Item> reg = new Registry<>(this.id);
+        Registry<Item> reg = new Registry<>(Item.class, this.id);
         for (T object : this.objects) {
             if (object instanceof Block) {
                 Block block = (Block) object;

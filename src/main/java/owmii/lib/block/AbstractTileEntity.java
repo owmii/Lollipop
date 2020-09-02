@@ -175,7 +175,7 @@ public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V>> 
         return true;
     }
 
-    private boolean keepInventory() {
+    protected boolean keepInventory() {
         return false;
     }
 

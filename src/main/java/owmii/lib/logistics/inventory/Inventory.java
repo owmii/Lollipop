@@ -7,6 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -16,7 +17,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import owmii.lib.block.AbstractTileEntity;
 import owmii.lib.block.IInventoryHolder;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,10 +94,13 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
         return super.isItemValid(slot, stack);
     }
 
-    @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         return canExtract(slot, getStackInSlot(slot)) ? super.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+    }
+
+    public ItemStack extractItemFromSlot(int slot, int amount, boolean simulate) {
+        return super.extractItem(slot, amount, simulate);
     }
 
     public boolean canExtract(int slot, ItemStack stack) {
@@ -124,7 +127,11 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
     }
 
     public ItemStack getLast() {
-        return getStackInSlot(getSlots() - 1);
+        return getLast(0);
+    }
+
+    public ItemStack getLast(int excludeSize) {
+        return getStackInSlot(getSlots() - 1 - excludeSize);
     }
 
     public boolean isEmpty() {
@@ -306,5 +313,19 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
     public static LazyOptional<IItemHandler> get(World world, BlockPos pos, Direction side) {
         TileEntity te = world.getTileEntity(pos);
         return te != null ? te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side) : LazyOptional.empty();
+    }
+
+    public static int calcRedstone(IItemHandler inv) {
+        int i = 0;
+        float f = 0.0F;
+        for (int j = 0; j < inv.getSlots(); ++j) {
+            ItemStack itemstack = inv.getStackInSlot(j);
+            if (!itemstack.isEmpty()) {
+                f += (float) itemstack.getCount() / (float) Math.min(inv.getSlotLimit(j), itemstack.getMaxStackSize());
+                ++i;
+            }
+        }
+        f = f / (float) inv.getSlots();
+        return MathHelper.floor(f * 14.0F) + (i > 0 ? 1 : 0);
     }
 }

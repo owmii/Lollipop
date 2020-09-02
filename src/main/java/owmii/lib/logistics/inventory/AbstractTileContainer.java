@@ -34,7 +34,7 @@ public abstract class AbstractTileContainer<T extends AbstractTileEntity<?, ?> &
     }
 
     protected void init(PlayerInventory inventory, T te) {
-        super.init(inventory);
+
     }
 
     @SuppressWarnings("unchecked")

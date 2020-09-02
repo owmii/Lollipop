@@ -4,9 +4,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import owmii.lib.api.IClient;
 import owmii.lib.api.IMod;
 import owmii.lib.network.Network;
 import owmii.lib.network.Packets;
+
+import javax.annotation.Nullable;
 
 @Mod(Lollipop.MOD_ID)
 public class Lollipop implements IMod {
@@ -21,5 +24,11 @@ public class Lollipop implements IMod {
     @Override
     public void setup(FMLCommonSetupEvent event) {
         Packets.register();
+    }
+
+    @Nullable
+    @Override
+    public IClient getClient() {
+        return null;
     }
 }

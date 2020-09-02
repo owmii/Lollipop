@@ -48,7 +48,7 @@ dependencies {
 //    compileOnly fg.deobf("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}:api")
 //    runtimeOnly fg.deobf("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}")
     
-    compile fg.deobf("top.theillusivec4.curios:curios:FORGE-${minecraft_version}-${curios_version}")
+    compile fg.deobf("top.theillusivec4.curios:curios-forge:${minecraft_version}-${curios_version}")
 }
 
 jar {

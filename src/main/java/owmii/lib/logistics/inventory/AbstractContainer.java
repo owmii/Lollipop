@@ -10,12 +10,12 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public abstract class AbstractContainer extends Container {
+public class AbstractContainer extends Container {
     public final PlayerEntity player;
     public final World world;
 
-    public AbstractContainer(@Nullable ContainerType<?> containerType, int id, PlayerInventory inventory, PacketBuffer buffer) {
-        this(containerType, id, inventory);
+    public AbstractContainer(@Nullable ContainerType<?> type, int id, PlayerInventory inventory, PacketBuffer buffer) {
+        this(type, id, inventory);
     }
 
     public AbstractContainer(@Nullable ContainerType<?> type, int id, PlayerInventory inventory) {
@@ -43,4 +43,11 @@ public abstract class AbstractContainer extends Container {
     public boolean canInteractWith(PlayerEntity playerIn) {
         return true;
     }
+
+    public static final Container DUMMY = new Container(null, 0) {
+        @Override
+        public boolean canInteractWith(PlayerEntity playerIn) {
+            return true;
+        }
+    };
 }
