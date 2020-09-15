@@ -1,4 +1,4 @@
-package owmii.lib.client.screen;
+package owmii.lib.client.screen.container;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -12,7 +12,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import owmii.lib.Lollipop;
 import owmii.lib.block.AbstractEnergyStorage;
 import owmii.lib.block.IInventoryHolder;
+import owmii.lib.client.screen.Texture;
 import owmii.lib.client.screen.widget.IconButton;
+import owmii.lib.client.util.Text;
 import owmii.lib.logistics.inventory.AbstractEnergyContainer;
 import owmii.lib.network.packets.NextEnergyConfigPacket;
 
@@ -48,7 +50,8 @@ public class AbstractEnergyScreen<T extends AbstractEnergyStorage<?, ?, ?> & IIn
                 Lollipop.NET.toServer(new NextEnergyConfigPacket(id, this.te.getPos()));
                 this.te.getSideConfig().nextType(side);
             }, this).setTooltip(tooltip -> {
-                tooltip.add(new TranslationTextComponent("info.lollipop.side." + side.getString(), TextFormatting.DARK_GRAY).mergeStyle(TextFormatting.GRAY));
+                tooltip.add(new TranslationTextComponent("info.lollipop.facing").append(Text.COLON).mergeStyle(TextFormatting.GRAY)
+                        .append(new TranslationTextComponent("info.lollipop.side." + side.getString()).mergeStyle(TextFormatting.DARK_GRAY)));
                 tooltip.add(this.te.getSideConfig().getType(side).getDisplayName());
             }));
         }
@@ -57,7 +60,8 @@ public class AbstractEnergyScreen<T extends AbstractEnergyStorage<?, ?, ?> & IIn
             Lollipop.NET.toServer(new NextEnergyConfigPacket(6, this.te.getPos()));
             this.te.getSideConfig().nextTypeAll();
         }, this).setTooltip(tooltip -> {
-            tooltip.add(new TranslationTextComponent("info.lollipop.side.all", TextFormatting.DARK_GRAY).mergeStyle(TextFormatting.GRAY));
+            tooltip.add(new TranslationTextComponent("info.lollipop.facing").append(Text.COLON).mergeStyle(TextFormatting.GRAY)
+                    .append(new TranslationTextComponent("info.lollipop.all").mergeStyle(TextFormatting.DARK_GRAY)));
             tooltip.add(this.te.getSideConfig().getType(Direction.UP).getDisplayName());
         }));
     }

@@ -1,10 +1,26 @@
 package owmii.lib.client.util;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.util.text.Color;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class Text {
+    public static final StringTextComponent EMPTY = new StringTextComponent("");
+    public static final StringTextComponent SPACE = new StringTextComponent(" ");
+    public static final StringTextComponent COLON = new StringTextComponent(": ");
+    public static final StringTextComponent COMA = new StringTextComponent(", ");
+
     public static Style color(int color) {
         return Style.EMPTY.setColor(Color.func_240743_a_(color));
     }

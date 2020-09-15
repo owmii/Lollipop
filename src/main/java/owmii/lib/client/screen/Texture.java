@@ -78,10 +78,6 @@ public class Texture extends AbstractGui {
         this.th = th;
     }
 
-    static Texture register(String path, int width, int height, int u, int v) {
-        return new Texture(new ResourceLocation(Lollipop.MOD_ID, "textures/gui/" + path + ".png"), width, height, u, v);
-    }
-
     public void drawScalableW(MatrixStack matrix, float size, int x, int y) {
         scaleW((int) (size * this.width)).draw(matrix, x, y);
     }

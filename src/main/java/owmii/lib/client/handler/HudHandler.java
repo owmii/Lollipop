@@ -35,7 +35,6 @@ public class HudHandler {
                     if (state.getBlock() instanceof IHud) {
                         ((IHud) state.getBlock()).renderHud(event.getMatrixStack(), state, world, pos, player, result, world.getTileEntity(pos));
                     }
-
                     for (Hand hand : Hand.values()) {
                         ItemStack stack = player.getHeldItem(hand);
                         if (stack.getItem() instanceof IHudItem) {

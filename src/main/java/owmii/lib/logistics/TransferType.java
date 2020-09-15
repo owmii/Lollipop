@@ -3,6 +3,9 @@ package owmii.lib.logistics;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import owmii.lib.client.util.Text;
+
+import java.util.Locale;
 
 public enum TransferType {
     ALL(true, true, TextFormatting.DARK_GRAY),
@@ -34,9 +37,9 @@ public enum TransferType {
         return NONE;
     }
 
-
     public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("info.lollipop.side.config." + name().toLowerCase(), this.color).mergeStyle(TextFormatting.GRAY);
+        return new TranslationTextComponent("info.lollipop.io.mode").append(Text.COLON).mergeStyle(TextFormatting.GRAY)
+                .append(new TranslationTextComponent("info.lollipop.io.mode." + name().toLowerCase()).mergeStyle(this.color));
     }
 
     public ITextComponent getDisplayName2() {

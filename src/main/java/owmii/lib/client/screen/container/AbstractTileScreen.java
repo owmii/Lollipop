@@ -1,4 +1,4 @@
-package owmii.lib.client.screen;
+package owmii.lib.client.screen.container;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
@@ -6,6 +6,7 @@ import net.minecraft.util.text.ITextComponent;
 import owmii.lib.Lollipop;
 import owmii.lib.block.AbstractTileEntity;
 import owmii.lib.block.IInventoryHolder;
+import owmii.lib.client.screen.Texture;
 import owmii.lib.client.screen.widget.IconButton;
 import owmii.lib.logistics.inventory.AbstractTileContainer;
 import owmii.lib.network.packets.NextRedstoneModePacket;

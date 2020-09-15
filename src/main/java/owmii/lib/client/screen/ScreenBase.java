@@ -6,12 +6,23 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class ScreenBase extends Screen {
     public final Minecraft mc = Minecraft.getInstance();
+    public int x, y, w, h;
 
-    protected ScreenBase(ITextComponent titleIn) {
-        super(titleIn);
+    protected ScreenBase(ITextComponent title) {
+        super(title);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        this.x = (this.width - this.w) / 2;
+        this.y = (this.height - this.h) / 2;
     }
 
     @Override

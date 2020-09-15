@@ -3,6 +3,7 @@ package owmii.lib.logistics;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import owmii.lib.client.util.Text;
 
 public enum Redstone {
     IGNORE(TextFormatting.DARK_GRAY),
@@ -21,6 +22,7 @@ public enum Redstone {
     }
 
     public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("info.lollipop.redstone.mode." + name().toLowerCase(), this.color).mergeStyle(TextFormatting.GRAY);
+        return new TranslationTextComponent("info.lollipop.redstone").append(Text.COLON).mergeStyle(TextFormatting.GRAY)
+                .append(new TranslationTextComponent("info.lollipop." + name().toLowerCase()).mergeStyle(this.color));
     }
 }

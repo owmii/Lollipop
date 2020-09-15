@@ -2,7 +2,7 @@ package owmii.lib.client.compat;
 
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import net.minecraft.client.renderer.Rectangle2d;
-import owmii.lib.client.screen.AbstractContainerScreen;
+import owmii.lib.client.screen.container.AbstractContainerScreen;
 import owmii.lib.logistics.inventory.AbstractContainer;
 
 import java.util.List;

@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 import owmii.lib.Lollipop;
-import owmii.lib.client.screen.AbstractContainerScreen;
+import owmii.lib.client.screen.container.AbstractContainerScreen;
 
 import javax.annotation.Nullable;
 
