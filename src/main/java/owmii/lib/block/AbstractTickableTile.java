@@ -3,9 +3,10 @@ package owmii.lib.block;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.World;
+import owmii.lib.registry.IVariant;
 import owmii.lib.util.Server;
 
-public class AbstractTickableTile<V extends IVariant, B extends AbstractBlock<V>> extends AbstractTileEntity<V, B> implements ITickableTileEntity {
+public class AbstractTickableTile<V extends IVariant, B extends AbstractBlock<V, B>> extends AbstractTileEntity<V, B> implements ITickableTileEntity {
     private int syncTicks;
     public int ticks;
 

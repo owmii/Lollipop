@@ -1,6 +1,7 @@
 package owmii.lib.block;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.item.Item;
@@ -10,10 +11,12 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
 import owmii.lib.item.ItemBlock;
+import owmii.lib.registry.IVariant;
+import owmii.lib.registry.IVariantEntry;
 
 import javax.annotation.Nullable;
 
-public interface IBlock<V extends IVariant> extends IForgeBlock {
+public interface IBlock<V extends IVariant, B extends Block & IBlock<V, B>> extends IForgeBlock, IVariantEntry<V, B> {
     @SuppressWarnings("unchecked")
     default ItemBlock getBlockItem(Item.Properties properties, @Nullable ItemGroup group) {
         return new ItemBlock(getBlock(), properties, group);

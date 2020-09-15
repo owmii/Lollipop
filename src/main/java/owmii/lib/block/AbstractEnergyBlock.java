@@ -20,13 +20,16 @@ import owmii.lib.api.energy.IEnergyConnector;
 import owmii.lib.config.IConfigHolder;
 import owmii.lib.config.IEnergyConfig;
 import owmii.lib.item.EnergyBlockItem;
+import owmii.lib.item.IEnergyItemProvider;
+import owmii.lib.logistics.TransferType;
 import owmii.lib.logistics.energy.Energy;
+import owmii.lib.registry.IVariant;
 import owmii.lib.util.Util;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class AbstractEnergyBlock<V extends IVariant<?>, C extends IEnergyConfig<V>> extends AbstractBlock<V> implements IConfigHolder<V, C> {
+public abstract class AbstractEnergyBlock<V extends IVariant<?>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C, B>> extends AbstractBlock<V, B> implements IConfigHolder<V, C>, InfoBox.IInfoBoxHolder, IEnergyItemProvider {
     public AbstractEnergyBlock(Properties properties) {
         this(properties, IVariant.getEmpty());
     }
@@ -71,6 +74,15 @@ public abstract class AbstractEnergyBlock<V extends IVariant<?>, C extends IEner
     }
 
     @Override
+    public boolean isChargeable(ItemStack stack) {
+        return getTransferType().canReceive;
+    }
+
+    public TransferType getTransferType() {
+        return TransferType.ALL;
+    }
+
+    @Override
     public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         Energy.ifPresent(stack, storage -> {
             if (storage instanceof Energy.Item) {
@@ -105,4 +117,16 @@ public abstract class AbstractEnergyBlock<V extends IVariant<?>, C extends IEner
 
     public void additionalEnergyInfo(ItemStack stack, Energy.Item energy, List<ITextComponent> tooltip) {}
 
+    @Override
+    public InfoBox getInfoBox(ItemStack stack, InfoBox box) {
+        Energy.ifPresent(stack, storage -> {
+            if (storage instanceof Energy.Item) {
+                Energy.Item energy = (Energy.Item) storage;
+                if (storage.getMaxEnergyStored() > 0)
+                    box.set(new TranslationTextComponent("info.lollipop.capacity"), new TranslationTextComponent("info.lollipop.fe", Util.addCommas(energy.getCapacity())));
+                box.set(new TranslationTextComponent("info.lollipop.max.io"), new TranslationTextComponent("info.lollipop.fe.pet.tick", Util.addCommas(energy.getMaxExtract())));
+            }
+        });
+        return box;
+    }
 }

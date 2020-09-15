@@ -21,13 +21,14 @@ import owmii.lib.logistics.IRedstoneInteract;
 import owmii.lib.logistics.Redstone;
 import owmii.lib.logistics.fluid.Tank;
 import owmii.lib.logistics.inventory.Inventory;
+import owmii.lib.registry.IVariant;
 import owmii.lib.util.NBT;
 import owmii.lib.util.Stack;
 
 import javax.annotation.Nullable;
 
 @SuppressWarnings("unchecked")
-public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V>> extends TileEntity implements IBlockEntity, IRedstoneInteract {
+public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V, B>> extends TileEntity implements IBlockEntity, IRedstoneInteract {
     /**
      * Used when this is instance of {@link IInventoryHolder}
      **/

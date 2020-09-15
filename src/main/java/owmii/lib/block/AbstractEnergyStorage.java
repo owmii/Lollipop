@@ -14,6 +14,7 @@ import owmii.lib.logistics.IRedstoneInteract;
 import owmii.lib.logistics.SideConfig;
 import owmii.lib.logistics.TransferType;
 import owmii.lib.logistics.energy.Energy;
+import owmii.lib.registry.IVariant;
 import owmii.lib.util.Util;
 
 import javax.annotation.Nullable;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class AbstractEnergyStorage<V extends IVariant<?>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C>> extends AbstractTickableTile<V, B> implements IRedstoneInteract {
+public class AbstractEnergyStorage<V extends IVariant<?>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C, B>> extends AbstractTickableTile<V, B> implements IRedstoneInteract {
     protected final SideConfig sideConfig = new SideConfig(this);
     protected final Energy energy = Energy.create(0);
 

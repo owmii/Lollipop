@@ -12,6 +12,7 @@ import net.minecraftforge.common.util.NonNullConsumer;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import owmii.lib.compat.curios.CuriosCompat;
+import owmii.lib.item.EnergyBlockItem;
 import owmii.lib.util.NBT;
 import owmii.lib.util.Player;
 import owmii.lib.util.Stack;
@@ -50,7 +51,7 @@ public class Energy implements IEnergyStorage {
     }
 
     public static Energy from(Energy energy) {
-        return create(energy.capacity, energy.maxExtract, energy.maxReceive);
+        return new Energy(energy);
     }
 
     public static Energy create(long capacity, long maxExtract, long maxReceive) {
@@ -331,6 +332,16 @@ public class Energy implements IEnergyStorage {
 
     public static void ifPresent(ItemStack stack, NonNullConsumer<? super IEnergyStorage> consumer) {
         get(stack).ifPresent(consumer);
+    }
+
+    public static boolean chargeable(ItemStack stack) {
+        if (stack.getItem() instanceof EnergyBlockItem) {
+            EnergyBlockItem item = (EnergyBlockItem) stack.getItem();
+            if (!item.isChargeable(stack)) {
+                return false;
+            }
+        }
+        return isPresent(stack);
     }
 
     public static boolean isPresent(ItemStack stack) {

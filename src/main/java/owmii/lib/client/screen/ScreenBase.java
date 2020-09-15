@@ -44,6 +44,10 @@ public class ScreenBase extends Screen {
         return false;
     }
 
+    public boolean isMouseOver(int x, int y, int w, int h, double mouseX, double mouseY) {
+        return mouseX >= x && mouseY >= y && mouseX < x + w && mouseY < y + h;
+    }
+
     public <T extends Widget> T addButton2(T button) {
         return addButton(button);
     }

@@ -1,4 +1,4 @@
-package owmii.lib.block;
+package owmii.lib.registry;
 
 import net.minecraft.nbt.CompoundNBT;
 
@@ -29,10 +29,17 @@ public interface IVariant<V extends Enum<?> & IVariant<?>> {
         return (T) new Single();
     }
 
+    int ordinal();
+
     class Single implements IVariant {
         @Override
         public Enum<?>[] getVariants() {
             return new Enum[0];
+        }
+
+        @Override
+        public int ordinal() {
+            return 0;
         }
     }
 }

@@ -1,6 +1,6 @@
 package owmii.lib.config;
 
-import owmii.lib.block.IVariant;
+import owmii.lib.registry.IVariant;
 
 public interface IConfig<V extends IVariant<?>> {
     void reload();

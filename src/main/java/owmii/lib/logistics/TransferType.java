@@ -38,4 +38,13 @@ public enum TransferType {
     public ITextComponent getDisplayName() {
         return new TranslationTextComponent("info.lollipop.side.config." + name().toLowerCase(), this.color).mergeStyle(TextFormatting.GRAY);
     }
+
+    public ITextComponent getDisplayName2() {
+        return new TranslationTextComponent("info.lollipop.io.mode").append(Text.COLON).mergeStyle(TextFormatting.GRAY)
+                .append(new TranslationTextComponent("info.lollipop.io.mode." + translate(name().toLowerCase(Locale.ENGLISH))).mergeStyle(this.color));
+    }
+
+    private String translate(String s) {
+        return s.equals("extract") ? "push" : s.equals("receive") ? "pull" : s;
+    }
 }

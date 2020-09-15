@@ -1,6 +1,7 @@
 package owmii.lib.client.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -11,7 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Optional;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
-public class Client {
+public class MC {
     public static long ticks;
 
     @SubscribeEvent
@@ -27,6 +28,10 @@ public class Client {
 
     public static Optional<World> world() {
         return Optional.ofNullable(get().world);
+    }
+
+    public static void open(Screen screen) {
+        get().displayGuiScreen(screen);
     }
 
     public static Minecraft get() {

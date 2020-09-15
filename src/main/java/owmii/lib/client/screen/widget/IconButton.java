@@ -3,17 +3,22 @@ package owmii.lib.client.screen.widget;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import owmii.lib.client.screen.Texture;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -27,6 +32,9 @@ public class IconButton extends Button {
     private ItemStack stack;
     private float xOffset;
     private float yOffset;
+
+    @Nullable
+    private SoundEvent sound;
 
     public IconButton(int x, int y, ITextComponent text, Texture texture, IPressable onPress, Screen screen) {
         this(x, y, ItemStack.EMPTY, texture, Texture.EMPTY, text, onPress, screen);
@@ -153,6 +161,23 @@ public class IconButton extends Button {
 
     public IconButton yOffset(float yOffset) {
         this.yOffset = yOffset;
+        return this;
+    }
+
+    @Override
+    public void playDownSound(SoundHandler handler) {
+        if (this.sound != null) {
+            handler.play(SimpleSound.master(this.sound, 1.0F));
+        }
+    }
+
+    public IconButton setClickSound() {
+        this.sound = SoundEvents.UI_BUTTON_CLICK;
+        return this;
+    }
+
+    public IconButton setSound(@Nullable SoundEvent sound) {
+        this.sound = sound;
         return this;
     }
 

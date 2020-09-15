@@ -21,19 +21,33 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import owmii.lib.logistics.inventory.AbstractContainer;
+import owmii.lib.registry.IRegistryObject;
+import owmii.lib.registry.IVariant;
+import owmii.lib.registry.IVariantEntry;
+import owmii.lib.registry.Registry;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static net.minecraft.state.properties.BlockStateProperties.*;
 
-public class AbstractBlock<V extends IVariant> extends Block implements IBlock<V> {
+public class AbstractBlock<V extends IVariant, B extends AbstractBlock<V, B>> extends Block implements IVariantEntry<V, B>, IBlock<V, B>, IRegistryObject<Block> {
+    protected final Map<Direction, VoxelShape> shapes = new HashMap<>();
     protected final V variant;
+
+    @SuppressWarnings("NullableProblems")
+    private Registry<Block> registry;
 
     public AbstractBlock(Properties properties) {
         this(properties, IVariant.getEmpty());
@@ -42,8 +56,43 @@ public class AbstractBlock<V extends IVariant> extends Block implements IBlock<V
     public AbstractBlock(Properties properties, V variant) {
         super(properties);
         this.variant = variant;
+        this.shapes.put(Direction.UP, VoxelShapes.fullCube());
+        this.shapes.put(Direction.DOWN, VoxelShapes.fullCube());
+        this.shapes.put(Direction.NORTH, VoxelShapes.fullCube());
+        this.shapes.put(Direction.SOUTH, VoxelShapes.fullCube());
+        this.shapes.put(Direction.EAST, VoxelShapes.fullCube());
+        this.shapes.put(Direction.WEST, VoxelShapes.fullCube());
     }
 
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        if (!this.shapes.isEmpty() && !getFacing().equals(Facing.NONE)) {
+            return this.shapes.get(state.get(FACING));
+        } else {
+            return super.getShape(state, worldIn, pos, context);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Block> getSiblings() {
+        if (getVariant() instanceof IVariant.Single) {
+            return getRegistry().getObjects().get(getRegistryName());
+        }
+        return getRegistry().getObjects().get(getSiblingsKey((B) this));
+    }
+
+    @Override
+    public Registry<Block> getRegistry() {
+        return this.registry;
+    }
+
+    @Override
+    public void setRegistry(Registry<Block> registry) {
+        this.registry = registry;
+    }
+
+    @Override
     public V getVariant() {
         return this.variant;
     }

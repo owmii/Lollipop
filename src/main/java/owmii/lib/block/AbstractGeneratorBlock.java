@@ -5,12 +5,14 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import owmii.lib.config.IEnergyConfig;
+import owmii.lib.logistics.TransferType;
 import owmii.lib.logistics.energy.Energy;
+import owmii.lib.registry.IVariant;
 import owmii.lib.util.Util;
 
 import java.util.List;
 
-public abstract class AbstractGeneratorBlock<V extends IVariant<?>, C extends IEnergyConfig<V>> extends AbstractEnergyBlock<V, C> {
+public abstract class AbstractGeneratorBlock<V extends IVariant<?>, C extends IEnergyConfig<V>, B extends AbstractGeneratorBlock<V, C, B>> extends AbstractEnergyBlock<V, C, B> {
     public AbstractGeneratorBlock(Properties properties) {
         super(properties);
     }
