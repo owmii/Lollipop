@@ -119,28 +119,40 @@ public class Energy implements IEnergyStorage {
     public int receiveEnergy(int maxReceive, boolean simulate) {
         if (!canReceive())
             return 0;
-        long energyReceived = Math.min(this.capacity - this.stored, Math.min(this.maxReceive, maxReceive));
+        long received = Math.min(this.capacity - this.stored, Math.min(this.maxReceive, maxReceive));
         if (!simulate)
-            this.stored += energyReceived;
-        return (int) energyReceived;
+            produce(received);
+        return Util.safeInt(received);
     }
 
     @Override
     public int extractEnergy(int maxExtract, boolean simulate) {
         if (!canExtract())
             return 0;
-        long energyExtracted = Math.min(this.stored, Math.min(this.maxExtract, maxExtract));
+        long extracted = Math.min(this.stored, Math.min(this.maxExtract, maxExtract));
         if (!simulate)
-            this.stored -= energyExtracted;
-        return (int) energyExtracted;
+            consume(extracted);
+        return Util.safeInt(extracted);
     }
 
-    public void produce(long amount) {
-        this.stored = Math.min(this.stored + amount, this.capacity);
+    public void addCapacity(long amount) {
+        setCapacity(getCapacity() + amount);
     }
 
-    public void consume(long amount) {
-        this.stored = Math.max(this.stored - amount, 0);
+    public void removeCapacity(long amount) {
+        setCapacity(getCapacity() - amount);
+    }
+
+    public long produce(long amount) {
+        long min = Math.min(this.capacity - this.stored, Math.max(0, amount));
+        this.stored += min;
+        return min;
+    }
+
+    public long consume(long amount) {
+        long min = Math.min(this.stored, Math.max(0, amount));
+        this.stored -= min;
+        return min;
     }
 
     public long chargeInventory(PlayerEntity player, Predicate<ItemStack> checker) {
@@ -173,12 +185,21 @@ public class Energy implements IEnergyStorage {
     }
 
     public Energy setCapacity(long capacity) {
-        this.capacity = capacity;
+        this.capacity = Math.max(0, Math.min(MAX, capacity));
+        if (this.stored > this.capacity) {
+            this.stored = this.capacity;
+        }
+        return this;
+    }
+
+    public Energy setAll(long value) {
+        setCapacity(value);
+        setTransfer(value);
         return this;
     }
 
     public long getStored() {
-        return this.stored;
+        return Math.min(this.stored, this.capacity);
     }
 
     public Energy setStored(long stored) {
@@ -241,11 +262,11 @@ public class Energy implements IEnergyStorage {
     }
 
     public int toComparatorPower() {
-        return (int) (((float) this.stored / this.capacity) * 15);
+        return (int) (subSized() * 15);
     }
 
     public float subSized() {
-        return (float) this.stored / this.capacity;
+        return this.capacity > 0 ? (float) this.stored / this.capacity : 0;
     }
 
     public boolean hasEnergy() {
@@ -261,7 +282,7 @@ public class Energy implements IEnergyStorage {
     }
 
     public long getPercent() {
-        return (long) (((float) this.stored / this.capacity) * 100);
+        return (long) (subSized() * 100);
     }
 
     public static class Item extends Energy {

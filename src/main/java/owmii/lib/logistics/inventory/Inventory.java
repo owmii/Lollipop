@@ -5,42 +5,50 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
-import org.apache.commons.lang3.tuple.Pair;
 import owmii.lib.block.AbstractTileEntity;
 import owmii.lib.block.IInventoryHolder;
+import owmii.lib.item.Stacks;
+import owmii.lib.util.Util;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
-@SuppressWarnings("unchecked")
-public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends ItemStackHandler {
+public class Inventory extends ItemStackHandler {
     @Nullable
-    private I tile;
+    private IInventoryHolder tile;
 
     public Inventory(int size) {
         this(size, null);
     }
 
-    Inventory(int size, @Nullable I tile) {
+    public Inventory(Stacks stacks) {
+        this(stacks, null);
+    }
+
+    public Inventory(Stacks stacks, @Nullable IInventoryHolder tile) {
+        super(stacks);
+        this.tile = tile;
+    }
+
+    Inventory(int size, @Nullable IInventoryHolder tile) {
         super(size);
         this.tile = tile;
     }
 
-    public static <I extends AbstractTileEntity & IInventoryHolder> Inventory create(int size, @Nullable I tile) {
+    public static <I extends AbstractTileEntity & owmii.lib.block.IInventoryHolder> Inventory create(int size, @Nullable I tile) {
         return new Inventory(size, tile);
     }
 
-    public static <I extends AbstractTileEntity & IInventoryHolder> Inventory createBlank(@Nullable I tile) {
+    public static <I extends AbstractTileEntity & owmii.lib.block.IInventoryHolder> Inventory createBlank(@Nullable I tile) {
         return new Inventory(0, tile);
     }
 
@@ -52,7 +60,7 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
         return new Inventory(0, null);
     }
 
-    public void setTile(@Nullable I tile) {
+    public void setTile(@Nullable IInventoryHolder tile) {
         this.tile = tile;
     }
 
@@ -68,14 +76,36 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
     }
 
     public Inventory set(int size) {
-        this.stacks = NonNullList.withSize(size, ItemStack.EMPTY);
+        this.stacks = Stacks.withSize(size, ItemStack.EMPTY);
         onContentsChanged(0);
         return this;
     }
 
     public Inventory add(int size) {
-        this.stacks = NonNullList.withSize(size + this.stacks.size(), ItemStack.EMPTY);
+        this.stacks = Stacks.withSize(size + this.stacks.size(), ItemStack.EMPTY);
         return this;
+    }
+
+    public Stacks canPut(Stacks outputs, int... slots) {
+        return canPut(outputs, fromSlotArray(slots));
+    }
+
+    public Stacks canPut(Stacks outputs, Stacks slots) {
+        Inventory inv = new Inventory(Stacks.from(slots).copy());
+        for (ItemStack stack : outputs) {
+            if (!ItemHandlerHelper.insertItem(inv, stack.copy(), false).isEmpty()) {
+                return Stacks.create();
+            }
+        }
+        return inv.getStacks();
+    }
+
+    public Stacks fromSlotArray(int... slots) {
+        Stacks stacks = Stacks.create();
+        for (int i : slots) {
+            stacks.add(getStackInSlot(i));
+        }
+        return stacks;
     }
 
     @Override
@@ -117,21 +147,25 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
         }
     }
 
-    @Nullable
-    public AbstractTileEntity getTile() {
-        return this.tile;
-    }
-
     public ItemStack getFirst() {
         return getStackInSlot(0);
     }
 
     public ItemStack getLast() {
-        return getLast(0);
+        return getStackInSlot(getLastSlot());
     }
 
-    public ItemStack getLast(int excludeSize) {
-        return getStackInSlot(getSlots() - 1 - excludeSize);
+    public int getLastSlot() {
+        return getSlots() - 1;
+    }
+
+    public Stacks getLast(int count) {
+        Stacks stacks = Stacks.create();
+        int size = this.stacks.size();
+        for (int i = size - count; i < count; i++) {
+            stacks.add(this.stacks.get(i));
+        }
+        return stacks;
     }
 
     public boolean isEmpty() {
@@ -171,10 +205,10 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
         return stack;
     }
 
-    public ItemStack setStack(int slot, ItemStack stack) {
+    @Override
+    public void setStackInSlot(int slot, ItemStack stack) {
         ItemStack stack1 = this.stacks.set(slot, stack);
         onContentsChanged(slot);
-        return stack1;
     }
 
     public void clear() {
@@ -185,8 +219,8 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
         return this.stacks.size() <= 0;
     }
 
-    public NonNullList<ItemStack> getStacks() {
-        return this.stacks;
+    public Stacks getStacks() {
+        return Stacks.from(this.stacks);
     }
 
     public List<ItemStack> getNonEmptyStacks() {
@@ -215,46 +249,17 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
         return ItemStack.EMPTY;
     }
 
-    public Pair<Integer, ItemStack> firstNonEmpty() {
-        return firstNonEmpty(stack -> true);
-    }
-
-    public Pair<Integer, ItemStack> lastNonEmpty() {
-        return lastNonEmpty(stack -> true);
-    }
-
-    public Pair<Integer, ItemStack> firstNonEmpty(Predicate<ItemStack> filter) {
-        return firstNonEmpty(filter, i -> true);
-    }
-
-    public Pair<Integer, ItemStack> firstNonEmptySlot(Predicate<Integer> index) {
-        return firstNonEmpty(stack -> true, index);
-    }
-
-    public Pair<Integer, ItemStack> firstNonEmpty(Predicate<ItemStack> filter, Predicate<Integer> index) {
+    public ItemStack insertItem(ItemStack stack, boolean simulate, int... ex) {
+        if (stack.isEmpty())
+            return stack;
         for (int i = 0; i < getSlots(); i++) {
-            ItemStack stack = getStackInSlot(i);
-            if (!stack.isEmpty() && filter.test(stack) && index.test(i))
-                return Pair.of(i, stack);
+            if (Util.anyMatch(ex, i)) continue;
+            stack = insertItem(i, stack, simulate);
+            if (stack.isEmpty()) {
+                return ItemStack.EMPTY;
+            }
         }
-        return Pair.of(0, ItemStack.EMPTY);
-    }
-
-    public Pair<Integer, ItemStack> lastNonEmpty(Predicate<ItemStack> filter) {
-        return lastNonEmpty(filter, i -> true);
-    }
-
-    public Pair<Integer, ItemStack> lastNonEmptySlot(Predicate<Integer> index) {
-        return lastNonEmpty(stack -> true, index);
-    }
-
-    public Pair<Integer, ItemStack> lastNonEmpty(Predicate<ItemStack> filter, Predicate<Integer> index) {
-        for (int i = getSlots() - 1; i >= 0; i--) {
-            ItemStack stack = getStackInSlot(i);
-            if (!stack.isEmpty() && filter.test(stack) && index.test(i))
-                return Pair.of(i, stack);
-        }
-        return Pair.of(0, ItemStack.EMPTY);
+        return stack;
     }
 
     public void drop(World world, BlockPos pos) {
@@ -268,7 +273,7 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
         ItemStack stack = getStackInSlot(index);
         if (!stack.isEmpty()) {
             InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), stack);
-            setStack(index, ItemStack.EMPTY);
+            setStackInSlot(index, ItemStack.EMPTY);
         }
     }
 
@@ -302,8 +307,8 @@ public class Inventory<I extends AbstractTileEntity & IInventoryHolder> extends 
         return inventory;
     }
 
-    public static NonNullList<ItemStack> toList(IItemHandler handler) {
-        NonNullList<ItemStack> stacks = NonNullList.withSize(handler.getSlots(), ItemStack.EMPTY);
+    public static Stacks toList(IItemHandler handler) {
+        Stacks stacks = Stacks.withSize(handler.getSlots(), ItemStack.EMPTY);
         for (int i = 0; i < handler.getSlots(); i++) {
             stacks.set(i, handler.getStackInSlot(i));
         }

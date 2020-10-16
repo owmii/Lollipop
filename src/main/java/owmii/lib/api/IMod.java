@@ -16,20 +16,26 @@ import java.util.function.Consumer;
 
 public interface IMod {
 
-    default void setup(FMLCommonSetupEvent event) {}
+    default void setup(FMLCommonSetupEvent event) {
+    }
 
-    default void modEnqueue(InterModEnqueueEvent event) {}
+    default void modEnqueue(InterModEnqueueEvent event) {
+    }
 
-    default void loadComplete(FMLLoadCompleteEvent event) {}
+    default void loadComplete(FMLLoadCompleteEvent event) {
+    }
 
-    default void aboutToStar(FMLServerAboutToStartEvent event) {}
+    default void aboutToStar(FMLServerAboutToStartEvent event) {
+    }
 
     default void starting(FMLServerStartingEvent event) {
     }
 
-    default void started(FMLServerStartedEvent event) {}
+    default void started(FMLServerStartedEvent event) {
+    }
 
-    default void stopped(FMLServerStoppedEvent event) {}
+    default void stopped(FMLServerStoppedEvent event) {
+    }
 
     default <T extends Event> void addModListener(Consumer<T> consumer) {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(consumer);

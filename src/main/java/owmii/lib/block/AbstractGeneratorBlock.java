@@ -8,14 +8,14 @@ import net.minecraft.util.text.TranslationTextComponent;
 import owmii.lib.client.util.Text;
 import owmii.lib.client.wiki.page.panel.InfoBox;
 import owmii.lib.config.IEnergyConfig;
-import owmii.lib.logistics.TransferType;
+import owmii.lib.logistics.Transfer;
 import owmii.lib.logistics.energy.Energy;
 import owmii.lib.registry.IVariant;
 import owmii.lib.util.Util;
 
 import java.util.List;
 
-public abstract class AbstractGeneratorBlock<V extends IVariant<?>, C extends IEnergyConfig<V>, B extends AbstractGeneratorBlock<V, C, B>> extends AbstractEnergyBlock<V, C, B> {
+public abstract class AbstractGeneratorBlock<V extends Enum<V> & IVariant<V>, C extends IEnergyConfig<V>, B extends AbstractGeneratorBlock<V, C, B>> extends AbstractEnergyBlock<V, C, B> {
     public AbstractGeneratorBlock(Properties properties) {
         super(properties);
     }
@@ -30,8 +30,8 @@ public abstract class AbstractGeneratorBlock<V extends IVariant<?>, C extends IE
     }
 
     @Override
-    public TransferType getTransferType() {
-        return TransferType.EXTRACT;
+    public Transfer getTransferType() {
+        return Transfer.EXTRACT;
     }
 
     @Override

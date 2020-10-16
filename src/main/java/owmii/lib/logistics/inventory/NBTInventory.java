@@ -14,6 +14,7 @@ public class NBTInventory extends Inventory {
     @Override
     public void onContentsChanged(int slot) {
         this.nbt.put("inventory_stacks", serializeNBT());
+        deserializeNBT(this.nbt.getCompound(("inventory_stacks")));
     }
 
     public CompoundNBT getNbt() {

@@ -25,7 +25,8 @@ import java.util.function.Consumer;
 
 public class IconButton extends Button {
     protected final Minecraft mc = Minecraft.getInstance();
-    private Consumer<List<ITextComponent>> tooltipConsumer = stringList -> {};
+    private Consumer<List<ITextComponent>> tooltipConsumer = stringList -> {
+    };
     private Screen screen;
     private Texture texture;
     private Texture hovering;
@@ -149,7 +150,7 @@ public class IconButton extends Button {
         return this;
     }
 
-    public IconButton setStack(ItemStack stack) {
+    public IconButton setStackInSlot(ItemStack stack) {
         this.stack = stack;
         return this;
     }
@@ -181,5 +182,6 @@ public class IconButton extends Button {
         return this;
     }
 
-    public static final IconButton EMPTY = new IconButton(0, 0, Texture.EMPTY, b -> {}, new ChatScreen(""));
+    public static final IconButton EMPTY = new IconButton(0, 0, Texture.EMPTY, b -> {
+    }, new ChatScreen(""));
 }

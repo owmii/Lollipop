@@ -12,7 +12,7 @@ public class Properties {
 
     public static Block.Properties rock(float hardness, float resistance) {
         return Block.Properties.create(Material.ROCK)
-                .hardnessAndResistance(hardness, resistance);
+                .hardnessAndResistance(hardness, resistance).setRequiresTool();
     }
 
     public static Block.Properties wood(float hardnessAndResistance) {
@@ -34,7 +34,7 @@ public class Properties {
     public static Block.Properties metal(float hardness, float resistance) {
         return Block.Properties.create(Material.IRON)
                 .hardnessAndResistance(hardness, resistance)
-                .sound(SoundType.METAL);
+                .sound(SoundType.METAL).setRequiresTool();
     }
 
     public static Block.Properties rockNoSolid(float hardnessAndResistance) {
@@ -43,9 +43,7 @@ public class Properties {
     }
 
     public static Block.Properties rockNoSolid(float hardness, float resistance) {
-        return Block.Properties.create(Material.ROCK)
-                .hardnessAndResistance(hardness, resistance)
-                .notSolid();
+        return rock(hardness, resistance).notSolid();
     }
 
     public static Block.Properties woodNoSolid(float hardnessAndResistance) {
@@ -54,10 +52,7 @@ public class Properties {
     }
 
     public static Block.Properties woodNoSolid(float hardness, float resistance) {
-        return Block.Properties.create(Material.WOOD)
-                .hardnessAndResistance(hardness, resistance)
-                .sound(SoundType.WOOD)
-                .notSolid();
+        return wood(hardness, resistance).notSolid();
     }
 
     public static Block.Properties metalNoSolid(float hardnessAndResistance) {
@@ -66,9 +61,6 @@ public class Properties {
     }
 
     public static Block.Properties metalNoSolid(float hardness, float resistance) {
-        return Block.Properties.create(Material.IRON)
-                .hardnessAndResistance(hardness, resistance)
-                .sound(SoundType.METAL)
-                .notSolid();
+        return metal(hardness, resistance).notSolid();
     }
 }

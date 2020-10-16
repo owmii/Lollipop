@@ -2,32 +2,70 @@ package owmii.lib.logistics.inventory.slot;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
+import owmii.lib.client.screen.Texture;
 import owmii.lib.logistics.inventory.Inventory;
 
 import javax.annotation.Nonnull;
 
-public class SlotBase extends SlotItemHandler {
-    protected final Inventory<?> inv;
+public class SlotBase extends SlotItemHandler implements ITexturedSlot<SlotBase> {
+    private Texture background = Texture.EMPTY;
+    private Texture overlay = Texture.EMPTY;
+    private boolean enabled = true;
 
-    public SlotBase(Inventory<?> handler, int id, int x, int y) {
+    public SlotBase(IItemHandler handler, int id, int x, int y) {
         super(handler, id, x, y);
-        this.inv = handler;
     }
 
     @Override
     public boolean canTakeStack(PlayerEntity player) {
-        return !this.getItemHandler().extractItemFromSlot(getSlotIndex(), 1, true).isEmpty();
+        if (this.getItemHandler() instanceof Inventory) {
+            return !((Inventory) getItemHandler()).extractItemFromSlot(getSlotIndex(), 1, true).isEmpty();
+        } else return super.canTakeStack(player);
     }
 
     @Nonnull
     @Override
     public ItemStack decrStackSize(int amount) {
-        return this.getItemHandler().extractItemFromSlot(getSlotIndex(), amount, false);
+        if (this.getItemHandler() instanceof Inventory) {
+            return ((Inventory) getItemHandler()).extractItemFromSlot(getSlotIndex(), amount, false);
+        } else return super.decrStackSize(amount);
     }
 
     @Override
-    public Inventory<?> getItemHandler() {
-        return this.inv;
+    @OnlyIn(Dist.CLIENT)
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public SlotBase setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
+    }
+
+    @Override
+    public Texture getOverlay() {
+        return this.overlay;
+    }
+
+    @Override
+    public SlotBase setOverlay(Texture overlay) {
+        this.overlay = overlay;
+        return this;
+    }
+
+    @Override
+    public Texture getBackground2() {
+        return this.background;
+    }
+
+    @Override
+    public SlotBase setBackground(Texture background) {
+        this.background = background;
+        return this;
     }
 }

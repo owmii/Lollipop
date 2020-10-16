@@ -8,7 +8,7 @@ import owmii.lib.registry.Registry;
 
 import java.util.List;
 
-public abstract class VarItem<V extends IVariant<?>, I extends VarItem<V, I>> extends ItemBase implements IRegistryObject<Item>, IVariantEntry<V, I> {
+public abstract class VarItem<V extends Enum<V> & IVariant<V>, I extends VarItem<V, I>> extends ItemBase implements IRegistryObject<Item>, IVariantEntry<V, I> {
     private final V variant;
 
     @SuppressWarnings("NullableProblems")

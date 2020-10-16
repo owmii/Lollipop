@@ -1,11 +1,20 @@
 package owmii.lib.util;
 
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
 public class Util {
+    public static boolean anyMatch(int[] arr, int value) {
+        return Arrays.stream(arr).anyMatch(i -> i == value);
+    }
+
+    public static boolean anyMatch(long[] arr, long value) {
+        return Arrays.stream(arr).anyMatch(i -> i == value);
+    }
+
     public static int safeInt(long value) {
         return value > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) value;
     }

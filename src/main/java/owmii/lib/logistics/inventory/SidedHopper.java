@@ -1,17 +1,16 @@
 package owmii.lib.logistics.inventory;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
-import net.minecraftforge.items.IItemHandler;
 
-import java.util.function.Predicate;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SidedHopper {
     private final Hopper[] hoppers = new Hopper[6];
-    private final IItemHandler inv;
+    private final Inventory inv;
 
-    public SidedHopper(IItemHandler inv) {
+    public SidedHopper(Inventory inv) {
         this.inv = inv;
         for (int i = 0; i < this.hoppers.length; i++) {
             this.hoppers[i] = new Hopper(inv);
@@ -31,19 +30,6 @@ public class SidedHopper {
             this.hoppers[i].write(nbt, key + "_" + side.getName2());
         }
         return nbt;
-    }
-
-    public void transfer(Direction side, IItemHandler to, int max, Predicate<ItemStack> pull, Predicate<ItemStack> push, int... ex) {
-        pull(side, to, max, pull, ex);
-        push(side, to, max, push, ex);
-    }
-
-    public void push(Direction side, IItemHandler to, int max, Predicate<ItemStack> predicate, int... ex) {
-        getHopper(side).push(to, max, predicate, ex);
-    }
-
-    public void pull(Direction side, IItemHandler from, int max, Predicate<ItemStack> predicate, int... ex) {
-        getHopper(side).pull(from, max, predicate, ex);
     }
 
     public void switchPull(Direction side) {
@@ -68,6 +54,17 @@ public class SidedHopper {
 
     public void setPush(Direction side, boolean push) {
         getHopper(side).setPush(push);
+    }
+
+    public Map<Direction, Hopper> getActiveHoppers() {
+        Map<Direction, Hopper> hoppers = new HashMap<>();
+        for (int i = 0; i < this.hoppers.length; i++) {
+            Hopper hopper = this.hoppers[i];
+            if (hopper.isActive()) {
+                hoppers.put(Direction.byIndex(i), hopper);
+            }
+        }
+        return hoppers;
     }
 
     public Hopper getHopper(Direction side) {

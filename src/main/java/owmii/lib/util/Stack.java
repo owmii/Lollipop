@@ -9,9 +9,32 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import owmii.lib.item.Stacks;
 
 public class Stack {
+    public static Stacks copy(Stacks stacks) {
+        Stacks itemStacks = Stacks.create();
+        stacks.forEach(stack -> itemStacks.add(stack.copy()));
+        return itemStacks;
+    }
+
+    public static Stacks singleton(ItemStack stack) {
+        Stacks itemStacks = Stacks.create();
+        itemStacks.add(stack);
+        return itemStacks;
+    }
+
+    public static boolean canMergeInSlot(ItemStack inSlot, ItemStack stack) {
+        return !stack.isEmpty() && (inSlot.isEmpty() || ItemHandlerHelper.canItemStacksStack(inSlot, stack)
+                && inSlot.getCount() + stack.getCount() <= inSlot.getMaxStackSize());
+    }
+
+    public static boolean equals(ItemStack stack, ItemStack other) {
+        return !stack.isEmpty() && stack.isItemEqual(other) && ItemStack.areItemStackTagsEqual(stack, other);
+    }
+
     public static boolean isFull(ItemStack stack) {
         return stack.getCount() >= stack.getMaxStackSize();
     }

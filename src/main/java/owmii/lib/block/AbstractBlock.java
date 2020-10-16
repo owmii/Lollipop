@@ -25,6 +25,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -43,6 +44,7 @@ import java.util.Map;
 import static net.minecraft.state.properties.BlockStateProperties.*;
 
 public class AbstractBlock<V extends IVariant, B extends AbstractBlock<V, B>> extends Block implements IVariantEntry<V, B>, IBlock<V, B>, IRegistryObject<Block> {
+    public static final VoxelShape SEMI_FULL_SHAPE = makeCuboidShape(0.01D, 0.01D, 0.01D, 15.99D, 15.99D, 15.99D);
     protected final Map<Direction, VoxelShape> shapes = new HashMap<>();
     protected final V variant;
 
@@ -71,6 +73,10 @@ public class AbstractBlock<V extends IVariant, B extends AbstractBlock<V, B>> ex
         } else {
             return super.getShape(state, worldIn, pos, context);
         }
+    }
+
+    public ITextComponent getDisplayName(ItemStack stack) {
+        return new TranslationTextComponent(asItem().getTranslationKey(stack));
     }
 
     @Override

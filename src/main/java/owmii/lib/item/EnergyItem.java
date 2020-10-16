@@ -19,7 +19,7 @@ import owmii.lib.util.Util;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class EnergyItem<V extends IVariant<?>, C extends IEnergyConfig<V>, I extends EnergyItem<V, C, I>> extends VarItem<V, I> implements InfoBox.IInfoBoxHolder, IEnergyItemProvider {
+public abstract class EnergyItem<V extends Enum<V> & IVariant<V>, C extends IEnergyConfig<V>, I extends EnergyItem<V, C, I>> extends VarItem<V, I> implements InfoBox.IInfoBoxHolder, IEnergyItemProvider {
     public EnergyItem(Properties properties, V variant) {
         super(properties, variant);
     }

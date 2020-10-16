@@ -6,7 +6,7 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;
 import owmii.lib.Lollipop;
 import owmii.lib.logistics.Redstone;
-import owmii.lib.logistics.TransferType;
+import owmii.lib.logistics.Transfer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class Texture extends AbstractGui {
     public static final Texture SLOT_HIGHLIGHT_BG = BUILDER.make("container/misc", 16, 16, 0, 0);
 
     // Side config
-    public static final Map<TransferType, Texture> CONFIG = new HashMap<>();
+    public static final Map<Transfer, Texture> CONFIG = new HashMap<>();
     public static final Texture CONFIG_BTN_BG = BUILDER.make("container/button_ov", 23, 25, 0, 0);
     public static final Texture CONFIG_BTN = BUILDER.make("container/button_ov", 5, 5, 23, 16);
     public static final Texture CONFIG_BTN_ALL = BUILDER.make("container/button_ov", 5, 5, 28, 16);
@@ -96,6 +96,22 @@ public class Texture extends AbstractGui {
 
     public void bindTexture(ResourceLocation guiTexture) {
         Minecraft.getInstance().getTextureManager().bindTexture(guiTexture);
+    }
+
+    public Texture addW(int width) {
+        return scaleW(this.width + width);
+    }
+
+    public Texture addH(int height) {
+        return scaleH(this.height + height);
+    }
+
+    public Texture remW(int width) {
+        return scaleW(this.width - width);
+    }
+
+    public Texture remH(int height) {
+        return scaleH(this.height - height);
     }
 
     public Texture scaleW(int width) {
@@ -159,10 +175,10 @@ public class Texture extends AbstractGui {
     }
 
     static {
-        CONFIG.put(TransferType.ALL, CONFIG_BTN_ALL);
-        CONFIG.put(TransferType.EXTRACT, CONFIG_BTN_OUT);
-        CONFIG.put(TransferType.RECEIVE, CONFIG_BTN_IN);
-        CONFIG.put(TransferType.NONE, CONFIG_BTN_OFF);
+        CONFIG.put(Transfer.ALL, CONFIG_BTN_ALL);
+        CONFIG.put(Transfer.EXTRACT, CONFIG_BTN_OUT);
+        CONFIG.put(Transfer.RECEIVE, CONFIG_BTN_IN);
+        CONFIG.put(Transfer.NONE, CONFIG_BTN_OFF);
         REDSTONE.put(Redstone.IGNORE, REDSTONE_BTN_IGNORE);
         REDSTONE.put(Redstone.ON, REDSTONE_BTN_ON);
         REDSTONE.put(Redstone.OFF, REDSTONE_BTN_OFF);

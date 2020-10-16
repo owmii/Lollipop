@@ -2,12 +2,11 @@ package owmii.lib.logistics;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.NonNullList;
+import owmii.lib.item.Stacks;
 import owmii.lib.logistics.inventory.ItemInventory;
 import owmii.lib.util.Recipe;
 import owmii.lib.util.Stack;
 
-@SuppressWarnings("unchecked")
 public class Filter {
     private final ItemStack stack;
     private final CompoundNBT nbt;
@@ -21,7 +20,7 @@ public class Filter {
 
     public boolean checkStack(ItemStack stack) {
         ItemInventory inv = new ItemInventory(this.size, this.stack);
-        NonNullList<ItemStack> stacks = inv.getStacks();
+        Stacks stacks = inv.getStacks();
         for (ItemStack stack1 : stacks) {
             if (compareTag() && Recipe.matchTags(stack, stack1)) {
                 return true;

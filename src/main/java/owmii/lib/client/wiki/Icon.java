@@ -39,7 +39,7 @@ public class Icon {
         return this.stack;
     }
 
-    public Icon setStack(ItemStack stack) {
+    public Icon setStackInSlot(ItemStack stack) {
         this.stack = stack;
         return this;
     }

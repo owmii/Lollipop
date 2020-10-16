@@ -7,11 +7,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.RecipeManager;
+import net.minecraft.tags.ITag;
+import net.minecraft.util.IItemProvider;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
+import owmii.lib.item.Stacks;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -19,15 +23,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class Recipe {
-    public static <T extends IRecipe<?>> IRecipeType<T> register(ResourceLocation key) {
-        return Registry.register(Registry.RECIPE_TYPE, key, new IRecipeType<T>() {
-            public String toString() {
-                return key.toString();
-            }
-        });
-    }
-
-    public static Collection<? extends IRecipe<?>> getAll(@Nullable World world, IRecipeType<?> type) {
+    public static Collection<? extends IRecipe<?>> getAll(@Nullable World world, IRecipeType<?> type) { // TODO remove
         if (world != null) {
             RecipeManager manager = world.getRecipeManager();
             return manager.getRecipes().stream().filter(r -> r.getType() == type).collect(Collectors.toList());
@@ -104,5 +100,24 @@ public class Recipe {
             }
         }
         return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Ingredient ingredientFrom(Object o) {
+        if (o instanceof IItemProvider) {
+            return Ingredient.fromItems((IItemProvider) o);
+        } else if (o instanceof ITag) {
+            return Ingredient.fromTag((ITag) o);
+        } else if (o instanceof Ingredient) {
+            return (Ingredient) o;
+        } else throw new IllegalArgumentException();
+    }
+
+    public static NonNullList<Ingredient> toNNList(Ingredient... a) {
+        return NonNullList.from(Ingredient.EMPTY, a);
+    }
+
+    public static Stacks toNNList(ItemStack... a) {
+        return Stacks.from(a);
     }
 }

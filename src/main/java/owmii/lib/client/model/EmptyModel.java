@@ -14,5 +14,6 @@ class EmptyModel extends Model {
     }
 
     @Override
-    public void render(MatrixStack matrix, IVertexBuilder buffer, int light, int ov, float red, float green, float blue, float alpha) {}
+    public void render(MatrixStack matrix, IVertexBuilder buffer, int light, int ov, float red, float green, float blue, float alpha) {
+    }
 }

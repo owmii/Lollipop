@@ -68,6 +68,7 @@ public abstract class AbstractTileContainer<T extends AbstractTileEntity<?, ?> &
             }
             if (stack1.isEmpty()) {
                 slot.putStack(ItemStack.EMPTY);
+                slot.onTake(this.player, stack);
             } else {
                 slot.onSlotChanged();
             }

@@ -4,17 +4,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import owmii.lib.util.Util;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Predicate;
 
 public class Hopper {
-    private final IItemHandler inv;
+    private final Inventory inv;
     private boolean push;
     private boolean pull;
 
-    public Hopper(IItemHandler inv) {
+    public Hopper(Inventory inv) {
         this.inv = inv;
     }
 
@@ -29,43 +28,38 @@ public class Hopper {
         return nbt;
     }
 
-    public void push(IItemHandler to, int max, Predicate<ItemStack> predicate, int... ex) {
+    public void transfer(IItemHandler to, int max, Predicate<ItemStack> pull, Predicate<ItemStack> push, int... ex) {
+        pull(to, max, pull, ex);
+        push(to, max, push, ex);
+    }
+
+    protected void push(IItemHandler to, int max, Predicate<ItemStack> predicate, int... ex) {
         if (this.push) {
-            transfer(this.inv, to, max, predicate, ex);
+            for (int i = 0; i < this.inv.getSlots(); i++) {
+                if (Util.anyMatch(ex, i)) continue;
+                ItemStack stack = this.inv.extractItem(i, max, true);
+                if (!stack.isEmpty() && predicate.test(stack)) {
+                    ItemStack insert = ItemHandlerHelper.insertItem(to, stack.copy(), false);
+                    if (!ItemStack.areItemStacksEqual(stack, insert)) {
+                        this.inv.extractItem(i, stack.getCount() - insert.getCount(), false);
+                        break;
+                    }
+                }
+            }
         }
     }
 
-    public void pull(IItemHandler from, int max, Predicate<ItemStack> predicate, int... ex) {
+    protected void pull(IItemHandler from, int max, Predicate<ItemStack> predicate, int... ex) {
         if (this.pull) {
-            transfer(from, this.inv, max, predicate, ex);
-        }
-    }
-
-    public void push(IItemHandler to, int max, Predicate<ItemStack> predicate, List<Integer> ex) {
-        if (this.push) {
-            transfer(this.inv, to, max, predicate, ex);
-        }
-    }
-
-    public void pull(IItemHandler from, int max, Predicate<ItemStack> predicate, List<Integer> ex) {
-        if (this.pull) {
-            transfer(from, this.inv, max, predicate, ex);
-        }
-    }
-
-    protected void transfer(IItemHandler from, IItemHandler to, int max, Predicate<ItemStack> predicate, int... ex) {
-        transfer(from, to, max, predicate, Arrays.asList(Arrays.stream(ex).boxed().toArray(Integer[]::new)));
-    }
-
-    protected void transfer(IItemHandler from, IItemHandler to, int max, Predicate<ItemStack> predicate, List<Integer> ex) {
-        for (int i = 0; i < from.getSlots(); i++) {
-            if (ex.contains(i)) continue;
-            ItemStack stack = from.extractItem(i, max, true);
-            if (!stack.isEmpty() && predicate.test(stack)) {
-                ItemStack insert = ItemHandlerHelper.insertItem(to, stack.copy(), false);
-                if (!ItemStack.areItemStacksEqual(stack, insert)) {
-                    from.extractItem(i, stack.getCount() - insert.getCount(), false);
-                    break;
+            for (int i = 0; i < from.getSlots(); i++) {
+                if (Util.anyMatch(ex, i)) continue;
+                ItemStack stack = from.extractItem(i, max, true);
+                if (!stack.isEmpty() && predicate.test(stack)) {
+                    ItemStack insert = this.inv.insertItem(stack.copy(), false, ex);
+                    if (!ItemStack.areItemStacksEqual(stack, insert)) {
+                        from.extractItem(i, stack.getCount() - insert.getCount(), false);
+                        break;
+                    }
                 }
             }
         }
@@ -95,5 +89,9 @@ public class Hopper {
     public Hopper setPush(boolean push) {
         this.push = push;
         return this;
+    }
+
+    public boolean isActive() {
+        return this.push || this.pull;
     }
 }

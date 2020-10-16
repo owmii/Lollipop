@@ -23,7 +23,7 @@ import owmii.lib.config.IConfigHolder;
 import owmii.lib.config.IEnergyConfig;
 import owmii.lib.item.EnergyBlockItem;
 import owmii.lib.item.IEnergyItemProvider;
-import owmii.lib.logistics.TransferType;
+import owmii.lib.logistics.Transfer;
 import owmii.lib.logistics.energy.Energy;
 import owmii.lib.registry.IVariant;
 import owmii.lib.util.Util;
@@ -31,7 +31,7 @@ import owmii.lib.util.Util;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class AbstractEnergyBlock<V extends IVariant<?>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C, B>> extends AbstractBlock<V, B> implements IConfigHolder<V, C>, InfoBox.IInfoBoxHolder, IEnergyItemProvider {
+public abstract class AbstractEnergyBlock<V extends Enum<V> & IVariant<V>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C, B>> extends AbstractBlock<V, B> implements IConfigHolder<V, C>, InfoBox.IInfoBoxHolder, IEnergyItemProvider {
     public AbstractEnergyBlock(Properties properties) {
         this(properties, IVariant.getEmpty());
     }
@@ -80,8 +80,8 @@ public abstract class AbstractEnergyBlock<V extends IVariant<?>, C extends IEner
         return getTransferType().canReceive;
     }
 
-    public TransferType getTransferType() {
-        return TransferType.ALL;
+    public Transfer getTransferType() {
+        return Transfer.ALL;
     }
 
     @Override
@@ -117,7 +117,8 @@ public abstract class AbstractEnergyBlock<V extends IVariant<?>, C extends IEner
         }
     }
 
-    public void additionalEnergyInfo(ItemStack stack, Energy.Item energy, List<ITextComponent> tooltip) {}
+    public void additionalEnergyInfo(ItemStack stack, Energy.Item energy, List<ITextComponent> tooltip) {
+    }
 
     @Override
     public InfoBox getInfoBox(ItemStack stack, InfoBox box) {

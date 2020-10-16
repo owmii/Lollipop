@@ -15,7 +15,6 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import owmii.lib.block.IBlock;
-import owmii.lib.item.ItemBlock;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -57,26 +56,25 @@ public class Registry<T extends IForgeRegistryEntry<T>> {
         return type;
     }
 
+    public <O extends T, V extends Enum<V> & IVariant<V>> O register(String name, O o, V v) {
+        final O t = register(name + "_" + v.getName(), o, false);
+        ResourceLocation key = new ResourceLocation(this.id, name);
+        List<T> sibling = getSiblings(key);
+        sibling.add(t);
+        this.objects.put(key, sibling);
+        return t;
+    }
+
     public <O extends T> O register(String name, O o) {
-        boolean flag = true;
-        if (o instanceof IVariantEntry) {
-            IVariantEntry v = (IVariantEntry) o;
-            if (!(v.getVariant() instanceof IVariant.Single)) {
-                if (!(o instanceof ItemBlock))
-                    name += "_" + v.getVariant().getName();
-                o.setRegistryName(new ResourceLocation(this.id, name));
-                ResourceLocation key = v.getSiblingsKey((IVariantEntry) o);
-                List<T> sibling = getSiblings(key);
-                sibling.add(o);
-                this.objects.put(key, sibling);
-                flag = false;
-            }
-        }
+        return register(name, o, true);
+    }
+
+    private <O extends T> O register(String name, O o, boolean flag) {
+        o.setRegistryName(new ResourceLocation(this.id, name));
         if (o instanceof IRegistryObject) {
             ((IRegistryObject) o).setRegistry(this);
         }
         if (flag) {
-            o.setRegistryName(new ResourceLocation(this.id, name));
             this.objects.put(o.getRegistryName(), Lists.newArrayList(o));
         }
         return o;
@@ -107,7 +105,21 @@ public class Registry<T extends IForgeRegistryEntry<T>> {
                 Block block = (Block) object;
                 ResourceLocation rl = block.getRegistryName();
                 if (block instanceof IBlock) {
-                    reg.register(rl.getPath(), ((IBlock) object).getBlockItem(new Item.Properties(), group));
+                    Item im = ((IBlock) object).getBlockItem(new Item.Properties(), group);
+                    boolean flag = true;
+                    if (block instanceof IVariantEntry) {
+                        IVariantEntry v = (IVariantEntry) block;
+                        if (!(v.getVariant() instanceof IVariant.Single)) { // TODO: optimise
+                            ResourceLocation key = v.getSiblingsKey(v);
+                            final Item t = reg.register(key.getPath() + "_" + v.getVariant().getName(), im, false);
+                            List<Item> sibling = reg.getSiblings(key);
+                            sibling.add(t);
+                            reg.objects.put(key, sibling);
+                            flag = false;
+                        }
+                    }
+                    if (flag)
+                        reg.register(rl.getPath(), im, true);
                 } else {
                     Item.Properties properties = new Item.Properties();
                     if (group != null) properties.group(group);
@@ -122,6 +134,10 @@ public class Registry<T extends IForgeRegistryEntry<T>> {
         this.objects.forEach((rl, ts) -> ts.forEach(action));
     }
 
+    public <V extends Enum<V> & IVariant<V>> VarReg<V, T> getVar(String name, VarReg.VarObject<V, T> varObject, V[] variants) {
+        return new VarReg<>(name, varObject, variants, this);
+    }
+
     public LinkedHashMap<ResourceLocation, List<T>> getObjects() {
         return this.objects;
     }
@@ -129,4 +145,5 @@ public class Registry<T extends IForgeRegistryEntry<T>> {
     public String getId() {
         return this.id;
     }
+
 }

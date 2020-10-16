@@ -79,7 +79,8 @@ public class Page {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void render(MatrixStack matrix, int x, int y, int mx, int my, float pt, FontRenderer font, WikiScreen screen) {}
+    public void render(MatrixStack matrix, int x, int y, int mx, int my, float pt, FontRenderer font, WikiScreen screen) {
+    }
 
 
     @OnlyIn(Dist.CLIENT)
@@ -88,7 +89,8 @@ public class Page {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void onClose() {}
+    public void onClose() {
+    }
 
     public boolean hasNext() {
         return this.next != null;

@@ -2,7 +2,6 @@ package owmii.lib.block;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -49,14 +48,14 @@ public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V, B
 
     public AbstractTileEntity(TileEntityType<?> type) {
         this(type, IVariant.getEmpty());
-        this.tank.validate(stack -> stack.getFluid() == Fluids.LAVA);
+        this.tank.validate(stack -> true);
     }
 
     public AbstractTileEntity(TileEntityType<?> type, V variant) {
         super(type);
         this.variant = variant;
         if (this instanceof IInventoryHolder) {
-            this.inv.setTile(this);
+            this.inv.setTile((IInventoryHolder) this);
         }
     }
 
@@ -103,8 +102,10 @@ public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V, B
         if (this instanceof IInventoryHolder && !keepInventory()) {
             this.inv.deserializeNBT(nbt);
         }
-        if (this instanceof ITankHolder && !keepFluid()) {
-            this.tank.readFromNBT(nbt);
+        if (this instanceof ITankHolder) {
+            if (!((ITankHolder) this).keepFluid()) {
+                this.tank.readFromNBT(nbt);
+            }
         }
         this.redstone = Redstone.values()[nbt.getInt("redstone_mode")];
         readStorable(nbt);
@@ -117,8 +118,10 @@ public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V, B
         if (this instanceof IInventoryHolder && !keepInventory()) {
             nbt.merge(this.inv.serializeNBT());
         }
-        if (this instanceof ITankHolder && !keepFluid()) {
-            this.tank.writeToNBT(nbt);
+        if (this instanceof ITankHolder) {
+            if (!((ITankHolder) this).keepFluid()) {
+                this.tank.writeToNBT(nbt);
+            }
         }
         nbt.putInt("redstone_mode", this.redstone.ordinal());
         return writeStorable(nbt);
@@ -128,8 +131,10 @@ public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V, B
         if (this instanceof IInventoryHolder && keepInventory()) {
             this.inv.deserializeNBT(nbt);
         }
-        if (this instanceof ITankHolder && keepFluid()) {
-            this.tank.readFromNBT(nbt);
+        if (this instanceof ITankHolder) {
+            if (((ITankHolder) this).keepFluid()) {
+                this.tank.readFromNBT(nbt);
+            }
         }
     }
 
@@ -137,8 +142,10 @@ public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V, B
         if (this instanceof IInventoryHolder && keepInventory()) {
             nbt.merge(this.inv.serializeNBT());
         }
-        if (this instanceof ITankHolder && keepFluid()) {
-            this.tank.writeToNBT(nbt);
+        if (this instanceof ITankHolder) {
+            if (((ITankHolder) this).keepFluid()) {
+                this.tank.writeToNBT(nbt);
+            }
         }
         return nbt;
     }
@@ -172,15 +179,19 @@ public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V, B
         return stack;
     }
 
+    public static <T extends AbstractTileEntity> T fromStack(ItemStack stack, T tile) {
+        CompoundNBT nbt = stack.getChildTag(NBT.TAG_STORABLE_STACK);
+        if (nbt != null) {
+            tile.readStorable(nbt);
+        }
+        return tile;
+    }
+
     public boolean keepStorable() {
         return true;
     }
 
     protected boolean keepInventory() {
-        return false;
-    }
-
-    protected boolean keepFluid() {
         return false;
     }
 

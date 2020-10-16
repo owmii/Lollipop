@@ -153,7 +153,7 @@ package owmii.lib.client.particle;//package owmii.lib.client.particle;
 //            this.scaleFactor = 1.0F - f0;
 //        }
 //
-//        if (!this.origin.equals(this.to)) {
+//        if (!this.origin.found(this.to)) {
 //            this.motionX = (this.to.x - this.posX) * this.speed;
 //            this.motionY = (this.to.y - this.posY) * this.speed;
 //            this.motionZ = (this.to.z - this.posZ) * this.speed;

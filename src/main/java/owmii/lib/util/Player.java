@@ -5,8 +5,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.util.FakePlayer;
+import owmii.lib.item.Stacks;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -46,8 +46,8 @@ public class Player {
         return ItemStack.EMPTY;
     }
 
-    public static NonNullList<ItemStack> invStacks(PlayerEntity player) {
-        NonNullList<ItemStack> stacks = NonNullList.create();
+    public static Stacks invStacks(PlayerEntity player) {
+        Stacks stacks = Stacks.create();
         PlayerInventory inventory = player.inventory;
         Stream.of(inventory.mainInventory, inventory.armorInventory, inventory.offHandInventory).forEach(stacks::addAll);
         return stacks;

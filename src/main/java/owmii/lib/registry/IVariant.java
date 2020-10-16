@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundNBT;
 
 import java.util.Locale;
 
-public interface IVariant<V extends Enum<?> & IVariant<?>> {
+public interface IVariant<V extends Enum<V> & IVariant<V>> {
     V[] getVariants();
 
     default String getName() {
@@ -26,20 +26,17 @@ public interface IVariant<V extends Enum<?> & IVariant<?>> {
 
     @SuppressWarnings("unchecked")
     static <T extends IVariant> T getEmpty() {
-        return (T) new Single();
+        return (T) Single.SINGLE;
     }
 
     int ordinal();
 
-    class Single implements IVariant {
-        @Override
-        public Enum<?>[] getVariants() {
-            return new Enum[0];
-        }
+    enum Single implements IVariant<Single> {
+        SINGLE;
 
         @Override
-        public int ordinal() {
-            return 0;
+        public Single[] getVariants() {
+            return new Single[0];
         }
     }
 }

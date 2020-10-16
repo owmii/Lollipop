@@ -1,9 +1,14 @@
 package owmii.lib.network.packets;
 
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 import owmii.lib.Lollipop;
+import owmii.lib.block.AbstractTileEntity;
+import owmii.lib.logistics.inventory.ISidedHopper;
 import owmii.lib.network.IPacket;
 
 import java.util.function.Supplier;
@@ -39,16 +44,16 @@ public class NextTransferConfigPacket implements IPacket<NextTransferConfigPacke
     @Override
     public void handle(NextTransferConfigPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-//            ServerPlayerEntity player = ctx.get().getSender();
-//            if (player != null) {
-//                TileEntity te = player.world.getTileEntity(msg.pos);
-//                if (te instanceof ILogicHandler && te instanceof TileBase) {
-//                    ILogicHandler handler = ((ILogicHandler) te);
-//                    if (msg.i > 5) handler.getTransferConfig().nextTypeAllSides();
-//                    else handler.getTransferConfig().nextType(Direction.byIndex(msg.i));
-//                    ((TileBase) te).markDirtyAndSync();
-//                }
-//            }
+            ServerPlayerEntity player = ctx.get().getSender();
+            if (player != null) {
+                TileEntity te = player.world.getTileEntity(msg.pos);
+                if (te instanceof ISidedHopper && te instanceof AbstractTileEntity) {
+                    ISidedHopper handler = ((ISidedHopper) te);
+                    if (msg.i > 5) handler.getHopperConfig().nextTypeAll();
+                    else handler.getHopperConfig().nextType(Direction.byIndex(msg.i));
+                    ((AbstractTileEntity) te).sync();
+                }
+            }
         });
         ctx.get().setPacketHandled(true);
     }

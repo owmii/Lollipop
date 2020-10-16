@@ -76,7 +76,7 @@ public class AbstractEnergyScreen<T extends AbstractEnergyStorage<?, ?, ?> & IIn
         }
     }
 
-    private List<Pair<Integer, Integer>> getSideButtonOffsets(int spacing) {
+    protected List<Pair<Integer, Integer>> getSideButtonOffsets(int spacing) {
         return Lists.newArrayList(Pair.of(0, spacing), Pair.of(0, -spacing), Pair.of(0, 0), Pair.of(spacing, spacing), Pair.of(-spacing, 0), Pair.of(spacing, 0));
     }
 
@@ -89,19 +89,10 @@ public class AbstractEnergyScreen<T extends AbstractEnergyStorage<?, ?, ?> & IIn
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrix, int mouseX, int mouseY) {
-        super.drawForeground(matrix, mouseX, mouseY);
-        String title = this.title.getString();
-        int width = this.font.getStringWidth(title);
-        this.font.drawStringWithShadow(matrix, title, this.xSize / 2 - width / 2, -14.0F, 0x999999);
-    }
-
-    @Override
     public List<Rectangle2d> getExtraAreas() {
         final List<Rectangle2d> extraAreas = super.getExtraAreas();
         if (hasConfigButtons()) {
-            Texture texture = Texture.CONFIG_BTN_BG;
-            extraAreas.add(new Rectangle2d(this.configButtons[1].x - 8, this.configButtons[1].y - 4, texture.getWidth(), texture.getHeight()));
+            extraAreas.add(toRectangle2d(this.configButtons[1].x - 8, this.configButtons[1].y - 4, Texture.CONFIG_BTN_BG));
         }
         return extraAreas;
     }

@@ -7,7 +7,7 @@ import owmii.lib.client.util.Text;
 
 import java.util.Locale;
 
-public enum TransferType {
+public enum Transfer {
     ALL(true, true, TextFormatting.DARK_GRAY),
     EXTRACT(true, false, TextFormatting.DARK_GRAY),
     RECEIVE(false, true, TextFormatting.DARK_GRAY),
@@ -17,13 +17,13 @@ public enum TransferType {
     public final boolean canReceive;
     private final TextFormatting color;
 
-    TransferType(boolean canExtract, boolean canReceive, TextFormatting color) {
+    Transfer(boolean canExtract, boolean canReceive, TextFormatting color) {
         this.canExtract = canExtract;
         this.canReceive = canReceive;
         this.color = color;
     }
 
-    public TransferType next(TransferType type) {
+    public Transfer next(Transfer type) {
         if (ALL.equals(type)) {
             int i = ordinal();
             if (i < 3) i++;

@@ -7,10 +7,13 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import owmii.lib.block.AbstractBlock;
 import owmii.lib.block.IBlock;
 import owmii.lib.client.renderer.item.TEItemRenderer;
+import owmii.lib.data.ItemModelType;
 import owmii.lib.registry.IRegistryObject;
 import owmii.lib.registry.IVariant;
 import owmii.lib.registry.IVariantEntry;
@@ -29,6 +32,14 @@ public class ItemBlock<V extends IVariant, B extends Block & IBlock<V, B>> exten
     }
 
     @Override
+    public ITextComponent getDisplayName(ItemStack stack) {
+        if (this.block instanceof AbstractBlock) {
+            return ((AbstractBlock) this.block).getDisplayName(stack);
+        }
+        return super.getDisplayName(stack);
+    }
+
+    @Override
     public B getBlock() {
         return this.block;
     }
@@ -37,6 +48,11 @@ public class ItemBlock<V extends IVariant, B extends Block & IBlock<V, B>> exten
     @OnlyIn(Dist.CLIENT)
     public void renderByItem(ItemStack stack, MatrixStack matrix, IRenderTypeBuffer rtb, int light, int ov) {
         getBlock().renderByItem(stack, matrix, rtb, light, ov);
+    }
+
+    @Override
+    public ItemModelType getItemModelType() {
+        return ItemModelType.BLOCK;
     }
 
     @Override
@@ -54,7 +70,8 @@ public class ItemBlock<V extends IVariant, B extends Block & IBlock<V, B>> exten
     }
 
     @Override
-    public void setRegistry(Registry<Block> registry) {}
+    public void setRegistry(Registry<Block> registry) {
+    }
 
     @Override
     public V getVariant() {

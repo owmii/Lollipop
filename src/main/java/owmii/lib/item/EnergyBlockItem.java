@@ -8,13 +8,13 @@ import owmii.lib.block.AbstractEnergyBlock;
 import owmii.lib.client.wiki.page.panel.InfoBox;
 import owmii.lib.config.IConfigHolder;
 import owmii.lib.config.IEnergyConfig;
-import owmii.lib.logistics.TransferType;
+import owmii.lib.logistics.Transfer;
 import owmii.lib.logistics.energy.Energy;
 import owmii.lib.registry.IVariant;
 
 import javax.annotation.Nullable;
 
-public class EnergyBlockItem<V extends IVariant<?>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C, B>> extends ItemBlock<V, B> implements IConfigHolder<V, C>, InfoBox.IInfoBoxHolder, IEnergyItemProvider {
+public class EnergyBlockItem<V extends Enum<V> & IVariant<V>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C, B>> extends ItemBlock<V, B> implements IConfigHolder<V, C>, InfoBox.IInfoBoxHolder, IEnergyItemProvider {
     public EnergyBlockItem(B block, Properties builder, @Nullable ItemGroup group) {
         super(block, builder, group);
     }
@@ -26,7 +26,7 @@ public class EnergyBlockItem<V extends IVariant<?>, C extends IEnergyConfig<V>, 
         return new Energy.Item.Provider(stack, getConfig().getCapacity(getVariant()), getTransferType().canExtract ? transfer : 0, getTransferType().canReceive ? transfer : 0);
     }
 
-    public TransferType getTransferType() {
+    public Transfer getTransferType() {
         return getBlock().getTransferType();
     }
 

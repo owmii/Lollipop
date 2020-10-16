@@ -7,7 +7,8 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import java.util.function.Predicate;
 
 public class Tank extends FluidTank {
-    private Runnable changed = () -> {};
+    private Runnable changed = () -> {
+    };
 
     public Tank(int capacity) {
         this(capacity, e -> true);

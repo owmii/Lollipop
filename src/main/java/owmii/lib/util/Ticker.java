@@ -88,10 +88,10 @@ public class Ticker {
     }
 
     public double perCent() {
-        return this.ticks * 100.0D / this.maxTicks;
+        return this.maxTicks > 0 ? this.ticks * 100.0D / this.maxTicks : 0;
     }
 
     public float subSized() {
-        return (float) (this.ticks / this.maxTicks);
+        return this.maxTicks > 0 ? (float) (this.ticks / this.maxTicks) : 0;
     }
 }

@@ -11,9 +11,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import owmii.lib.config.IEnergyConfig;
 import owmii.lib.logistics.IRedstoneInteract;
-import owmii.lib.logistics.SideConfig;
-import owmii.lib.logistics.TransferType;
+import owmii.lib.logistics.Transfer;
 import owmii.lib.logistics.energy.Energy;
+import owmii.lib.logistics.energy.SideConfig;
 import owmii.lib.registry.IVariant;
 import owmii.lib.util.Util;
 
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class AbstractEnergyStorage<V extends IVariant<?>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C, B>> extends AbstractTickableTile<V, B> implements IRedstoneInteract {
+public class AbstractEnergyStorage<V extends Enum<V> & IVariant<V>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C, B>> extends AbstractTickableTile<V, B> implements IRedstoneInteract {
     protected final SideConfig sideConfig = new SideConfig(this);
     protected final Energy energy = Energy.create(0);
 
@@ -143,7 +143,7 @@ public class AbstractEnergyStorage<V extends IVariant<?>, C extends IEnergyConfi
 
     public List<ItemStack> getChargingInv(int i, int j) {
         return IntStream.range(i, j)
-                .mapToObj(value -> (ItemStack) this.inv.getStacks().get(value))
+                .mapToObj(value -> this.inv.getStacks().get(value))
                 .collect(Collectors.toList());
     }
 
@@ -214,8 +214,8 @@ public class AbstractEnergyStorage<V extends IVariant<?>, C extends IEnergyConfi
         return this.energy;
     }
 
-    public TransferType getTransferType() {
-        return TransferType.ALL;
+    public Transfer getTransferType() {
+        return Transfer.ALL;
     }
 
     public SideConfig getSideConfig() {
