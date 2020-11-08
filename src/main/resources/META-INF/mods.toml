@@ -1,5 +1,5 @@
 modLoader="javafml" 
-loaderVersion="[34,)"
+loaderVersion="[35,)"
 issueTrackerURL="https://github.com/owmii/Lollipop/issues"
 license="LGPLv3"
 
@@ -16,6 +16,6 @@ A Library mod.
 [[dependencies.lollipop]]
     modId="forge"
     mandatory=true
-    versionRange="[34.0.2,)"
+    versionRange="[35.0.2,)"
     ordering="NONE"
     side="BOTH"

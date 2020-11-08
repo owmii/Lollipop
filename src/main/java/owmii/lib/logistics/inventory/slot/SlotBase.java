@@ -6,14 +6,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
-import owmii.lib.client.screen.Texture;
 import owmii.lib.logistics.inventory.Inventory;
 
 import javax.annotation.Nonnull;
 
-public class SlotBase extends SlotItemHandler implements ITexturedSlot<SlotBase> {
-    private Texture background = Texture.EMPTY;
-    private Texture overlay = Texture.EMPTY;
+public class SlotBase extends SlotItemHandler {
     private boolean enabled = true;
 
     public SlotBase(IItemHandler handler, int id, int x, int y) {
@@ -44,28 +41,6 @@ public class SlotBase extends SlotItemHandler implements ITexturedSlot<SlotBase>
     @OnlyIn(Dist.CLIENT)
     public SlotBase setEnabled(boolean enabled) {
         this.enabled = enabled;
-        return this;
-    }
-
-    @Override
-    public Texture getOverlay() {
-        return this.overlay;
-    }
-
-    @Override
-    public SlotBase setOverlay(Texture overlay) {
-        this.overlay = overlay;
-        return this;
-    }
-
-    @Override
-    public Texture getBackground2() {
-        return this.background;
-    }
-
-    @Override
-    public SlotBase setBackground(Texture background) {
-        this.background = background;
         return this;
     }
 }
