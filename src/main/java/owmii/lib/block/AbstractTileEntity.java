@@ -87,7 +87,7 @@ public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V, B
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(getPos(), 3, getUpdateTag());
+        return new SUpdateTileEntityPacket(getPos(), 3, writeSync(new CompoundNBT()));
     }
 
     @Override
