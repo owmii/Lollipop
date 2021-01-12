@@ -1,15 +1,14 @@
 package owmii.lib.network;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
-import owmii.lib.util.Server;
-
-import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_CLIENT;
 
 public class Network {
     private final ResourceLocation location;
@@ -36,14 +35,21 @@ public class Network {
     }
 
     public <T> void toAll(T msg) {
-        Server.get().getPlayerList().getPlayers().forEach(serverPlayerEntity -> {
-            toClient(msg, serverPlayerEntity);
-        });
+        this.channel.send(PacketDistributor.ALL.noArg(), msg);
     }
 
     public <T> void toClient(T msg, PlayerEntity player) {
         if (player instanceof ServerPlayerEntity) {
-            this.channel.sendTo(msg, ((ServerPlayerEntity) player).connection.getNetworkManager(), PLAY_TO_CLIENT);
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+            this.channel.send(PacketDistributor.PLAYER.with(() -> serverPlayer), msg);
         }
+    }
+
+    public <T> void toTracking(T msg, Entity entity) {
+        this.channel.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), msg);
+    }
+
+    public <T> void toTrackingAndSelf(T msg, Entity entity) {
+        this.channel.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), msg);
     }
 }
