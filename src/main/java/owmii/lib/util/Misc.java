@@ -1,18 +1,15 @@
 package owmii.lib.util;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class Misc {
+    /**
+     * Checks if the given block can see the sky.
+     * If the block itself blocks the sky, e.g. doesn't propagate skylight down, then check the block above it instead.
+     */
     public static boolean canBlockSeeSky(World world, BlockPos pos) {
-        BlockPos blockpos = new BlockPos(pos.getX(), world.getSeaLevel(), pos.getZ());
-        for (BlockPos down = blockpos.down(); down.getY() > pos.getY(); down = down.down()) {
-            BlockState blockstate = world.getBlockState(down);
-            if (blockstate.getOpacity(world, down) > 0 && !blockstate.getMaterial().isLiquid()) {
-                return false;
-            }
-        }
-        return true;
+        // world#canBlockSeeSky does not act like how it is named and is really used for guardian spawning check
+        return world.canSeeSky(pos);
     }
 }
