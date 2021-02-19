@@ -2,6 +2,7 @@ package owmii.lib.api;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
@@ -57,6 +58,7 @@ public interface IMod {
         IClient mod = getClient();
         if (mod != null) {
             addModListener(mod::client);
+            addModListener((Consumer<FMLClientSetupEvent>) event -> event.enqueueWork(() -> mod.syncClient(event)));
         }
     }
 
