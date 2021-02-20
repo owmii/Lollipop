@@ -49,14 +49,14 @@ public class CraftingPanel<T extends IItemProvider> extends ItemPanel<T> {
     @OnlyIn(Dist.CLIENT)
     public void init(int x, int y, WikiScreen screen) {
         super.init(x, y, screen);
-        this.nextRecipe = screen.addButton2(new IconButton(x + 172, y + 140, Texture.WIKI_ITM_NEXT, button -> {
+        this.nextRecipe = screen.addButton2(new IconButton(x + 144, y + 140, Texture.WIKI_ITM_NEXT, button -> {
             if (this.currRecipe < getRecipe().size() - 1) {
                 this.currRecipe = this.currRecipe + 1;
                 screen.setPanel(this);
                 MC.open(screen);
             }
         }, screen));
-        this.prevRecipe = screen.addButton2(new IconButton(x + 34, y + 140, Texture.WIKI_ITM_PREV, button -> {
+        this.prevRecipe = screen.addButton2(new IconButton(x + 6, y + 140, Texture.WIKI_ITM_PREV, button -> {
             if (this.currRecipe > 0) {
                 this.currRecipe = this.currRecipe - 1;
                 screen.setPanel(this);
@@ -70,6 +70,7 @@ public class CraftingPanel<T extends IItemProvider> extends ItemPanel<T> {
     @OnlyIn(Dist.CLIENT)
     public void refresh() {
         super.refresh();
+        this.currRecipe = MathHelper.clamp(this.currRecipe, 0, Math.max(0, getRecipe().size() - 1));
         this.nextRecipe.visible = this.currRecipe < getRecipe().size() - 1;
         this.prevRecipe.visible = this.currRecipe > 0;
     }
@@ -78,7 +79,7 @@ public class CraftingPanel<T extends IItemProvider> extends ItemPanel<T> {
     @OnlyIn(Dist.CLIENT)
     public void render(MatrixStack matrix, int x, int y, int mx, int my, float pt, FontRenderer font, WikiScreen screen) {
         super.render(matrix, x, y, mx, my, pt, font, screen);
-        if (!getRecipe().isEmpty()) {
+        if (0 <= this.currRecipe && this.currRecipe < getRecipe().size()) {
             NonNullList<Ingredient> ingredients = NonNullList.withSize(9, Ingredient.EMPTY);
             NonNullList<Ingredient> ingredients1 = getRecipe().get(this.currRecipe).getIngredients();
             for (int i = 0; i < ingredients1.size(); i++) ingredients.set(i, ingredients1.get(i));
