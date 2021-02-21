@@ -7,10 +7,13 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import owmii.lib.config.IEnergyConfig;
 import owmii.lib.logistics.IRedstoneInteract;
+import owmii.lib.logistics.SidedStorage;
 import owmii.lib.logistics.Transfer;
 import owmii.lib.logistics.energy.Energy;
 import owmii.lib.logistics.energy.SideConfig;
@@ -23,8 +26,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class AbstractEnergyStorage<V extends Enum<V> & IVariant<V>, C extends IEnergyConfig<V>, B extends AbstractEnergyBlock<V, C, B>> extends AbstractTickableTile<V, B> implements IRedstoneInteract {
+    @CapabilityInject(IEnergyStorage.class)
+    public static Capability<IEnergyStorage> ENERGY_CAPABILITY = CapabilityEnergy.ENERGY;
     protected final SideConfig sideConfig = new SideConfig(this);
     protected final Energy energy = Energy.create(0);
+    private final SidedStorage<LazyOptional<IEnergyStorage>> energyProxies = SidedStorage.create(this::createEnergyProxy);
 
     public AbstractEnergyStorage(TileEntityType<?> type) {
         this(type, IVariant.getEmpty());
@@ -32,6 +38,40 @@ public class AbstractEnergyStorage<V extends Enum<V> & IVariant<V>, C extends IE
 
     public AbstractEnergyStorage(TileEntityType<?> type, V variant) {
         super(type, variant);
+    }
+
+    private LazyOptional<IEnergyStorage> createEnergyProxy(@Nullable Direction side) {
+        return LazyOptional.of(() -> new IEnergyStorage() {
+            @Override
+            public int extractEnergy(int maxExtract, boolean simulate) {
+                return Util.safeInt(AbstractEnergyStorage.this.extractEnergy(maxExtract, simulate, side));
+            }
+
+            @Override
+            public int getEnergyStored() {
+                return Util.safeInt(AbstractEnergyStorage.this.getEnergy().getStored());
+            }
+
+            @Override
+            public int getMaxEnergyStored() {
+                return AbstractEnergyStorage.this.getEnergy().getMaxEnergyStored();
+            }
+
+            @Override
+            public int receiveEnergy(int maxReceive, boolean simulate) {
+                return Util.safeInt(AbstractEnergyStorage.this.receiveEnergy(maxReceive, simulate, side));
+            }
+
+            @Override
+            public boolean canReceive() {
+                return AbstractEnergyStorage.this.canReceiveEnergy(side);
+            }
+
+            @Override
+            public boolean canExtract() {
+                return AbstractEnergyStorage.this.canExtractEnergy(side);
+            }
+        });
     }
 
     @Override
@@ -68,34 +108,20 @@ public class AbstractEnergyStorage<V extends Enum<V> & IVariant<V>, C extends IE
         return super.writeStorable(nbt);
     }
 
+    @Override
+    protected void invalidateCaps() {
+        super.invalidateCaps();
+        this.energyProxies.stream().forEach(LazyOptional::invalidate);
+    }
+
     public boolean keepEnergy() {
         return false;
     }
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityEnergy.ENERGY && isEnergyPresent(side)) {
-            return LazyOptional.of(() -> new Energy(getEnergy()) {
-                @Override
-                public int extractEnergy(int maxExtract, boolean simulate) {
-                    return Util.safeInt(AbstractEnergyStorage.this.extractEnergy(maxExtract, simulate, side));
-                }
-
-                @Override
-                public int receiveEnergy(int maxReceive, boolean simulate) {
-                    return Util.safeInt(AbstractEnergyStorage.this.receiveEnergy(maxReceive, simulate, side));
-                }
-
-                @Override
-                public boolean canReceive() {
-                    return AbstractEnergyStorage.this.canReceiveEnergy(side);
-                }
-
-                @Override
-                public boolean canExtract() {
-                    return AbstractEnergyStorage.this.canExtractEnergy(side);
-                }
-            }).cast();
+        if (cap == ENERGY_CAPABILITY && isEnergyPresent(side)) {
+            return this.energyProxies.get(side).cast();
         }
         return super.getCapability(cap, side);
     }
