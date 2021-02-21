@@ -12,10 +12,13 @@ import net.minecraft.util.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import owmii.lib.logistics.IRedstoneInteract;
 import owmii.lib.logistics.Redstone;
 import owmii.lib.logistics.fluid.Tank;
@@ -28,6 +31,11 @@ import javax.annotation.Nullable;
 
 @SuppressWarnings("unchecked")
 public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V, B>> extends TileEntity implements IBlockEntity, IRedstoneInteract {
+    @CapabilityInject(IItemHandler.class)
+    public static Capability<IItemHandler> ITEM_HANDLER_CAPABILITY = CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
+    @CapabilityInject(IFluidHandler.class)
+    public static Capability<IFluidHandler> FLUID_HANDLER_CAPABILITY = CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY;
+
     /**
      * Used when this is instance of {@link IInventoryHolder}
      **/
@@ -225,11 +233,18 @@ public class AbstractTileEntity<V extends IVariant, B extends AbstractBlock<V, B
     }
 
     @Override
+    protected void invalidateCaps() {
+        super.invalidateCaps();
+        invHolder.invalidate();
+        tankHolder.invalidate();
+    }
+
+    @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        if (this instanceof IInventoryHolder && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && !this.inv.isBlank()) {
+        if (cap == ITEM_HANDLER_CAPABILITY && this instanceof IInventoryHolder && !this.inv.isBlank()) {
             return this.invHolder.cast();
         }
-        if (this instanceof ITankHolder && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+        if (cap == FLUID_HANDLER_CAPABILITY && this instanceof ITankHolder) {
             return this.tankHolder.cast();
         }
         return super.getCapability(cap, side);
