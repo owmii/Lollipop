@@ -83,7 +83,7 @@ public class IconButton extends Button {
             if (!s.isEmpty()) {
                 int width = f.getStringWidth(s);
                 Color c = getMessage().getStyle().getColor();
-                int color = c == null ? 0x555555 : c.func_240742_a_();
+                int color = c == null ? 0x555555 : c.getColor();
                 f.drawString(matrix, s, this.xOffset + this.x + 0.5F + this.width / 2.0F - width / 2.0F, this.yOffset + this.y + this.height / 2.0F - 4, color);
             }
             if (!this.stack.isEmpty()) {
