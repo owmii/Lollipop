@@ -35,7 +35,7 @@ public class RenderTypes extends RenderType {
         State state = State.getBuilder().texture(new TextureState(location, false, false))
                 .transparency(BLENDED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).alpha(DEFAULT_ALPHA).cull(CULL_DISABLED)
                 .lightmap(LIGHTMAP_DISABLED).build(true);
-        return makeType("blend", DefaultVertexFormats.POSITION_TEX, 7, 256, true, true, state);
+        return makeType("blend", DefaultVertexFormats.POSITION_COLOR_TEX, 7, 256, true, true, state);
     }
 
     public static RenderType entityBlendedNoDept(ResourceLocation location) {
@@ -46,7 +46,7 @@ public class RenderTypes extends RenderType {
         State state = State.getBuilder().texture(new TextureState(location, false, false))
                 .transparency(BLENDED_NO_DEPT).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).alpha(DEFAULT_ALPHA).cull(CULL_DISABLED)
                 .lightmap(LIGHTMAP_DISABLED).build(true);
-        return makeType("blend_bo_dept", DefaultVertexFormats.POSITION_TEX, 7, 256, true, true, state);
+        return makeType("blend_bo_dept", DefaultVertexFormats.POSITION_COLOR_TEX, 7, 256, true, true, state);
     }
 
     public static RenderType getTextBlended(ResourceLocation locationIn) {
