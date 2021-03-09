@@ -22,14 +22,14 @@ public class Text {
     public static final StringTextComponent COMA = new StringTextComponent(", ");
 
     public static Style color(int color) {
-        return Style.EMPTY.setColor(Color.func_240743_a_(color));
+        return Style.EMPTY.setColor(Color.fromInt(color));
     }
 
     public static void drawString(ITextProperties text, float x, float y, int w, int h, int color) {
         Minecraft mc = Minecraft.getInstance();
         FontRenderer font = mc.fontRenderer;
         Matrix4f matrix4f = TransformationMatrix.identity().getMatrix();
-        for (IReorderingProcessor processor : font.func_238425_b_(text, w)) {
+        for (IReorderingProcessor processor : font.trimStringToWidth(text, w)) {
             IRenderTypeBuffer.Impl impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
             font.func_238416_a_(processor, x, y, color, false, matrix4f, impl, false, 0, 15728880);
             impl.finish();

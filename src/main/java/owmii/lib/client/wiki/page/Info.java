@@ -127,7 +127,7 @@ public class Info extends Page {
         for (int i = 0; i < this.cache.size(); i++) {
             ITextComponent text = this.cache.get(i);
             Text.drawString(text, x + 6, y + 7, screen.w / 2 - 5, 10, 0x38453c);
-            y += (i + 1 == this.cache.size() ? 0 : 3) + font.func_238425_b_(text, screen.w / 2 - 5).size() * 10;
+            y += (i + 1 == this.cache.size() ? 0 : 3) + font.trimStringToWidth(text, screen.w / 2 - 5).size() * 10;
         }
     }
 }

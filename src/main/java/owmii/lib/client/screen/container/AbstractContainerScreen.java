@@ -56,7 +56,7 @@ public class AbstractContainerScreen<C extends AbstractContainer> extends Contai
     public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
         renderBackground(matrix);
         super.render(matrix, mouseX, mouseY, partialTicks);
-        func_230459_a_(matrix, mouseX, mouseY);
+        renderHoveredTooltip(matrix, mouseX, mouseY);
     }
 
     @Override
@@ -70,8 +70,8 @@ public class AbstractContainerScreen<C extends AbstractContainer> extends Contai
     }
 
     @Override
-    protected void func_230459_a_(MatrixStack matrix, int mouseX, int mouseY) {
-        super.func_230459_a_(matrix, mouseX, mouseY);
+    protected void renderHoveredTooltip(MatrixStack matrix, int mouseX, int mouseY) {
+        super.renderHoveredTooltip(matrix, mouseX, mouseY);
         for (Widget widget : this.buttons) {
             if (widget.isHovered()) {
                 widget.renderToolTip(matrix, mouseX, mouseY);
@@ -135,6 +135,6 @@ public class AbstractContainerScreen<C extends AbstractContainer> extends Contai
     }
 
     protected Rectangle2d toRectangle2d(Widget widget) {
-        return new Rectangle2d(widget.x, widget.y, widget.getWidth(), widget.getWidth_CLASH());
+        return new Rectangle2d(widget.x, widget.y, widget.getWidth(), widget.getHeightRealms());
     }
 }
