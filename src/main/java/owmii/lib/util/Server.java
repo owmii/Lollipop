@@ -30,7 +30,7 @@ public class Server {
     }
 
     public static <T extends WorldSavedData> T getData(Supplier<T> supplier) {
-        return getData(supplier, World.field_234918_g_);
+        return getData(supplier, World.OVERWORLD);
     }
 
 //    public static <T extends WorldSavedData> T getData(Supplier<T> supplier, Dimension dim) {
@@ -62,7 +62,7 @@ public class Server {
 //    }
 
     public static Optional<ServerWorld> getWorld(ResourceLocation dimName) {
-        return getWorld(RegistryKey.func_240903_a_(Registry.WORLD_KEY, dimName));
+        return getWorld(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, dimName));
     }
 
     public static Optional<ServerWorld> getWorld(@Nullable RegistryKey<World> dim) {
